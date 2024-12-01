@@ -1,6 +1,8 @@
-file(GLOB_RECURSE SOURCES "*.cpp")
-add_executable(${PROJECT_NAME}_day_1 ${SOURCES})
-if(MSVC)
-    target_compile_options(${PROJECT_NAME}_day_1 PRIVATE /std:c++latest)
+set(DAY 1)
+
+add_subdirectory(src)
+add_subdirectory(lib)
+
+if(BUILD_TESTS)
+    add_subdirectory(test)
 endif()
-configure_file(input.txt input.txt COPYONLY)

@@ -1,0 +1,7 @@
+file(GLOB_RECURSE SOURCES "*.cpp")
+add_executable(${PROJECT_NAME}_day_${DAY} ${SOURCES})
+target_link_libraries(${PROJECT_NAME}_day_${DAY} PRIVATE ${PROJECT_NAME}_day_1_lib)
+if(MSVC)
+    target_compile_options(${PROJECT_NAME}_day_${DAY} PRIVATE /std:c++latest)
+endif()
+configure_file(input.txt input.txt COPYONLY)
