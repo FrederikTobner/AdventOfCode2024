@@ -29,7 +29,7 @@ auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_
                        }
                    });
 
-    auto results = nonstd::ranges::to_vector(numbers);
+    std::vector<std::expected<int64_t, std::error_code>> results = nonstd::ranges::to_vector(numbers);
 
     if (results.size() != 2 || !results[0] || !results[1]) {
         return std::unexpected(std::make_error_code(invalid_argument));
@@ -41,15 +41,15 @@ auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_
 auto parseInput(std::string_view input)
     -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code> {
 
-    auto lines = nonstd::ranges::to_vector(input | std::views::split('\n') | std::views::transform([](auto && chars) {
-                                               return std::string_view(chars.begin(), chars.end());
-                                           }) |
-                                           std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }));
+    std::vector<std::string_view> lines = nonstd::ranges::to_vector(
+        input | std::views::split('\n') |
+        std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
+        std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }));
 
     std::multiset<int64_t> set1, set2;
 
     for (std::string_view const & line : lines) {
-        auto result = parseLine(line);
+        std::expected<std::pair<int64_t, int64_t>, std::error_code> result = parseLine(line);
         if (!result) {
             return std::unexpected(result.error());
         }

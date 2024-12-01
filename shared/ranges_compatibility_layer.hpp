@@ -19,12 +19,12 @@ namespace nonstd::ranges {
  * @brief Converts a range to a specified container type
  * @tparam Container The target container type
  * @tparam Range The input range type
- * @param rng The range to convert
+ * @param range The range to convert
  * @return A new container of the specified type containing the range elements
  */
-template <typename Container, typename Range> [[nodiscard]] auto to_container(Range && rng) -> Container {
+template <typename Container, typename Range> [[nodiscard]] auto to_container(Range && range) -> Container {
     Container result;
-    for (auto && element : rng) {
+    for (auto && element : range) {
         result.insert(result.end(), std::forward<decltype(element)>(element));
     }
     return result;
@@ -33,10 +33,10 @@ template <typename Container, typename Range> [[nodiscard]] auto to_container(Ra
 /**
  * @brief Converts a range to a vector
  * @tparam Range The input range type
- * @param rng The range to convert
+ * @param range The range to convert
  * @return A vector containing the range elements
  */
-template <typename Range> [[nodiscard]] auto to_vector(Range && rng) {
-    return to_container<std::vector<std::ranges::range_value_t<Range>>>(std::forward<Range>(rng));
+template <typename Range> [[nodiscard]] auto to_vector(Range && range) {
+    return to_container<std::vector<std::ranges::range_value_t<Range>>>(std::forward<Range>(range));
 }
-} // namespace compat
+} // namespace nonstd::ranges

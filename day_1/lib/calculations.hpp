@@ -22,7 +22,7 @@ template <std::ranges::input_range R>
     requires std::integral<std::ranges::range_value_t<R>>
 [[nodiscard]] constexpr auto calculateTotalDistance(R const & leftList, R const & rightList) -> uint64_t {
     if (std::ranges::distance(leftList) != std::ranges::distance(rightList)) [[unlikely]] {
-        return 0;
+        throw std::invalid_argument("Lists must have the same size");
     }
 
     if (std::is_constant_evaluated()) {
@@ -46,6 +46,9 @@ template <std::ranges::input_range R>
 template <std::ranges::input_range R>
     requires std::integral<std::ranges::range_value_t<R>>
 [[nodiscard]] constexpr auto calculateSimilarityScore(R const & leftList, R const & rightList) -> uint64_t {
+    if (std::ranges::distance(leftList) != std::ranges::distance(rightList)) [[unlikely]] {
+        throw std::invalid_argument("Lists must have the same size");
+    }
     if (std::is_constant_evaluated()) {
         return std::transform_reduce(
             std::ranges::begin(leftList), std::ranges::end(leftList), uint64_t{0}, std::plus{},

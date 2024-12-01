@@ -12,15 +12,15 @@
 #include "../lib/file_operations.hpp"
 #include "../lib/parser.hpp"
 
-
 auto main(int argc, char const ** argv) -> int {
-    auto input = readInput("input.txt");
+    std::expected<std::string, std::error_code> input = readInput("input.txt");
     if (!input) [[unlikely]] {
         std::println(stderr, "Could not open file: {}", input.error().message());
         return EXIT_CODE_IO_ERROR;
     }
 
-    auto parsed = parser::parseInput(*input); // Add namespace qualification
+    std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code> parsed =
+        parser::parseInput(*input);
     if (!parsed) [[unlikely]] {
         std::println(stderr, "Failed to parse input: {}", parsed.error().message());
         return EXIT_CODE_DATA_ERROR;
@@ -34,10 +34,10 @@ auto main(int argc, char const ** argv) -> int {
         return EXIT_CODE_DATA_ERROR;
     }
 
-    auto totalDistance = calculateTotalDistance(leftList, rightList);
+    uint64_t totalDistance = calculateTotalDistance(leftList, rightList);
     std::println("The totalDistance is: {:#}", totalDistance);
 
-    auto similarityScore = calculateSimilarityScore(leftList, rightList);
+    uint64_t similarityScore = calculateSimilarityScore(leftList, rightList);
     std::println("The similarity score is: {:#}", similarityScore);
 
     return EXIT_CODE_SUCCESS;
