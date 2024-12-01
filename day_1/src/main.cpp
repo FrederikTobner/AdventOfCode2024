@@ -6,11 +6,12 @@
  * and provides appropriate exit codes.
  */
 
+#include "../../shared/exit_code.hpp"
+#include "../../shared/print_compatibility_layer.hpp"
 #include "../lib/calculations.hpp"
 #include "../lib/file_operations.hpp"
 #include "../lib/parser.hpp"
-#include "../../shared/exit_code.hpp"
-#include "../../shared/print_compatibility_layer.hpp"
+
 
 auto main(int argc, char const ** argv) -> int {
     auto input = readInput("input.txt");
@@ -19,17 +20,17 @@ auto main(int argc, char const ** argv) -> int {
         return EXIT_CODE_IO_ERROR;
     }
 
-    auto parsed = parseInput(*input);
+    auto parsed = parser::parseInput(*input); // Add namespace qualification
     if (!parsed) [[unlikely]] {
         std::println(stderr, "Failed to parse input: {}", parsed.error().message());
         return EXIT_CODE_DATA_ERROR;
     }
 
-    auto & [leftList, rightList] = *parsed;
+    auto const & [leftList, rightList] = *parsed;
 
     if (leftList.size() != rightList.size()) [[unlikely]] {
-        std::println(stderr, "The lists are not of equal size: leftList.size={}, rightList.size={}", leftList.size(),
-                     rightList.size());
+        std::println(stderr, "Lists have different sizes: {} vs {}", leftList.size(),
+                     rightList.size()); // Simplified format string
         return EXIT_CODE_DATA_ERROR;
     }
 

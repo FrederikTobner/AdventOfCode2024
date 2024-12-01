@@ -8,7 +8,8 @@
 
 #pragma once
 
-// GCC has not yet implemented the print library, so we need to use the format library instead and implement the print functions ourselves :)
+// GCC has not yet implemented the print library, so we need to use the format library instead and implement the print
+// functions ourselves :)
 #if defined(__GNUC__) && !defined(__clang__)
 #include <format>
 #include <iostream>

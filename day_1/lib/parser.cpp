@@ -14,34 +14,37 @@
 #include <string>
 #include <vector>
 
-constexpr auto isOnlyWhitespace(std::string_view str) -> bool {
-    return str.empty() || std::ranges::all_of(str, isWhitespace);
-}
+namespace parser { // Add namespace wrapper
 
 auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_t>, std::error_code> {
-    try {
-        auto numbers = compat::to_vector(
-            line | std::views::split(' ') |
-            std::views::filter([](auto && rng) { return !std::string_view(rng).empty(); }) |
-            std::views::transform([](auto && rng) { return std::stoll(std::string(rng.begin(), rng.end())); }));
+    using enum std::errc;
 
-        if (numbers.size() != 2) {
-            return std::unexpected(std::make_error_code(std::errc::invalid_argument));
-        }
+    auto numbers = line | std::views::split(' ') |
+                   std::views::filter([](auto && rng) { return !std::string_view(rng).empty(); }) |
+                   std::views::transform([](auto && rng) -> std::expected<int64_t, std::error_code> {
+                       try {
+                           return std::stoll(std::string(rng.begin(), rng.end()));
+                       } catch (...) {
+                           return std::unexpected(std::make_error_code(invalid_argument));
+                       }
+                   });
 
-        return std::pair{numbers[0], numbers[1]};
-    } catch (...) {
-        return std::unexpected(std::make_error_code(std::errc::invalid_argument));
+    auto results = nonstd::ranges::to_vector(numbers);
+
+    if (results.size() != 2 || !results[0] || !results[1]) {
+        return std::unexpected(std::make_error_code(invalid_argument));
     }
+
+    return std::pair{*results[0], *results[1]};
 }
 
 auto parseInput(std::string_view input)
     -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code> {
 
-    auto lines = compat::to_vector(input | std::views::split('\n') | std::views::transform([](auto && chars) {
-                                       return std::string_view(chars.begin(), chars.end());
-                                   }) |
-                                   std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }));
+    auto lines = nonstd::ranges::to_vector(input | std::views::split('\n') | std::views::transform([](auto && chars) {
+                                               return std::string_view(chars.begin(), chars.end());
+                                           }) |
+                                           std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }));
 
     std::multiset<int64_t> set1, set2;
 
@@ -56,3 +59,5 @@ auto parseInput(std::string_view input)
 
     return std::pair{set1, set2};
 }
+
+} // namespace parser

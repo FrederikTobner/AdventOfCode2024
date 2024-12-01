@@ -14,7 +14,7 @@
  * @brief Compatibility layer for ranges operations
  * @namespace compat
  */
-namespace compat {
+namespace nonstd::ranges {
 /**
  * @brief Converts a range to a specified container type
  * @tparam Container The target container type
