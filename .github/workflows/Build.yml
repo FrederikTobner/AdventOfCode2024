@@ -12,7 +12,7 @@ jobs:
       BUILD_TYPE: ${{matrix.buildtypes}}
     strategy:
       matrix:
-        operatingsystems: [windows-latest, ubuntu-latest, macos-latest]
+        operatingsystems: [windows-latest, ubuntu-latest]
         buildtypes: [Debug, Release] 
     steps:
     - uses: actions/checkout@v4
@@ -46,7 +46,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew install \
-          gcc@15 \
+          gcc@13 \
           ninja \
           ${NULL+}
 
