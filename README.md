@@ -1,7 +1,7 @@
 # Advent of Code 2024
 
-[![Build](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/build.yaml/badge.svg)](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/build.yaml)
-[![Test](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/test.yaml/badge.svg)](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/test.yaml)
+[![Build](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/Build.yaml/badge.svg)](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/Build.yaml)
+[![Test](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/Test.yaml/badge.svg)](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/Test.yaml)
 
 Solutions for the [Advent of Code 2024](https://adventofcode.com/2024) written in modern C++.
 
