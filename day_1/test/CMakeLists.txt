@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.24)
-
 set(TESTS_EXE_NAME ${PROJECT_NAME}_day_${DAY}_tests)
 
 # Used to add dependencies to the project
