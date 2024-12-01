@@ -4,7 +4,7 @@ set(TESTS_EXE_NAME ${PROJECT_NAME}_day_${DAY}_tests)
 include(AddDependency)
 
 # Fetches google-test framework from the github repo
-add_github_dependency_by_tag(googletest google/googletest v1.14.0)
+add_github_dependency_by_tag(googletest google/googletest v1.15.2)
 
 file(GLOB_RECURSE TEST_SOURCES *.cpp)
 
