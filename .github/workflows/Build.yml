@@ -26,28 +26,17 @@ jobs:
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
     
-    # Schlinux setup
     - name: Setup Dependencies under Linux
       if: runner.os == 'Linux'
       run: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
         sudo apt-get update
-        sudo apt install software-properties-common
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-        sudo apt-get update
+        sudo apt-get install -y gcc-13 g++-13
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
         sudo apt-get -y install \
           cmake \
           ninja-build \
-          gcc-15 \
-          g++-15 \
-          ${NULL+}
-
-    # SchmockOS setup
-    - name: Setup Dependencies under MacOS
-      if: runner.os == 'macOS'
-      run: |
-        brew install \
-          gcc@13 \
-          ninja \
           ${NULL+}
 
     - name: Configure CMake under Windows
