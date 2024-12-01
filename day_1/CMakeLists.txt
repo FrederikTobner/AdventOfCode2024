@@ -11,6 +11,7 @@ else()
         -std=c++23
         -D_GLIBCXX_USE_CXX11_ABI=1
         -D_GLIBCXX_ASSERTIONS
+        -fexperimental-library
     )
 endif()
 
