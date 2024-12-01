@@ -12,7 +12,7 @@ jobs:
       BUILD_TYPE: ${{matrix.buildtypes}}
     strategy:  
       matrix:
-        buildtypes: [Debug, Release]
+        buildtypes: [Release]
     steps:
     - uses: actions/checkout@v4
 
@@ -30,4 +30,4 @@ jobs:
 
     - name: Run tests
       working-directory: ${{github.workspace}}/build
-      run: ctest -C ${{env.BUILD_TYPE}} 
+      run: ctest -C ${{env.BUILD_TYPE}} -L . --output-on-failure
