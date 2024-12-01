@@ -1,11 +1,9 @@
 #include "parser.hpp"
-#include "ranges_compat.hpp"
-#include "utils.hpp"
+#include "ranges_compatibility_layer.hpp"
 #include <algorithm>
 #include <ranges>
 #include <string>
 #include <vector>
-
 
 constexpr auto isOnlyWhitespace(std::string_view str) -> bool {
     return str.empty() || std::ranges::all_of(str, isWhitespace);

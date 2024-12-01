@@ -1,3 +1,10 @@
+/**
+ * @file print_compatibility_layer.hpp
+ * @brief Provides compatibility layer for std::print functionality across different compilers
+ *
+ * This header provides implementations for print functions when using compilers
+ * that haven't yet implemented the C++23 print library.
+ */
 #pragma once
 
 // GCC and Clang have not yet implemented the print library, so we need to use the format library instead

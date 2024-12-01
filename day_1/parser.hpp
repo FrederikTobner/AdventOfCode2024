@@ -6,7 +6,6 @@
 #include <system_error>
 #include <utility>
 
-
 /**
  * @brief Parses a single line containing two space-separated numbers
  * @param line String view containing the line to parse
@@ -30,3 +29,13 @@
  */
 [[nodiscard]] auto parseInput(std::string_view input)
     -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code>;
+
+/**
+ * @brief Checks if a character is considered whitespace
+ * @param c Character to check
+ * @return true if the character is whitespace, false otherwise
+ * @note Whitespace characters include space, tab, newline and carriage return
+ */
+[[nodiscard]] constexpr auto isWhitespace(char c) noexcept -> bool {
+    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+}

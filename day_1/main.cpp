@@ -1,14 +1,8 @@
+#include "calculations.hpp"
 #include "exit_code.hpp"
-#include "file_ops.hpp"
+#include "file_operations.hpp"
 #include "parser.hpp"
-#include "printer.hpp"
-#include "ranges_compat.hpp"
-
-#include <algorithm>
-#include <execution>
-#include <numeric>
-#include <ranges>
-#include <vector>
+#include "print_compatibility_layer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
     auto input = readInput("input.txt");
@@ -31,23 +25,10 @@ auto main(int argc, char const ** argv) -> int {
         return EXIT_CODE_DATA_ERROR;
     }
 
-    // Part 1 - Calculate the total distance
-    auto distances =
-        compat::to_vector(std::ranges::zip_view(leftList, rightList) | std::views::transform([](auto pair) {
-                              auto [a, b] = pair;
-                              return std::abs(a - b);
-                          }));
-
-    auto totalDistance = std::reduce(std::execution::par, distances.begin(), distances.end(), std::uint64_t{0});
-
+    auto totalDistance = calculateTotalDistance(leftList, rightList);
     std::println("The totalDistance is: {:#}", totalDistance);
 
-    // Part 2 - Calculate a similarity score
-    auto similarities = compat::to_vector(
-        leftList | std::views::transform([&rightList](auto const & num) { return rightList.count(num) * num; }));
-
-    auto similarityScore = std::reduce(std::execution::par, similarities.begin(), similarities.end(), std::uint64_t{0});
-
+    auto similarityScore = calculateSimilarityScore(leftList, rightList);
     std::println("The similarity score is: {:#}", similarityScore);
 
     return EXIT_CODE_SUCCESS;
