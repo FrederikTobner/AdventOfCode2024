@@ -46,9 +46,9 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew install \
-          gcc@13 \
           ninja \
           ${NULL+}
+          
     - name: Configure CMake under Windows
       if: runner.os == 'Windows'
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja

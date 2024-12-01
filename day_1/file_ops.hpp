@@ -1,7 +1,8 @@
 #pragma once
-#include <optional>
+#include <expected>
 #include <string>
 #include <string_view>
+#include <system_error>
 
 /**
  * @brief Reads the entire contents of a file into a string
@@ -10,4 +11,4 @@
  * opened
  * @throws std::runtime_error if file operations fail after opening
  */
-[[nodiscard]] auto readInput(std::string_view path) -> std::optional<std::string>;
+[[nodiscard]] auto readInput(std::string_view path) -> std::expected<std::string, std::error_code>;
