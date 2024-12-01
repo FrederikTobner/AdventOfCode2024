@@ -1,5 +1,8 @@
 # Advent of Code 2024
 
+[![Build](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/build.yaml/badge.svg)](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/build.yaml)
+[![Test](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/test.yaml/badge.svg)](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/test.yaml)
+
 Solutions for the [Advent of Code 2024](https://adventofcode.com/2024) written in modern C++.
 
 ![Merry Christmas](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3NoNjJ6eGtiZmhrYmtibnI4dnBzd3BpOWswMjh0ODlxMWwybGE1dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/damYg6Mana2CHXfuz5/giphy.gif)
