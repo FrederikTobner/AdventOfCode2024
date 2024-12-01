@@ -1,3 +1,11 @@
+/**
+ * @file ranges_compatibility_layer.hpp
+ * @brief Provides compatibility utilities for C++ ranges operations
+ * @details This file contains utility functions to work with ranges and convert them
+ * to different container types, providing a compatibility layer across different
+ * C++ standard library implementations.
+ */
+
 #pragma once
 #include <ranges>
 #include <vector>

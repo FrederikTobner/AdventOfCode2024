@@ -1,5 +1,12 @@
+/**
+ * @file file_operations.cpp
+ * @brief Implementation of file handling operations
+ * @details Implements the file reading functionality declared in file_operations.hpp.
+ * Handles file stream operations and error conditions.
+ */
 
 #include "file_operations.hpp"
+
 #include <fstream>
 
 auto readInput(std::string_view path) -> std::expected<std::string, std::error_code> {

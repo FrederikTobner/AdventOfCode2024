@@ -1,6 +1,8 @@
 /**
  * @file exit_code.hpp
- * @brief This file contains the exit codes for the program.
+ * @brief Program exit codes definition
+ * @details Defines standardized exit codes based on UNIX sysexits,
+ * providing meaningful return values for different program termination scenarios.
  */
 
 #pragma once

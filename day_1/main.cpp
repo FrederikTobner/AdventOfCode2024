@@ -1,8 +1,16 @@
+/**
+ * @file main.cpp
+ * @brief Main program entry point
+ * @details Coordinates the overall program flow, including file reading,
+ * input parsing, calculations, and result output. Handles error conditions
+ * and provides appropriate exit codes.
+ */
+
 #include "calculations.hpp"
-#include "exit_code.hpp"
 #include "file_operations.hpp"
 #include "parser.hpp"
-#include "print_compatibility_layer.hpp"
+#include "../shared/exit_code.hpp"
+#include "../shared/print_compatibility_layer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
     auto input = readInput("input.txt");

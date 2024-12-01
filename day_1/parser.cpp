@@ -1,5 +1,14 @@
+/**
+ * @file parser.cpp
+ * @brief Implementation of input parsing functionality
+ * @details Contains the implementation of parsing functions declared in parser.hpp.
+ * Handles the conversion of string input into numerical data structures with
+ * proper error handling.
+ */
+
 #include "parser.hpp"
-#include "ranges_compatibility_layer.hpp"
+#include "../shared/ranges_compatibility_layer.hpp"
+
 #include <algorithm>
 #include <ranges>
 #include <string>

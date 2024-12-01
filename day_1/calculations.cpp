@@ -1,6 +1,13 @@
+/**
+ * @file calculations.cpp
+ * @brief Implementation of numerical calculations
+ * @details Implements the calculation functions declared in calculations.hpp,
+ * utilizing parallel algorithms where possible for better performance.
+ */
 
 #include "calculations.hpp"
-#include "ranges_compatibility_layer.hpp"
+#include "../shared/ranges_compatibility_layer.hpp"
+
 #include <algorithm>
 #include <execution>
 #include <numeric>

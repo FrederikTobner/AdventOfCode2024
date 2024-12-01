@@ -1,4 +1,13 @@
+/**
+ * @file parser.hpp
+ * @brief Input parsing functionality declarations
+ * @details Provides interfaces for parsing input data containing pairs of numbers.
+ * Includes utilities for parsing individual lines and complete input files,
+ * with error handling through std::expected.
+ */
+
 #pragma once
+
 #include <cstdint>
 #include <expected>
 #include <set>

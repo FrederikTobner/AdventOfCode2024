@@ -1,4 +1,12 @@
+/**
+ * @file file_operations.hpp
+ * @brief File handling operations interface
+ * @details Declares functions for reading input files safely with error handling.
+ * Provides abstractions over standard file operations with modern C++ features.
+ */
+
 #pragma once
+
 #include <expected>
 #include <string>
 #include <string_view>

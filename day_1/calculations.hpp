@@ -1,3 +1,10 @@
+/**
+ * @file calculations.hpp
+ * @brief Numerical calculations interface
+ * @details Declares functions for performing various numerical calculations
+ * on sets of numbers, including distance and similarity calculations.
+ */
+
 #pragma once
 #include <cstdint>
 #include <set>
