@@ -11,7 +11,10 @@ else()
         -std=c++23
         -D_GLIBCXX_USE_CXX11_ABI=1
         -D_GLIBCXX_ASSERTIONS
-        -fexperimental-library
+    )
+    # Add definition to enable experimental features
+    target_compile_definitions(${PROJECT_NAME}_day_1 PRIVATE
+        _GLIBCXX_EXPERIMENTAL_ENABLED=1
     )
 endif()
 
