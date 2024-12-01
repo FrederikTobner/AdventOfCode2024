@@ -8,7 +8,7 @@
 
 #pragma once
 
-// GCC and Clang have not yet implemented the print library, so we need to use the format library instead and implement the print functions ourselves :)
+// GCC has not yet implemented the print library, so we need to use the format library instead and implement the print functions ourselves :)
 #if defined(__GNUC__) && !defined(__clang__)
 #include <format>
 #include <iostream>
@@ -31,6 +31,6 @@ template <typename... Args> void println(std::FILE * stream, std::format_string<
     std::fprintf(stream, "%s\n", std::vformat(fmt.get(), std::make_format_args(args...)).c_str());
 }
 } // namespace std
-#else // MSVC already has the print library implemented
+#else // MSVC and Clang already have the print library implemented
 #include <print>
 #endif

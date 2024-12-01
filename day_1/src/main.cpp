@@ -6,11 +6,11 @@
  * and provides appropriate exit codes.
  */
 
-#include "calculations.hpp"
-#include "file_operations.hpp"
-#include "parser.hpp"
-#include "../shared/exit_code.hpp"
-#include "../shared/print_compatibility_layer.hpp"
+#include "../lib/calculations.hpp"
+#include "../lib/file_operations.hpp"
+#include "../lib/parser.hpp"
+#include "../../shared/exit_code.hpp"
+#include "../../shared/print_compatibility_layer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
     auto input = readInput("input.txt");

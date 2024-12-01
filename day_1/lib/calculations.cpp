@@ -6,8 +6,7 @@
  */
 
 #include "calculations.hpp"
-#include "../shared/ranges_compatibility_layer.hpp"
-
+#include "../../shared/ranges_compatibility_layer.hpp"
 #include <algorithm>
 #include <execution>
 #include <numeric>
