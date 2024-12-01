@@ -1,30 +1,24 @@
 #include "file_ops.hpp"
 #include "parser.hpp"
-#include <iostream>
 #include <numeric>
+#include <print>
 
-auto main(int argc, char const *argv[]) -> int 
-{
-    auto input = readInput("input.txt");
+auto main(int argc, char const * argv[]) -> int {
+    std::optional<std::string> input = readInput("input.txt");
     if (!input) {
-        std::cerr << "Could not open file\n";
+        std::println(stderr, "Could not open file");
         return 1;
     }
 
-    auto [set1, set2] = parseInput(*input);
-    
-    if (set1.size() != set2.size()) {
+    auto [leftList, rightList] = parseInput(*input);
+
+    if (leftList.size() != rightList.size()) {
         throw std::runtime_error("The two sets are not the same size");
     }
 
-    auto result = std::transform_reduce(
-        set1.begin(), set1.end(),
-        set2.begin(),
-        std::uint64_t{0},
-        std::plus<>{},
-        [](auto a, auto b) { return std::abs(a - b); }
-    );
+    uint64_t result = std::transform_reduce(leftList.begin(), leftList.end(), rightList.begin(), std::uint64_t{0},
+                                            std::plus<>{}, [](auto a, auto b) { return std::abs(a - b); });
 
-    std::cout << "The result is: " << result << '\n';
+    std::println("The result is: {}", result);
     return 0;
 }
