@@ -2,6 +2,7 @@
 #include "file_ops.hpp"
 #include "parser.hpp"
 #include "printer.hpp"
+#include "ranges_compat.hpp"
 
 #include <algorithm>
 #include <execution>
@@ -31,20 +32,19 @@ auto main(int argc, char const ** argv) -> int {
     }
 
     // Part 1 - Calculate the total distance
-    auto distances = std::ranges::zip_view(leftList, rightList) | std::views::transform([](auto pair) {
-                         auto [a, b] = pair;
-                         return std::abs(a - b);
-                     }) |
-                     std::ranges::to<std::vector>();
+    auto distances =
+        compat::to_vector(std::ranges::zip_view(leftList, rightList) | std::views::transform([](auto pair) {
+                              auto [a, b] = pair;
+                              return std::abs(a - b);
+                          }));
 
     auto totalDistance = std::reduce(std::execution::par, distances.begin(), distances.end(), std::uint64_t{0});
 
     std::println("The totalDistance is: {:#}", totalDistance);
 
     // Part 2 - Calculate a similarity score
-    auto similarities = leftList |
-                        std::views::transform([&rightList](auto const & num) { return rightList.count(num) * num; }) |
-                        std::ranges::to<std::vector>();
+    auto similarities = compat::to_vector(
+        leftList | std::views::transform([&rightList](auto const & num) { return rightList.count(num) * num; }));
 
     auto similarityScore = std::reduce(std::execution::par, similarities.begin(), similarities.end(), std::uint64_t{0});
 

@@ -1,9 +1,11 @@
 #include "parser.hpp"
+#include "ranges_compat.hpp"
 #include "utils.hpp"
 #include <algorithm>
 #include <ranges>
 #include <string>
 #include <vector>
+
 
 constexpr auto isOnlyWhitespace(std::string_view str) -> bool {
     return str.empty() || std::ranges::all_of(str, isWhitespace);
@@ -11,11 +13,10 @@ constexpr auto isOnlyWhitespace(std::string_view str) -> bool {
 
 auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_t>, std::error_code> {
     try {
-        auto numbers =
+        auto numbers = compat::to_vector(
             line | std::views::split(' ') |
             std::views::filter([](auto && rng) { return !std::string_view(rng).empty(); }) |
-            std::views::transform([](auto && rng) { return std::stoll(std::string(rng.begin(), rng.end())); }) |
-            std::ranges::to<std::vector>();
+            std::views::transform([](auto && rng) { return std::stoll(std::string(rng.begin(), rng.end())); }));
 
         if (numbers.size() != 2) {
             return std::unexpected(std::make_error_code(std::errc::invalid_argument));
@@ -30,9 +31,10 @@ auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_
 auto parseInput(std::string_view input)
     -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code> {
 
-    auto lines = input | std::views::split('\n') |
-                 std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
-                 std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }) | std::ranges::to<std::vector>();
+    auto lines = compat::to_vector(input | std::views::split('\n') | std::views::transform([](auto && chars) {
+                                       return std::string_view(chars.begin(), chars.end());
+                                   }) |
+                                   std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }));
 
     std::multiset<int64_t> set1, set2;
 
