@@ -1,1 +1,1 @@
-add_aoc_test()
+aoc_add_test()
