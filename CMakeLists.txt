@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.24)
+
+project(AdventofC++2024 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Add subdirectories for each day if they exist
+foreach(day RANGE 1 24)
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/day_${day})
+        add_subdirectory(day_${day})
+    endif()
+endforeach()
