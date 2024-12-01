@@ -37,8 +37,8 @@ jobs:
         sudo apt-get -y install \
           cmake \
           ninja-build \
-          gcc-13 \
-          g++-13 \
+          gcc-15 \
+          g++-15 \
           ${NULL+}
 
     # SchmockOS setup
@@ -46,7 +46,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew install \
-          gcc@13 \
+          gcc@15 \
           ninja \
           ${NULL+}
 
