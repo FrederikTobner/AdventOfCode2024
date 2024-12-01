@@ -4,9 +4,10 @@
 #include "printer.hpp"
 
 #include <algorithm>
+#include <execution>
 #include <numeric>
-#include <optional>
 #include <ranges>
+#include <vector>
 
 auto main(int argc, char const ** argv) -> int {
     auto input = readInput("input.txt");
@@ -15,27 +16,39 @@ auto main(int argc, char const ** argv) -> int {
         return EXIT_CODE_IO_ERROR;
     }
 
-    // Use ranges::to for cleaner container creation
-    auto [leftList, rightList] = parseInput(*input);
+    auto parsed = parseInput(*input);
+    if (!parsed) [[unlikely]] {
+        std::println(stderr, "Failed to parse input: {}", parsed.error().message());
+        return EXIT_CODE_DATA_ERROR;
+    }
 
-    if (leftList.size() != rightList.size()) {
-        std::println(stderr, "The lists are not of equal size");
+    auto & [leftList, rightList] = *parsed;
+
+    if (leftList.size() != rightList.size()) [[unlikely]] {
+        std::println(stderr, "The lists are not of equal size: leftList.size={}, rightList.size={}", leftList.size(),
+                     rightList.size());
         return EXIT_CODE_DATA_ERROR;
     }
 
     // Part 1 - Calculate the total distance
-    uint64_t totalDistance =
-        std::transform_reduce(leftList.begin(), leftList.end(), rightList.begin(), std::uint64_t{0}, std::plus<>{},
-                              [](auto a, auto b) { return std::abs(a - b); });
+    auto distances = std::ranges::zip_view(leftList, rightList) | std::views::transform([](auto pair) {
+                         auto [a, b] = pair;
+                         return std::abs(a - b);
+                     }) |
+                     std::ranges::to<std::vector>();
 
-    std::println("The totalDistance is: {}", totalDistance);
+    auto totalDistance = std::reduce(std::execution::par, distances.begin(), distances.end(), std::uint64_t{0});
+
+    std::println("The totalDistance is: {:#}", totalDistance);
 
     // Part 2 - Calculate a similarity score
-    uint64_t similarityScore = std::ranges::fold_left(
-        leftList | std::views::transform([&rightList](auto const & num) { return rightList.count(num) * num; }),
-        std::uint64_t{0}, std::plus<>{});
+    auto similarities = leftList |
+                        std::views::transform([&rightList](auto const & num) { return rightList.count(num) * num; }) |
+                        std::ranges::to<std::vector>();
 
-    std::println("The similarity score is: {}", similarityScore);
+    auto similarityScore = std::reduce(std::execution::par, similarities.begin(), similarities.end(), std::uint64_t{0});
+
+    std::println("The similarity score is: {:#}", similarityScore);
 
     return EXIT_CODE_SUCCESS;
 }
