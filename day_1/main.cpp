@@ -1,7 +1,7 @@
 #include "file_ops.hpp"
 #include "parser.hpp"
+#include "printer.hpp"
 #include <numeric>
-#include <print>
 
 auto main(int argc, char const * argv[]) -> int {
     std::optional<std::string> input = readInput("input.txt");
