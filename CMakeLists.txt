@@ -12,9 +12,12 @@ FetchContent_Declare(
   SOURCE_DIR ${CMAKE_BINARY_DIR}/external/ExternalCMakeFiles/src
 )
 FetchContent_MakeAvailable(ExternalCMakeFiles)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/external/ExternalCMakeFiles/src")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/external/ExternalCMakeFiles/src" "${CMAKE_SOURCE_DIR}/cmake")
 
 include(Options)
+include(AOCTest)
+include(AOCLibrary)
+include(AOCExecutable)
 add_option(BUILD_TESTS "Build tests" OFF)
 
 if(BUILD_TESTS)
