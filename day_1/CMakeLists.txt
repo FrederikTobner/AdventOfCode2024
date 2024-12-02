@@ -3,7 +3,7 @@ set(DAY 1)
 add_subdirectory(src)
 add_subdirectory(lib)
 
-if(BUILD_TESTS)
+if(TRUE)
     add_subdirectory(test)
 endif()
 if(BUILD_BENCHMARKS)

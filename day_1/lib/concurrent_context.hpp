@@ -38,25 +38,25 @@ template <typename T = std::error_code> class concurrent_context {
     [[nodiscard]] T getValue() const noexcept;
 
   private:
-    std::atomic<bool> has_value{false};
-    mutable std::mutex context_mutex;
-    T value;
+    std::atomic<bool> m_has_value{false};
+    mutable std::mutex m_context_mutex;
+    T m_value;
 };
 
 template <typename T> void concurrent_context<T>::setValue(T value) {
-    if (!has_value.exchange(true, std::memory_order_relaxed)) {
-        std::scoped_lock lock(context_mutex);
-        value = std::move(value);
+    if (!m_has_value.exchange(true, std::memory_order_relaxed)) {
+        std::scoped_lock lock(m_context_mutex);
+        m_value = std::move(value);
     }
 }
 
 template <typename T> bool concurrent_context<T>::hasValue() const noexcept {
-    return has_value.load(std::memory_order_relaxed);
+    return m_has_value.load(std::memory_order_relaxed);
 }
 
 template <typename T> T concurrent_context<T>::getValue() const noexcept {
-    std::scoped_lock lock(context_mutex);
-    return value;
+    std::scoped_lock lock(m_context_mutex);
+    return m_value;
 }
 
 } // namespace threads
