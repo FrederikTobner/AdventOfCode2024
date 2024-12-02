@@ -19,6 +19,7 @@ include(AOCTest)
 include(AOCLibrary)
 include(AOCExecutable)
 add_option(BUILD_TESTS "Build tests" OFF)
+add_option(BUILD_BENCHMARKS "Build benchmarks" OFF)
 
 if(BUILD_TESTS)
     enable_testing()

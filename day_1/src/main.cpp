@@ -6,11 +6,12 @@
  * and provides appropriate exit codes.
  */
 
-#include "../../shared/exit_code.hpp"
-#include "../../shared/print_compatibility_layer.hpp"
 #include "../lib/calculations.hpp"
 #include "../lib/file_operations.hpp"
 #include "../lib/parser.hpp"
+
+#include "../../shared/exit_code.hpp"
+#include "../../shared/print_compatibility_layer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = readInput("input.txt");
@@ -29,8 +30,7 @@ auto main(int argc, char const ** argv) -> int {
     auto const & [leftList, rightList] = *parsed;
 
     if (leftList.size() != rightList.size()) [[unlikely]] {
-        std::println(stderr, "Lists have different sizes: {} vs {}", leftList.size(),
-                     rightList.size()); // Simplified format string
+        std::println(stderr, "Lists have different sizes: {} vs {}", leftList.size(), rightList.size());
         return EXIT_CODE_DATA_ERROR;
     }
 

@@ -39,22 +39,20 @@ inline constexpr auto WHITESPACE_CHARS = " \t\n\r"_ws;
     return str.empty() || str.find_first_not_of(WHITESPACE_CHARS) == std::string_view::npos;
 }
 
+/// @brief Processing mode for input parsing - mainly used for performance testing optimizations made using parallelism
+enum class ProcessingMode {
+    Sequential,
+    Parallel
+};
+
 /**
  * @brief Parses the entire input string into two ordered sets of numbers
  * @param input String view containing the entire input
+ * @param mode Processing mode to use for parsing
  * @return std::pair of multisets containing the parsed numbers
  * @throws std::invalid_argument if any line parsing fails
  */
-[[nodiscard]] auto parseInput(std::string_view input)
+[[nodiscard]] auto parseInput(std::string_view input, ProcessingMode mode = ProcessingMode::Parallel)
     -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code>;
 
-/**
- * @brief Checks if a character is considered whitespace
- * @param c Character to check
- * @return true if the character is whitespace, false otherwise
- * @note Whitespace characters include space, tab, newline and carriage return
- */
-[[nodiscard]] constexpr auto isWhitespace(char c) noexcept -> bool {
-    return WHITESPACE_CHARS.contains(c); // C++23 contains
-}
 } // namespace parser
