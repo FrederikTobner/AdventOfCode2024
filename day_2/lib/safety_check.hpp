@@ -15,7 +15,7 @@ namespace safety_check {
  * @param input Span of numbers to check
  * @return true if the sequence follows all safety rules, false otherwise
  */
-bool isSafe(std::span<uint8_t const> input);
+[[nodiscard]] auto isSafe(std::span<uint8_t const> input) -> bool;
 
 /**
  * @brief Checks if sequence can be made safe by removing one number
@@ -24,6 +24,6 @@ bool isSafe(std::span<uint8_t const> input);
  * @param input Span of numbers to check
  * @return true if removing one number can make the sequence safe, false otherwise
  */
-bool canBeMadeSafe(std::span<uint8_t const> input);
+[[nodiscard]] auto canBeMadeSafe(std::span<uint8_t const> input) -> bool;
 
 } // namespace safety_check

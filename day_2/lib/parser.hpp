@@ -17,7 +17,8 @@ namespace parser {
  * @param input String view containing the input data
  * @return Expected containing vector of number sequences or error code on failure
  */
-auto parseInput(std::string_view input) -> std::expected<std::vector<std::vector<uint8_t>>, std::error_code>;
+[[nodiscard]] auto parseInput(std::string_view input)
+    -> std::expected<std::vector<std::vector<uint8_t>>, std::error_code>;
 
 /// @brief User-defined literal for creating string views of whitespace characters
 /// @param str The string to convert to a string view
@@ -45,6 +46,6 @@ inline constexpr auto WHITESPACE_CHARS = " \t\n\r"_ws;
  * @return Expected containing vector of numbers or error code on failure
  * @throws Nothing
  */
-auto parseLine(std::string_view line) -> std::expected<std::vector<uint8_t>, std::error_code>;
+[[nodiscard]] auto parseLine(std::string_view line) -> std::expected<std::vector<uint8_t>, std::error_code>;
 
 } // namespace parser
