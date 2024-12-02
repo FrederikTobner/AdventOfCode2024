@@ -12,6 +12,8 @@
 #include <string_view>
 #include <system_error>
 
+namespace fileops {
+
 /**
  * @brief Reads the entire contents of a file into a string
  * @param path Path to the file to read
@@ -19,4 +21,6 @@
  * opened
  * @throws std::runtime_error if file operations fail after opening
  */
-[[nodiscard]] auto readInput(std::string_view path) -> std::expected<std::string, std::error_code>;
+[[nodiscard]] auto readFromFile(std::string_view path) -> std::expected<std::string, std::error_code>;
+
+} // namespace fileops

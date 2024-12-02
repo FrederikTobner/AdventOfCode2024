@@ -6,7 +6,7 @@ TEST(Calculations, TotalDistance) {
     std::multiset<int64_t> leftList{3, 4, 2, 1, 3, 3};
     std::multiset<int64_t> rightList{4, 3, 5, 3, 9, 3};
 
-    auto result = calculateTotalDistance(leftList, rightList);
+    auto result = calculations::totalDistance(leftList, rightList);
     EXPECT_EQ(result, 11);
 }
 
@@ -14,6 +14,6 @@ TEST(Calculations, SimilarityScore) {
     std::multiset<int64_t> leftList{3, 4, 2, 1, 3, 3};
     std::multiset<int64_t> rightList{4, 3, 5, 3, 9, 3};
 
-    auto result = calculateSimilarityScore(leftList, rightList);
+    auto result = calculations::similarityScore(leftList, rightList);
     EXPECT_EQ(result, 31);
 }

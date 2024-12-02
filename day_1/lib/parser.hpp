@@ -15,11 +15,24 @@
 #include <system_error>
 #include <utility>
 
+/// @brief Namespace containing input parsing utilities
 namespace parser {
-constexpr auto operator""_ws(char const * str, size_t len) noexcept {
+
+/// @brief Processing mode for input parsing - mainly used for performance testing optimizations made using parallelism
+enum class ProcessingMode {
+    Sequential,
+    Parallel
+};
+
+/// @brief User-defined literal for creating string views of whitespace characters
+/// @param str The string to convert to a string view
+/// @param len The length of the string
+/// @return A string view of the input string
+[[nodiscard]] constexpr auto operator""_ws(char const * str, size_t len) noexcept {
     return std::string_view{str, len};
 }
 
+/// @brief String view of whitespace characters for use in parsing
 inline constexpr auto WHITESPACE_CHARS = " \t\n\r"_ws;
 
 /**
@@ -39,16 +52,10 @@ inline constexpr auto WHITESPACE_CHARS = " \t\n\r"_ws;
     return str.empty() || str.find_first_not_of(WHITESPACE_CHARS) == std::string_view::npos;
 }
 
-/// @brief Processing mode for input parsing - mainly used for performance testing optimizations made using parallelism
-enum class ProcessingMode {
-    Sequential,
-    Parallel
-};
-
 /**
  * @brief Parses the entire input string into two ordered sets of numbers
  * @param input String view containing the entire input
- * @param mode Processing mode to use for parsing
+ * @param mode Processing mode to use for parsing - defaults to Parallel
  * @return std::pair of multisets containing the parsed numbers
  * @throws std::invalid_argument if any line parsing fails
  */
