@@ -20,6 +20,11 @@
 
 namespace parser {
 
+// Helper function at top of file
+static bool isWhitespace(char c) {
+    return c == ' ' || c == '\t';
+}
+
 static auto processLinesInParallel(std::span<std::string_view const> lines)
     -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code>;
 
@@ -29,16 +34,17 @@ static auto processLinesSequential(std::span<std::string_view const> lines)
 auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_t>, std::error_code> {
     using enum std::errc;
 
-    std::vector<std::expected<int64_t, std::error_code>> results =
-        nonstd::ranges::to_vector(line | std::views::split(' ') |
-                                  std::views::filter([](auto && range) { return !std::string_view(range).empty(); }) |
-                                  std::views::transform([](auto && range) -> std::expected<int64_t, std::error_code> {
-                                      try {
-                                          return std::stoll(std::string(range.begin(), range.end()));
-                                      } catch (...) {
-                                          return std::unexpected(std::make_error_code(invalid_argument));
-                                      }
-                                  }));
+    std::vector<std::expected<int64_t, std::error_code>> results = nonstd::ranges::to_vector(
+        line | std::views::split(' ') |
+        std::views::transform([](auto && range) { return std::string_view(range.begin(), range.end()); }) |
+        std::views::filter([](auto && sv) { return !isOnlyWhitespace(sv); }) |
+        std::views::transform([](auto && sv) -> std::expected<int64_t, std::error_code> {
+            try {
+                return std::stoll(std::string(sv));
+            } catch (...) {
+                return std::unexpected(std::make_error_code(invalid_argument));
+            }
+        }));
 
     if (results.size() != 2 || !results[0] || !results[1]) {
         return std::unexpected(std::make_error_code(invalid_argument));

@@ -7,10 +7,10 @@
  */
 
 #include "../lib/calculations.hpp"
-#include "../lib/file_operations.hpp"
 #include "../lib/parser.hpp"
 
 #include "../../shared/exit_code.hpp"
+#include "../../shared/file_operations.hpp"
 #include "../../shared/print_compatibility_layer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
