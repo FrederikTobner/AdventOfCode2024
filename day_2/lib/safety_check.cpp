@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <ranges>
 
+#include "../../shared/ranges_compatibility_layer.hpp"
+
 namespace safety_check {
 
 enum class CurrentMode {
@@ -25,10 +27,10 @@ bool isSafe(std::span<uint8_t const> input) {
 
 bool canBeMadeSafe(std::span<uint8_t const> input) {
     return std::ranges::any_of(std::views::iota(0u, input.size()), [&](size_t i) {
-        auto removed = input | std::views::enumerate |
-                       std::views::filter([i](const auto & pair) { return std::get<0>(pair) != i; }) |
-                       std::views::transform([](const auto & pair) { return std::get<1>(pair); }) |
-                       std::ranges::to<std::vector>();
+        auto removed =
+            nonstd::ranges::to_vector(input | std::views::enumerate |
+                                      std::views::filter([i](const auto & pair) { return std::get<0>(pair) != i; }) |
+                                      std::views::transform([](const auto & pair) { return std::get<1>(pair); }));
         return isSafe(removed);
     });
 }
