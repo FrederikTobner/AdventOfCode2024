@@ -14,7 +14,7 @@
 #include "../../shared/print_compatibility_layer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
-    std::expected<std::string, std::error_code> input = readInput("input.txt");
+    std::expected<std::string, std::error_code> input = fileops::readFromFile("input.txt");
     if (!input) [[unlikely]] {
         std::println(stderr, "Could not open file: {}", input.error().message());
         return EXIT_CODE_IO_ERROR;
@@ -34,10 +34,10 @@ auto main(int argc, char const ** argv) -> int {
         return EXIT_CODE_DATA_ERROR;
     }
 
-    uint64_t totalDistance = calculateTotalDistance(leftList, rightList);
+    uint64_t totalDistance = calculations::totalDistance(leftList, rightList);
     std::println("The totalDistance is: {:#}", totalDistance);
 
-    uint64_t similarityScore = calculateSimilarityScore(leftList, rightList);
+    uint64_t similarityScore = calculations::similarityScore(leftList, rightList);
     std::println("The similarity score is: {:#}", similarityScore);
 
     return EXIT_CODE_SUCCESS;
