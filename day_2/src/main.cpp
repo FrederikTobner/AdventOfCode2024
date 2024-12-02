@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <ranges>
+
 #include "../lib/parser.hpp"
 #include "../lib/safety_check.hpp"
 
@@ -17,22 +20,15 @@ int main(int argc, char const * argv[]) {
         std::println(stderr, "Failed to parse input: {}", parsed.error().message());
         return EXIT_CODE_DATA_ERROR;
     }
-    size_t counter = 0;
-    for (auto const & line : *parsed) {
-        if (safety_check::isSafe(line)) {
-            counter++;
-        }
-    }
-    std::println("The number of safe levels is: {:#}", counter);
 
-    size_t counter2 = 0;
-    for (auto const & line : *parsed) {
-        if (safety_check::canBeMadeSafe(line)) {
-            counter2++;
-        }
-    }
+    ptrdiff_t const safe_count =
+        std::ranges::count_if(*parsed, [](auto const & line) { return safety_check::isSafe(line); });
 
-    std::println("The number of safe levels with one violation is: {:#}", counter2);
+    ptrdiff_t const fixable_count =
+        std::ranges::count_if(*parsed, [](auto const & line) { return safety_check::canBeMadeSafe(line); });
+
+    std::println("The number of safe levels is: {:#}", safe_count);
+    std::println("The number of safe levels with one violation is: {:#}", fixable_count);
 
     return 0;
 }

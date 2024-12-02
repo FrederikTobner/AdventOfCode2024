@@ -8,6 +8,7 @@
 
 #include "parser.hpp"
 #include "../../shared/ranges_compatibility_layer.hpp"
+#include "concurrent_context.hpp"
 
 #include <algorithm>
 #include <atomic>
@@ -20,21 +21,42 @@
 
 namespace parser {
 
-// Helper function at top of file
 static bool isWhitespace(char c) {
     return c == ' ' || c == '\t';
 }
 
-static auto processLinesInParallel(std::span<std::string_view const> lines)
-    -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code>;
+static void processLineIntoSets(std::string_view const & line,
+                                std::vector<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>> & sets,
+                                size_t thread_id, threads::concurrent_context<std::error_code> & context) {
+    if (context.hasValue()) {
+        return;
+    }
 
-static auto processLinesSequential(std::span<std::string_view const> lines)
-    -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code>;
+    auto result = parseLine(line);
+    if (!result) {
+        context.setValue(result.error());
+        return;
+    }
+
+    auto & [left, right] = sets[thread_id];
+    left.insert(result->first);
+    right.insert(result->second);
+}
+
+static auto mergeSets(std::vector<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>> const & thread_local_sets)
+    -> std::pair<std::multiset<int64_t>, std::multiset<int64_t>> {
+    std::multiset<int64_t> left, right;
+    for (auto const & [local_left, local_right] : thread_local_sets) {
+        left.insert(local_left.begin(), local_left.end());
+        right.insert(local_right.begin(), local_right.end());
+    }
+    return {std::move(left), std::move(right)};
+}
 
 auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_t>, std::error_code> {
     using enum std::errc;
 
-    std::vector<std::expected<int64_t, std::error_code>> results = nonstd::ranges::to_vector(
+    std::vector<std::expected<int64_t, std::error_code>> tokens = nonstd::ranges::to_vector(
         line | std::views::split(' ') |
         std::views::transform([](auto && range) { return std::string_view(range.begin(), range.end()); }) |
         std::views::filter([](auto && sv) { return !isOnlyWhitespace(sv); }) |
@@ -46,11 +68,11 @@ auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_
             }
         }));
 
-    if (results.size() != 2 || !results[0] || !results[1]) {
+    if (tokens.size() != 2 || !tokens[0] || !tokens[1]) {
         return std::unexpected(std::make_error_code(invalid_argument));
     }
 
-    return std::pair{*results[0], *results[1]};
+    return std::pair{*tokens[0], *tokens[1]};
 }
 
 auto parseInput(std::string_view input, ProcessingMode mode)
@@ -60,66 +82,28 @@ auto parseInput(std::string_view input, ProcessingMode mode)
                                            }) |
                                            std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }));
 
-    return mode == ProcessingMode::Parallel ? processLinesInParallel(lines) : processLinesSequential(lines);
-}
+    threads::concurrent_context<std::error_code> context;
+    std::vector<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>> thread_local_sets(
+        mode == ProcessingMode::Parallel ? std::thread::hardware_concurrency() : 1);
 
-static auto processLinesInParallel(std::span<std::string_view const> lines)
-    -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code> {
-    std::vector<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>> thread_local_sets;
-    thread_local_sets.resize(std::thread::hardware_concurrency());
-
-    std::atomic<bool> error_occurred{false};
-    std::mutex error_mutex;
-    std::error_code first_error;
-
-    std::for_each(std::execution::par_unseq, lines.begin(), lines.end(), [&](std::string_view const & line) {
-        if (error_occurred.load(std::memory_order_relaxed)) {
-            return;
+    if (mode == ProcessingMode::Parallel) {
+        // Execute with a parallel unsequenced policy to allow for parallel processing of the lines
+        std::for_each(std::execution::par_unseq, lines.begin(), lines.end(), [&](std::string_view const & line) {
+            unsigned long long thread_id =
+                std::hash<std::thread::id>{}(std::this_thread::get_id()) % thread_local_sets.size();
+            processLineIntoSets(line, thread_local_sets, thread_id, context);
+        });
+    } else {
+        for (auto const & line : lines) {
+            processLineIntoSets(line, thread_local_sets, 0, context);
         }
-
-        std::expected<std::pair<int64_t, int64_t>, std::error_code> result = parseLine(line);
-        if (!result) {
-            if (!error_occurred.exchange(true, std::memory_order_relaxed)) {
-                std::scoped_lock lock(error_mutex);
-                first_error = result.error();
-            }
-            return;
-        }
-
-        unsigned long long thread_id =
-            std::hash<std::thread::id>{}(std::this_thread::get_id()) % thread_local_sets.size();
-        std::pair<std::multiset<int64_t>, std::multiset<int64_t>> & local_sets = thread_local_sets[thread_id];
-        local_sets.first.insert(result->first);
-        local_sets.second.insert(result->second);
-    });
-
-    if (error_occurred) {
-        return std::unexpected(first_error);
     }
 
-    std::multiset<int64_t> set1, set2;
-    for (std::pair<std::multiset<int64_t>, std::multiset<int64_t>> const & local_sets : thread_local_sets) {
-        set1.insert(local_sets.first.begin(), local_sets.first.end());
-        set2.insert(local_sets.second.begin(), local_sets.second.end());
+    if (context.hasValue()) {
+        return std::unexpected(context.getValue());
     }
 
-    return std::pair{std::move(set1), std::move(set2)};
-}
-
-static auto processLinesSequential(std::span<std::string_view const> lines)
-    -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code> {
-    std::multiset<int64_t> set1, set2;
-
-    for (auto const & line : lines) {
-        auto result = parseLine(line);
-        if (!result) {
-            return std::unexpected(result.error());
-        }
-        set1.insert(result->first);
-        set2.insert(result->second);
-    }
-
-    return std::pair{std::move(set1), std::move(set2)};
+    return mergeSets(thread_local_sets);
 }
 
 } // namespace parser
