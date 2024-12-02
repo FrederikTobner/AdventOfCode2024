@@ -15,6 +15,7 @@
 #include <mutex>
 #include <ranges>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace parser {
