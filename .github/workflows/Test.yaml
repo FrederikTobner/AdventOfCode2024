@@ -7,23 +7,55 @@ on:
 
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: ${{matrix.operatingsystems}}
     env:
       BUILD_TYPE: ${{matrix.buildtypes}}
     strategy:  
       matrix:
+        operatingsystems: [windows-latest, ubuntu-latest, macos-latest]
         buildtypes: [Release]
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Ninja
+    # Windoof setup
+    - name: Setup Ninja under Windows
+      if: runner.os == 'Windows'
       run: choco install ninja -y
 
     - name: Setup MSVC under Windows
+      if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Configure CMake        
+    # Schlinux setup
+    - name: Setup Dependencies under Linux
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt install software-properties-common
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get -y install \
+          cmake \
+          ninja-build \
+          gcc-13 \
+          g++-13 \
+          ${NULL+}
+    
+    # SchmockOS setup
+    - name: Setup Dependencies under MacOS
+      if: runner.os == 'macOS'
+      run: |
+        brew install \
+          ninja \
+          ${NULL+}
+
+    - name: Configure CMake under Windows
+      if: runner.os == 'Windows'
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DBUILD_TESTS=ON
+
+    - name: Configure Cmake under Linux or MacOS
+      if: runner.os == 'Linux' || runner.os == 'macOS'
+      run: cmake -D CMAKE_C_COMPILER=gcc-13 -D CMAKE_CXX_COMPILER=g++-13 -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DBUILD_TESTS=ON
 
     - name: Build tests
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
