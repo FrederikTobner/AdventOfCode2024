@@ -36,5 +36,5 @@ TEST_F(ParserTest, HandlesWhitespace) {
 TEST_F(ParserTest, DetectsInvalidInput) {
     EXPECT_FALSE(parser::parseInput("1 2 a"));
     EXPECT_FALSE(parser::parseInput("1 2 3\n4 b 6"));
-    EXPECT_FALSE(parser::parseInput("256 1 2")); // Overflow for uint8_t
+    EXPECT_FALSE(parser::parseInput("256 1 2"));
 }

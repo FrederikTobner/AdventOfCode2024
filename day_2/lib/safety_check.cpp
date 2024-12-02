@@ -6,12 +6,6 @@
 
 namespace safety_check {
 
-enum class CurrentMode {
-    INCREASE,
-    DECREASE,
-    NONE
-};
-
 bool isSafe(std::span<uint8_t const> input) {
     if (input.size() < 2) {
         return true;
