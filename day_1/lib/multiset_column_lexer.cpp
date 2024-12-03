@@ -6,9 +6,10 @@
  * proper error handling.
  */
 
-#include "parser.hpp"
+#include "multiset_column_lexer.hpp"
+
+#include "../../shared/concurrent_context.hpp"
 #include "../../shared/ranges_compatibility_layer.hpp"
-#include "concurrent_context.hpp"
 
 #include <algorithm>
 #include <atomic>
@@ -19,7 +20,7 @@
 #include <thread>
 #include <vector>
 
-namespace parser {
+namespace aoc::lexer {
 
 static bool isWhitespace(char c) {
     return c == ' ' || c == '\t';
@@ -32,7 +33,7 @@ static void processLineIntoSets(std::string_view const & line,
         return;
     }
 
-    auto result = parseLine(line);
+    auto result = tokenizeLine(line);
     if (!result) {
         context.setValue(result.error());
         return;
@@ -53,11 +54,24 @@ static auto mergeSets(std::vector<std::pair<std::multiset<int64_t>, std::multise
     return {std::move(left), std::move(right)};
 }
 
-auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_t>, std::error_code> {
+auto normalizeTabs(std::string_view str) -> std::string {
+    std::string result;
+    for (char c : str) {
+        if (c == '\t') {
+            result.append(" ");
+        } else {
+            result += c;
+        }
+    }
+    return result;
+}
+
+auto tokenizeLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_t>, std::error_code> {
     using enum std::errc;
 
-    std::vector<std::expected<int64_t, std::error_code>> tokens = nonstd::ranges::to_vector(
-        line | std::views::split(' ') |
+    std::string normalized = normalizeTabs(line);
+    std::vector<std::expected<int64_t, std::error_code>> tokens =
+        std::string_view{normalized} | std::views::split(' ') |
         std::views::transform([](auto && range) { return std::string_view(range.begin(), range.end()); }) |
         std::views::filter([](auto && sv) { return !isOnlyWhitespace(sv); }) |
         std::views::transform([](auto && sv) -> std::expected<int64_t, std::error_code> {
@@ -66,7 +80,8 @@ auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_
             } catch (...) {
                 return std::unexpected(std::make_error_code(invalid_argument));
             }
-        }));
+        }) |
+        nonstd::ranges::to<std::vector<std::expected<int64_t, std::error_code>>>;
 
     if (tokens.size() != 2 || !tokens[0] || !tokens[1]) {
         return std::unexpected(std::make_error_code(invalid_argument));
@@ -75,12 +90,12 @@ auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_
     return std::pair{*tokens[0], *tokens[1]};
 }
 
-auto parseInput(std::string_view input, ProcessingMode mode)
+auto tokenize(std::string_view input, ProcessingMode mode)
     -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code> {
-    auto lines = nonstd::ranges::to_vector(input | std::views::split('\n') | std::views::transform([](auto && chars) {
-                                               return std::string_view(chars.begin(), chars.end());
-                                           }) |
-                                           std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }));
+    auto lines = input | std::views::split('\n') |
+                 std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
+                 std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }) |
+                 nonstd::ranges::to<std::vector<std::string_view>>;
 
     threads::concurrent_context<std::error_code> context;
     std::vector<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>> thread_local_sets(
@@ -106,4 +121,4 @@ auto parseInput(std::string_view input, ProcessingMode mode)
     return mergeSets(thread_local_sets);
 }
 
-} // namespace parser
+} // namespace aoc::lexer
