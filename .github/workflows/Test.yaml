@@ -22,7 +22,9 @@ jobs:
       if: runner.os == 'Windows'
       uses: actions/cache@v3
       with:
-        path: ~\AppData\Local\Temp\chocolatey
+        path: |
+          ~\AppData\Local\Temp\chocolatey
+          C:\ProgramData\chocolatey\lib\ninja
         key: ${{ runner.os }}-choco-${{ hashFiles('**/Test.yaml') }}
 
     - name: Setup Ninja under Windows
@@ -39,8 +41,8 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          ~/.cache/apt
-          ~/.local/share/apt
+          /var/cache/apt
+          /var/lib/apt/lists
         key: ${{ runner.os }}-apt-${{ hashFiles('**/Test.yaml') }}
     
     - name: Setup Dependencies under Linux
