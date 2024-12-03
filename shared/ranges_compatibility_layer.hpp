@@ -39,4 +39,21 @@ template <typename Container, typename Range> [[nodiscard]] auto to_container(Ra
 template <typename Range> [[nodiscard]] auto to_vector(Range && range) {
     return to_container<std::vector<std::ranges::range_value_t<Range>>>(std::forward<Range>(range));
 }
+
+/**
+ * @brief Pipe operator for range-to-container conversion
+ * @tparam Container The target container type
+ * @tparam Range The input range type
+ */
+template <typename Container> struct to_helper {
+    template <typename Range> friend Container operator|(Range && range, to_helper) {
+        return to_container<Container>(std::forward<Range>(range));
+    }
+};
+
+/**
+ * @brief Helper variable template for pipe syntax
+ */
+template <typename Container> inline constexpr to_helper<Container> to{};
+
 } // namespace nonstd::ranges

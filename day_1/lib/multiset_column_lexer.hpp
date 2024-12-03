@@ -1,6 +1,6 @@
 /**
- * @file parser.hpp
- * @brief Input parsing functionality declarations
+ * @file multiset_column_lexer.hpp
+ * @brief Implementation of a lexer that parses the input data into columnar multiset structures
  * @details Provides interfaces for parsing input data containing pairs of numbers.
  * Includes utilities for parsing individual lines and complete input files,
  * with error handling through std::expected.
@@ -15,8 +15,8 @@
 #include <system_error>
 #include <utility>
 
-/// @brief Namespace containing input parsing utilities
-namespace parser {
+/// @brief Namespace containing lexer functionality for parsing and tokenizing input
+namespace aoc::lexer {
 
 /// @brief Processing mode for input parsing - mainly used for performance testing optimizations made using parallelism
 enum class ProcessingMode {
@@ -41,7 +41,7 @@ inline constexpr auto WHITESPACE_CHARS = " \t\n\r"_ws;
  * @return std::pair containing the two parsed numbers
  * @throws std::invalid_argument if the conversion to number fails
  */
-[[nodiscard]] auto parseLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_t>, std::error_code>;
+[[nodiscard]] auto tokenizeLine(std::string_view line) -> std::expected<std::pair<int64_t, int64_t>, std::error_code>;
 
 /**
  * @brief Checks if a string view contains only whitespace characters
@@ -59,7 +59,14 @@ inline constexpr auto WHITESPACE_CHARS = " \t\n\r"_ws;
  * @return std::pair of multisets containing the parsed numbers
  * @throws std::invalid_argument if any line parsing fails
  */
-[[nodiscard]] auto parseInput(std::string_view input, ProcessingMode mode = ProcessingMode::Parallel)
+[[nodiscard]] auto tokenize(std::string_view input, ProcessingMode mode = ProcessingMode::Parallel)
     -> std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code>;
 
-} // namespace parser
+/**
+ * @brief Normalizes tab characters by replacing them with two spaces
+ * @param str String view to process
+ * @return String with tabs replaced by two spaces
+ */
+[[nodiscard]] auto normalizeTabs(std::string_view str) -> std::string;
+
+} // namespace aoc::lexer
