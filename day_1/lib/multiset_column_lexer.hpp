@@ -1,5 +1,5 @@
 /**
- * @file parser.hpp
+ * @file multiset_column_lexer.hpp
  * @brief Input parsing functionality declarations
  * @details Provides interfaces for parsing input data containing pairs of numbers.
  * Includes utilities for parsing individual lines and complete input files,

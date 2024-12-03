@@ -1,5 +1,5 @@
 /**
- * @file parser.cpp
+ * @file multiset_column_lexer.cpp
  * @brief Implementation of input parsing functionality
  * @details Contains the implementation of parsing functions declared in parser.hpp.
  * Handles the conversion of string input into numerical data structures with

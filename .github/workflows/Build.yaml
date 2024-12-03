@@ -46,6 +46,7 @@ jobs:
     - name: Setup Dependencies under Linux
       if: runner.os == 'Linux'
       run: |
+        mkdir -p ~/.cache/apt ~/.local/share/apt
         sudo apt-get update
         sudo apt install software-properties-common
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
