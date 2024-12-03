@@ -35,16 +35,7 @@ jobs:
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
 
-    # Schlinux setup
-    - name: Cache apt packages
-      if: runner.os == 'Linux'
-      uses: actions/cache@v3
-      with:
-        path: |
-          /var/cache/apt
-          /var/lib/apt/lists
-        key: ${{ runner.os }}-apt-${{ hashFiles('**/Build.yaml') }}
-    
+    # Schlinux setup    
     - name: Setup Dependencies under Linux
       if: runner.os == 'Linux'
       run: |
