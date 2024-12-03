@@ -15,7 +15,7 @@
 #include <system_error>
 #include <utility>
 
-/// @brief Namespace containing input parsing utilities
+/// @brief Namespace containing lexer functionality for parsing and tokenizing input
 namespace aoc::lexer {
 
 /// @brief Processing mode for input parsing - mainly used for performance testing optimizations made using parallelism
