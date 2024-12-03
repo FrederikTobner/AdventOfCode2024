@@ -14,7 +14,7 @@ class MultiSetColumnLexerTest : public ::testing::Test {
 
 TEST_F(MultiSetColumnLexerTest, ValidInput_Sequential) {
     auto result = aoc::lexer::columnbased::tokenize<int64_t, 2>("1 2\n4 5\n7 8", aoc::lexer::rules::numberProducer,
-                                                                aoc::lexer::ProcessingMode::Sequential);
+                                                                std::execution::seq);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -24,7 +24,7 @@ TEST_F(MultiSetColumnLexerTest, ValidInput_Sequential) {
 
 TEST_F(MultiSetColumnLexerTest, ValidInput_Parallel) {
     auto result = aoc::lexer::columnbased::tokenize<int64_t, 2>("1 2\n4 5\n7 8", aoc::lexer::rules::numberProducer,
-                                                                aoc::lexer::ProcessingMode::Parallel);
+                                                                std::execution::par_unseq);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;

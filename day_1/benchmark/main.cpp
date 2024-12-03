@@ -2,7 +2,9 @@
 #include <iostream>
 
 #include "../lib/calculations.hpp"
-#include "../lib/parser.hpp"
+#include "../lib/lexer_rule.hpp"
+
+#include "../../shared/multiset_column_lexer.hpp"
 
 static std::string createInput(size_t size) {
     std::string input;
@@ -55,7 +57,8 @@ static void BM_ParseLinesInParrallel(benchmark::State & state) {
 
     for (auto _ : state) {
         state.PauseTiming();
-        auto result = parseInput(input, parser::ProcessingMode::Parallel);
+        auto result = aoc::lexer::columnbased::tokenize<int64_t, 2>(input, aoc::lexer::rules::numberProducer,
+                                                                    std::execution::par_unseq);
         state.ResumeTiming();
 
         benchmark::DoNotOptimize(result);
@@ -77,7 +80,8 @@ static void BM_ParseLinesInSequence(benchmark::State & state) {
 
     for (auto _ : state) {
         state.PauseTiming();
-        auto result = parseInput(input, parser::ProcessingMode::Sequential);
+        auto result = aoc::lexer::columnbased::tokenize<int64_t, 2>(input, aoc::lexer::rules::numberProducer,
+                                                                    std::execution::seq);
         state.ResumeTiming();
         if (!result) {
             state.SkipWithError("Parser error occurred");

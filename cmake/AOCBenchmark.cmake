@@ -1,5 +1,8 @@
 macro(aoc_add_benchmark)
     file(GLOB_RECURSE BENCHMARK_TESTS_SOURCES *.cpp)    
+    if(NOT BENCHMARK_TESTS_SOURCES)
+        return()
+    endif()
     set(PERFORMANCE_TESTS_EXE_NAME ${PROJECT_NAME}_day_${DAY}_performance_tests)
     add_executable(${PERFORMANCE_TESTS_EXE_NAME} ${BENCHMARK_TESTS_SOURCES})
     include(AddDependency)

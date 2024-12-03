@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "concurrent_context.hpp"
+#include "execution_policy_traits.hpp"
 #include "lexer.hpp"
 #include "ranges_compatibility_layer.hpp"
 
@@ -52,10 +53,11 @@ template <typename TOKEN, size_t COLUMN_AMOUNT>
  * @param mode Processing mode to use for parsing
  * @return tuple of two multisets containing the parsed numbers
  */
-template <typename TOKEN, size_t COLUMN_AMOUNT>
+template <typename TOKEN, size_t COLUMN_AMOUNT, typename EXECUTION_POLICY>
+    requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
 [[nodiscard]] auto tokenize(std::string_view input,
                             std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
-                            ProcessingMode mode = ProcessingMode::Parallel)
+                            EXECUTION_POLICY && policy)
     -> std::expected<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>, std::error_code>;
 
 template <typename TOKEN, size_t COLUMN_AMOUNT>
@@ -119,9 +121,11 @@ auto tokenizeLine(std::string_view line,
     return result;
 }
 
-template <typename TOKEN, size_t COLUMN_AMOUNT>
+template <typename TOKEN, size_t COLUMN_AMOUNT, typename EXECUTION_POLICY>
+    requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
 auto tokenize(std::string_view input,
-              std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer, ProcessingMode mode)
+              std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
+              EXECUTION_POLICY && policy)
     -> std::expected<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>, std::error_code> {
     auto lines = input | std::views::split('\n') |
                  std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
@@ -130,26 +134,27 @@ auto tokenize(std::string_view input,
 
     threads::concurrent_context<std::error_code> context;
     std::vector<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>> thread_local_sets(
-        mode == ProcessingMode::Parallel ? std::thread::hardware_concurrency() : 1);
+        aoc::execution_policy_traits::is_parallel_policy_v<EXECUTION_POLICY> ? std::thread::hardware_concurrency() : 1);
 
-    if (mode == ProcessingMode::Parallel) {
-        // Execute with a parallel unsequenced policy to allow for parallel processing of the lines
-        std::for_each(std::execution::par_unseq, lines.begin(), lines.end(), [&](std::string_view const & line) {
+    std::for_each(
+        std::forward<EXECUTION_POLICY>(policy), lines.begin(), lines.end(), [&](std::string_view const & line) {
             unsigned long long thread_id =
                 std::hash<std::thread::id>{}(std::this_thread::get_id()) % thread_local_sets.size();
             processLineIntoSets<TOKEN, COLUMN_AMOUNT>(line, thread_local_sets, thread_id, context, tokenProducer);
         });
-    } else {
-        for (auto const & line : lines) {
-            processLineIntoSets<TOKEN, COLUMN_AMOUNT>(line, thread_local_sets, 0, context, tokenProducer);
-        }
-    }
 
     if (context.hasValue()) {
         return std::unexpected(context.getValue());
     }
 
     return mergeSets<TOKEN, COLUMN_AMOUNT>(thread_local_sets);
+}
+
+template <typename TOKEN, size_t COLUMN_AMOUNT>
+auto tokenize(std::string_view input,
+              std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducery)
+    -> std::expected<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>, std::error_code> {
+    return tokenize<TOKEN, COLUMN_AMOUNT>(input, tokenProducery, std::execution::unseq);
 }
 
 } // namespace aoc::lexer::columnbased
