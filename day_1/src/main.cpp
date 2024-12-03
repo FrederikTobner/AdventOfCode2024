@@ -7,6 +7,7 @@
  */
 
 #include "../lib/calculations.hpp"
+#include "../lib/lexer_rule.hpp"
 #include "../lib/multiset_column_lexer.hpp"
 
 #include "../../shared/exit_code.hpp"
@@ -20,14 +21,13 @@ auto main(int argc, char const ** argv) -> int {
         return EXIT_CODE_IO_ERROR;
     }
 
-    std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code> tokens =
-        aoc::lexer::tokenize(*input);
+    auto tokens = aoc::lexer::tokenize<int64_t, 2>(*input, aoc::lexer::rules::numberProducer);
     if (!tokens) [[unlikely]] {
         std::println(stderr, "Failed to parse input: {}", tokens.error().message());
         return EXIT_CODE_DATA_ERROR;
     }
 
-    auto const & [leftList, rightList] = *tokens;
+    auto const & [leftList, rightList] = *tokens; // array destructuring still works
 
     if (leftList.size() != rightList.size()) [[unlikely]] {
         std::println(stderr, "Lists have different sizes: {} vs {}", leftList.size(), rightList.size());

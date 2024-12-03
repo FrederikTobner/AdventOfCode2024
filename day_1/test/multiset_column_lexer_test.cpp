@@ -1,3 +1,4 @@
+#include "../lib/lexer_rule.hpp"
 #include "../lib/multiset_column_lexer.hpp"
 #include <gtest/gtest.h>
 
@@ -12,7 +13,8 @@ class MultiSetColumnLexerTest : public ::testing::Test {
 };
 
 TEST_F(MultiSetColumnLexerTest, ValidInput_Sequential) {
-    auto result = aoc::lexer::tokenize("1 2\n4 5\n7 8", aoc::lexer::ProcessingMode::Sequential);
+    auto result = aoc::lexer::tokenize<int64_t, 2>("1 2\n4 5\n7 8", aoc::lexer::rules::numberProducer,
+                                                   aoc::lexer::ProcessingMode::Sequential);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -21,7 +23,8 @@ TEST_F(MultiSetColumnLexerTest, ValidInput_Sequential) {
 }
 
 TEST_F(MultiSetColumnLexerTest, ValidInput_Parallel) {
-    auto result = aoc::lexer::tokenize("1 2\n4 5\n7 8", aoc::lexer::ProcessingMode::Parallel);
+    auto result = aoc::lexer::tokenize<int64_t, 2>("1 2\n4 5\n7 8", aoc::lexer::rules::numberProducer,
+                                                   aoc::lexer::ProcessingMode::Parallel);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -30,7 +33,7 @@ TEST_F(MultiSetColumnLexerTest, ValidInput_Parallel) {
 }
 
 TEST_F(MultiSetColumnLexerTest, EmptyInput) {
-    auto result = aoc::lexer::tokenize("");
+    auto result = aoc::lexer::tokenize<int64_t, 2>("", aoc::lexer::rules::numberProducer);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -39,7 +42,7 @@ TEST_F(MultiSetColumnLexerTest, EmptyInput) {
 }
 
 TEST_F(MultiSetColumnLexerTest, WhitespaceOnly) {
-    auto result = aoc::lexer::tokenize("  \n\t\r  \n  ");
+    auto result = aoc::lexer::tokenize<int64_t, 2>("  \n\t\r  \n  ", aoc::lexer::rules::numberProducer);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -48,7 +51,7 @@ TEST_F(MultiSetColumnLexerTest, WhitespaceOnly) {
 }
 
 TEST_F(MultiSetColumnLexerTest, SingleLine) {
-    auto result = aoc::lexer::tokenize("42 99");
+    auto result = aoc::lexer::tokenize<int64_t, 2>("42 99", aoc::lexer::rules::numberProducer);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -57,25 +60,25 @@ TEST_F(MultiSetColumnLexerTest, SingleLine) {
 }
 
 TEST_F(MultiSetColumnLexerTest, InvalidNumber) {
-    auto result = aoc::lexer::tokenize("1 2\nabc def\n3 4");
+    auto result = aoc::lexer::tokenize<int64_t, 2>("1 2\nabc def\n3 4", aoc::lexer::rules::numberProducer);
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), std::make_error_code(std::errc::invalid_argument));
 }
 
 TEST_F(MultiSetColumnLexerTest, MissingNumber) {
-    auto result = aoc::lexer::tokenize("1 2\n3\n4 5");
+    auto result = aoc::lexer::tokenize<int64_t, 2>("1 2\n3\n4 5", aoc::lexer::rules::numberProducer);
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), std::make_error_code(std::errc::invalid_argument));
 }
 
 TEST_F(MultiSetColumnLexerTest, ExtraNumbers) {
-    auto result = aoc::lexer::tokenize("1 2\n3 4 5\n6 7");
+    auto result = aoc::lexer::tokenize<int64_t, 2>("1 2\n3 4 5\n6 7", aoc::lexer::rules::numberProducer);
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), std::make_error_code(std::errc::invalid_argument));
 }
 
 TEST_F(MultiSetColumnLexerTest, MultipleWhitespace) {
-    auto result = aoc::lexer::tokenize("1   2\n  4  5   \n7    8");
+    auto result = aoc::lexer::tokenize<int64_t, 2>("1   2\n  4  5   \n7    8", aoc::lexer::rules::numberProducer);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -84,7 +87,7 @@ TEST_F(MultiSetColumnLexerTest, MultipleWhitespace) {
 }
 
 TEST_F(MultiSetColumnLexerTest, TabSeparated) {
-    auto result = aoc::lexer::tokenize("1\t2\n4\t5\n7\t8");
+    auto result = aoc::lexer::tokenize<int64_t, 2>("1\t2\n4\t5\n7\t8", aoc::lexer::rules::numberProducer);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;

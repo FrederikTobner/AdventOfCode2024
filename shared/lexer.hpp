@@ -14,12 +14,14 @@
 #include <expected>
 #include <functional>
 #include <ranges>
+#include <string>
 #include <string_view>
 #include <system_error>
 #include <thread>
 #include <vector>
 
 #include "concurrent_context.hpp"
+#include "ranges_compatibility_layer.hpp"
 
 /**
  * @brief Namespace containing lexer functionality for parsing and tokenizing input
@@ -89,7 +91,6 @@ auto mergeVectors(std::vector<std::vector<std::vector<TOKEN_TYPE>>> const & thre
     -> std::vector<std::vector<TOKEN_TYPE>>;
 
 /// @brief User-defined literal for creating string views of whitespace characters
-/// @param str The string to convert to a string view
 /// @param len The length of the string
 /// @return A string view of the input string
 [[nodiscard]] constexpr auto operator""_ws(char const * str, size_t len) noexcept;
@@ -122,15 +123,7 @@ inline constexpr auto WHITESPACE_CHARS = " \t\n\r"_ws;
 }
 
 auto normalizeTabs(std::string_view str) -> std::string {
-    std::string result;
-    for (char c : str) {
-        if (c == '\t') {
-            result.append(" ");
-        } else {
-            result += c;
-        }
-    }
-    return result;
+    return str | std::views::transform([](char c) { return c == '\t' ? ' ' : c; }) | nonstd::ranges::to<std::string>;
 }
 
 template <typename TOKEN_TYPE, size_t EXPECTED_SIZE>
@@ -206,18 +199,19 @@ auto tokenizeLine(std::string_view line,
     std::string normalized = normalizeTabs(line);
     auto tokens = std::string_view{normalized} | std::views::split(' ') |
                   std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
-                  std::views::filter([](std::string_view sv) { return !isOnlyWhitespace(sv); }) |
-                  std::views::transform(tokenProducer);
+                  std::views::filter([](std::string_view sv) { return !isOnlyWhitespace(sv); });
 
     std::vector<TOKEN_TYPE> result;
     if (EXPECTED_SIZE > 0 && std::ranges::distance(tokens) != EXPECTED_SIZE) {
         return std::unexpected(std::make_error_code(std::errc::invalid_argument));
     }
-    for (auto const & num : tokens) {
-        if (!num) {
-            return std::unexpected(num.error());
+
+    for (auto const & token : tokens) {
+        auto parsed = tokenProducer(token);
+        if (!parsed) {
+            return std::unexpected(parsed.error());
         }
-        result.push_back(*num);
+        result.push_back(*parsed);
     }
 
     return result;
