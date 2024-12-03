@@ -25,13 +25,6 @@ jobs:
         path: ~\AppData\Local\Temp\chocolatey
         key: ${{ runner.os }}-choco-${{ hashFiles('**/Build.yaml') }}
 
-    - name: Cache MSVC
-      if: runner.os == 'Windows'
-      uses: actions/cache@v3
-      with:
-        path: C:\Program Files (x86)\Microsoft Visual Studio
-        key: ${{ runner.os }}-msvc-${{ hashFiles('**/Build.yaml') }}
-
     - name: Setup Ninja under Windows
       if: runner.os == 'Windows'
       run: choco install ninja -y
