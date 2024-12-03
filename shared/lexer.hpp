@@ -19,7 +19,7 @@
 #include <thread>
 #include <vector>
 
-#include "../../shared/concurrent_context.hpp"
+#include "concurrent_context.hpp"
 
 /**
  * @brief Namespace containing lexer functionality for parsing and tokenizing input
@@ -105,7 +105,8 @@ auto tokenize(std::string_view input,
     if (mode == ProcessingMode::Parallel) {
         std::for_each(std::execution::par_unseq, lines.begin(), lines.end(), [&](std::string_view const & line) {
             size_t thread_id = std::hash<std::thread::id>{}(std::this_thread::get_id()) % thread_count;
-            processLineIntoSets<TOKEN_TYPE, EXPECTED_SIZE>(line, thread_local_vectors, thread_id, context, tokenProducer);
+            processLineIntoSets<TOKEN_TYPE, EXPECTED_SIZE>(line, thread_local_vectors, thread_id, context,
+                                                           tokenProducer);
         });
     } else {
         for (auto const & line : lines) {
