@@ -27,6 +27,13 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
 
     # Schlinux setup
+    - name: Cache apt packages
+      if: runner.os == 'Linux'
+      uses: actions/cache@v3
+      with:
+        path: /var/lib/apt/lists
+        key: ${{ runner.os }}-apt-${{ hashFiles('**/Build.yaml') }}  
+    
     - name: Setup Dependencies under Linux
       if: runner.os == 'Linux'
       run: |
@@ -40,7 +47,9 @@ jobs:
           gcc-13 \
           g++-13 \
           ${NULL+}
-    
+      env:
+        DEBIAN_FRONTEND: noninteractive
+        
     # SchmockOS setup
     - name: Setup Dependencies under MacOS
       if: runner.os == 'macOS'
