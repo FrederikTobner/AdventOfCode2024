@@ -49,8 +49,6 @@ jobs:
           ~/.cache/apt
           ~/.local/share/apt
         key: ${{ runner.os }}-apt-${{ hashFiles('**/Build.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-apt-
     
     - name: Setup Dependencies under Linux
       if: runner.os == 'Linux'

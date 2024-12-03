@@ -22,7 +22,7 @@ jobs:
       if: runner.os == 'Windows'
       uses: actions/cache@v3
       with:
-        path: C:\Users\runneradmin\AppData\Local\Temp\chocolatey
+        path: ~\AppData\Local\Temp\chocolatey
         key: ${{ runner.os }}-choco-${{ hashFiles('**/Test.yaml') }}
 
     - name: Cache MSVC
@@ -45,8 +45,10 @@ jobs:
       if: runner.os == 'Linux'
       uses: actions/cache@v3
       with:
-        path: /var/lib/apt/lists
-        key: ${{ runner.os }}-apt-${{ hashFiles('**/Test.yaml') }}  
+        path: |
+          ~/.cache/apt
+          ~/.local/share/apt
+        key: ${{ runner.os }}-apt-${{ hashFiles('**/Test.yaml') }}
     
     - name: Setup Dependencies under Linux
       if: runner.os == 'Linux'
