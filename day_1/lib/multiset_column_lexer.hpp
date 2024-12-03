@@ -1,6 +1,6 @@
 /**
  * @file multiset_column_lexer.hpp
- * @brief Input parsing functionality declarations
+ * @brief Implementation of a lexer that parses the input data into columnar multiset structures
  * @details Provides interfaces for parsing input data containing pairs of numbers.
  * Includes utilities for parsing individual lines and complete input files,
  * with error handling through std::expected.

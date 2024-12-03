@@ -1,6 +1,6 @@
 /**
  * @file multiset_column_lexer.cpp
- * @brief Implementation of input parsing functionality
+ * @brief Implementation of a lexer that parses the input data into columnar multiset structures
  * @details Contains the implementation of parsing functions declared in parser.hpp.
  * Handles the conversion of string input into numerical data structures with
  * proper error handling.
