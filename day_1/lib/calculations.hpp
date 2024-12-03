@@ -29,7 +29,6 @@ namespace calculations {
 template <std::ranges::input_range RANGE>
     requires std::integral<std::ranges::range_value_t<RANGE>>
 [[nodiscard]] constexpr auto totalDistance(RANGE const & leftList, RANGE const & rightList) -> uint64_t {
-
     return std::transform_reduce(std::ranges::begin(leftList), std::ranges::end(leftList),
                                  std::ranges::begin(rightList), uint64_t{0}, std::plus{},
                                  [](auto a, auto b) { return static_cast<uint64_t>(std::abs(a - b)); });

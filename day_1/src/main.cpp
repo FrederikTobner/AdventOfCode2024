@@ -7,10 +7,11 @@
  */
 
 #include "../lib/calculations.hpp"
-#include "../lib/parser.hpp"
+#include "../lib/lexer_rule.hpp"
 
 #include "../../shared/exit_code.hpp"
 #include "../../shared/file_operations.hpp"
+#include "../../shared/multiset_column_lexer.hpp"
 #include "../../shared/print_compatibility_layer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
@@ -20,14 +21,13 @@ auto main(int argc, char const ** argv) -> int {
         return EXIT_CODE_IO_ERROR;
     }
 
-    std::expected<std::pair<std::multiset<int64_t>, std::multiset<int64_t>>, std::error_code> parsed =
-        parser::parseInput(*input);
-    if (!parsed) [[unlikely]] {
-        std::println(stderr, "Failed to parse input: {}", parsed.error().message());
+    auto tokens = aoc::lexer::columnbased::tokenize<int64_t, 2>(*input, aoc::lexer::rules::numberProducer);
+    if (!tokens) [[unlikely]] {
+        std::println(stderr, "Failed to parse input: {}", tokens.error().message());
         return EXIT_CODE_DATA_ERROR;
     }
 
-    auto const & [leftList, rightList] = *parsed;
+    auto const & [leftList, rightList] = *tokens; // array destructuring still works
 
     if (leftList.size() != rightList.size()) [[unlikely]] {
         std::println(stderr, "Lists have different sizes: {} vs {}", leftList.size(), rightList.size());
@@ -35,9 +35,9 @@ auto main(int argc, char const ** argv) -> int {
     }
 
     uint64_t totalDistance = calculations::totalDistance(leftList, rightList);
-    std::println("The totalDistance is: {:#}", totalDistance);
-
     uint64_t similarityScore = calculations::similarityScore(leftList, rightList);
+
+    std::println("The totalDistance is: {:#}", totalDistance);
     std::println("The similarity score is: {:#}", similarityScore);
 
     return EXIT_CODE_SUCCESS;

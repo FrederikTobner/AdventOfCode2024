@@ -23,19 +23,19 @@ template <typename T = std::error_code> class concurrent_context {
      * @brief Sets the first encountered value
      * @param value Value to set if no previous value exists
      */
-    void setValue(T value);
+    auto setValue(T value) -> void;
 
     /**
      * @brief Checks if an value was recorded
      * @return true if an value was recorded, false otherwise
      */
-    [[nodiscard]] bool hasValue() const noexcept;
+    [[nodiscard]] auto hasValue() const noexcept -> bool;
 
     /**
      * @brief Retrieves the first value recorded
      * @return The stored value
      */
-    [[nodiscard]] T getValue() const noexcept;
+    [[nodiscard]] auto getValue() const noexcept -> T const &;
 
   private:
     std::atomic<bool> m_has_value{false};
@@ -43,18 +43,18 @@ template <typename T = std::error_code> class concurrent_context {
     T m_value;
 };
 
-template <typename T> void concurrent_context<T>::setValue(T value) {
+template <typename T> auto concurrent_context<T>::setValue(T value) -> void {
     if (!m_has_value.exchange(true, std::memory_order_relaxed)) {
         std::scoped_lock lock(m_context_mutex);
         m_value = std::move(value);
     }
 }
 
-template <typename T> bool concurrent_context<T>::hasValue() const noexcept {
+template <typename T> auto concurrent_context<T>::hasValue() const noexcept -> bool {
     return m_has_value.load(std::memory_order_relaxed);
 }
 
-template <typename T> T concurrent_context<T>::getValue() const noexcept {
+template <typename T> auto concurrent_context<T>::getValue() const noexcept -> T const & {
     std::scoped_lock lock(m_context_mutex);
     return m_value;
 }
