@@ -14,9 +14,9 @@
 
 /**
  * @brief Compatibility layer for ranges operations
- * @namespace nonstd::ranges
+ * @namespace aoc::ranges
  */
-namespace nonstd::ranges {
+namespace aoc::ranges {
 
 template <typename Container> struct container_traits {
     static void reserve(Container & c, size_t) {
@@ -112,4 +112,4 @@ template <std::ranges::range Range, typename Container> Container operator|(Rang
     return to_container<Container>(std::forward<Range>(range));
 }
 
-} // namespace nonstd::ranges
+} // namespace aoc::ranges

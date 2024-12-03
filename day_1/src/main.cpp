@@ -8,10 +8,10 @@
 
 #include "../lib/calculations.hpp"
 #include "../lib/lexer_rule.hpp"
-#include "../lib/multiset_column_lexer.hpp"
 
 #include "../../shared/exit_code.hpp"
 #include "../../shared/file_operations.hpp"
+#include "../../shared/multiset_column_lexer.hpp"
 #include "../../shared/print_compatibility_layer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
@@ -21,7 +21,7 @@ auto main(int argc, char const ** argv) -> int {
         return EXIT_CODE_IO_ERROR;
     }
 
-    auto tokens = aoc::lexer::tokenize<int64_t, 2>(*input, aoc::lexer::rules::numberProducer);
+    auto tokens = aoc::lexer::columnbased::tokenize<int64_t, 2>(*input, aoc::lexer::rules::numberProducer);
     if (!tokens) [[unlikely]] {
         std::println(stderr, "Failed to parse input: {}", tokens.error().message());
         return EXIT_CODE_DATA_ERROR;

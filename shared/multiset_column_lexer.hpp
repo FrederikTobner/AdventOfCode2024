@@ -25,28 +25,12 @@
 #include <utility>
 #include <vector>
 
-#include "../../shared/concurrent_context.hpp"
-#include "../../shared/ranges_compatibility_layer.hpp"
+#include "concurrent_context.hpp"
+#include "lexer.hpp"
+#include "ranges_compatibility_layer.hpp"
 
 /// @brief Namespace containing lexer functionality for parsing and tokenizing input
-namespace aoc::lexer {
-
-/// @brief Processing mode for input parsing - mainly used for performance testing optimizations made using parallelism
-enum class ProcessingMode {
-    Sequential,
-    Parallel
-};
-
-/// @brief User-defined literal for creating string views of whitespace characters
-/// @param str The string to convert to a string view
-/// @param len The length of the string
-/// @return A string view of the input string
-[[nodiscard]] constexpr auto operator""_ws(char const * str, size_t len) noexcept {
-    return std::string_view{str, len};
-}
-
-/// @brief String view of whitespace characters for use in parsing
-inline constexpr auto WHITESPACE_CHARS = " \t\n\r"_ws;
+namespace aoc::lexer::columnbased {
 
 /**
  * @brief Parses a single line containing N space-separated numbers
@@ -61,15 +45,6 @@ template <typename TOKEN, size_t COLUMN_AMOUNT>
     -> std::expected<std::array<TOKEN, COLUMN_AMOUNT>, std::error_code>;
 
 /**
- * @brief Checks if a string view contains only whitespace characters
- * @param str String view to check
- * @return true if string contains only whitespace or is empty, false otherwise
- */
-[[nodiscard]] constexpr auto isOnlyWhitespace(std::string_view str) -> bool {
-    return str.empty() || str.find_first_not_of(WHITESPACE_CHARS) == std::string_view::npos;
-}
-
-/**
  * @brief Parses the entire input string into a tuple of two ordered multisets of numbers
  * @tparam TOKEN The numeric type to store in the multisets
  * @tparam COLUMN_AMOUNT Number of columns to parse (must be 2)
@@ -82,17 +57,6 @@ template <typename TOKEN, size_t COLUMN_AMOUNT>
                             std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
                             ProcessingMode mode = ProcessingMode::Parallel)
     -> std::expected<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>, std::error_code>;
-
-/**
- * @brief Normalizes tab characters by replacing them with two spaces
- * @param str String view to process
- * @return String with tabs replaced by two spaces
- */
-[[nodiscard]] auto normalizeTabs(std::string_view str) -> std::string;
-
-static bool isWhitespace(char c) {
-    return c == ' ' || c == '\t';
-}
 
 template <typename TOKEN, size_t COLUMN_AMOUNT>
 static void processLineIntoSets(std::string_view const & line,
@@ -138,7 +102,7 @@ auto tokenizeLine(std::string_view line,
         std::string_view{normalized} | std::views::split(' ') |
         std::views::transform([](auto && range) { return std::string_view(range.begin(), range.end()); }) |
         std::views::filter([](auto && sv) { return !isOnlyWhitespace(sv); }) | std::views::transform(tokenProducer) |
-        nonstd::ranges::to<std::vector<std::expected<TOKEN, std::error_code>>>;
+        aoc::ranges::to<std::vector<std::expected<TOKEN, std::error_code>>>;
 
     if (tokens.size() != COLUMN_AMOUNT) {
         return std::unexpected(std::make_error_code(invalid_argument));
@@ -162,7 +126,7 @@ auto tokenize(std::string_view input,
     auto lines = input | std::views::split('\n') |
                  std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
                  std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }) |
-                 nonstd::ranges::to<std::vector<std::string_view>>;
+                 aoc::ranges::to<std::vector<std::string_view>>;
 
     threads::concurrent_context<std::error_code> context;
     std::vector<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>> thread_local_sets(
@@ -188,8 +152,4 @@ auto tokenize(std::string_view input,
     return mergeSets<TOKEN, COLUMN_AMOUNT>(thread_local_sets);
 }
 
-auto normalizeTabs(std::string_view str) -> std::string {
-    return str | std::views::transform([](char c) { return c == '\t' ? ' ' : c; }) | nonstd::ranges::to<std::string>;
-}
-
-} // namespace aoc::lexer
+} // namespace aoc::lexer::columnbased

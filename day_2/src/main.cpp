@@ -6,9 +6,8 @@
 
 #include "../../shared/exit_code.hpp"
 #include "../../shared/file_operations.hpp"
-#include "../../shared/lexer.hpp"
+#include "../../shared/line_lexer.hpp"
 #include "../../shared/print_compatibility_layer.hpp"
-
 
 int main(int argc, char const * argv[]) {
     std::expected<std::string, std::error_code> input = fileops::readFromFile("input.txt");
@@ -18,7 +17,7 @@ int main(int argc, char const * argv[]) {
     }
 
     std::expected<std::vector<std::vector<uint8_t>>, std::error_code> parsed =
-        aoc::lexer::tokenize<uint8_t>(*input, aoc::lexer::rules::handleToken);
+        aoc::lexer::linebased::tokenize<uint8_t>(*input, aoc::lexer::rules::handleToken);
     if (!parsed) [[unlikely]] {
         std::println(stderr, "Failed to parse input: {}", parsed.error().message());
         return EXIT_CODE_DATA_ERROR;
