@@ -35,9 +35,9 @@ auto main(int argc, char const ** argv) -> int {
     }
 
     uint64_t totalDistance = calculations::totalDistance(leftList, rightList);
-    std::println("The totalDistance is: {:#}", totalDistance);
-
     uint64_t similarityScore = calculations::similarityScore(leftList, rightList);
+
+    std::println("The totalDistance is: {:#}", totalDistance);
     std::println("The similarity score is: {:#}", similarityScore);
 
     return EXIT_CODE_SUCCESS;
