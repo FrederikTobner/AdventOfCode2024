@@ -4,7 +4,7 @@
 #include "../lib/calculations.hpp"
 #include "../lib/lexer_rule.hpp"
 
-#include "../../shared/multiset_column_lexer.hpp"
+#include "../../shared/src/column_lexer.hpp"
 
 static std::string createInput(size_t size) {
     std::string input;

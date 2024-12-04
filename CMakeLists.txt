@@ -17,6 +17,7 @@ list(APPEND CMAKE_MODULE_PATH
 "${CMAKE_SOURCE_DIR}/cmake")
 
 include(Options)
+add_option(BUILD_SOLUTIONS "Build AOC solutions" ON)
 add_option(BUILD_TESTS "Build tests" OFF)
 add_option(BUILD_BENCHMARKS "Build benchmarks" OFF)
 

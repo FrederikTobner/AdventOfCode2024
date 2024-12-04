@@ -9,7 +9,7 @@
 
 #include <fstream>
 
-auto aoc::fileops::readFromFile(std::string_view path) -> std::expected<std::string, std::error_code> {
+auto aoc::file_operations::read(std::string_view path) -> std::expected<std::string, std::error_code> {
     std::ifstream file(path.data(), std::ios::binary);
     if (!file) [[unlikely]] {
         return std::unexpected(std::make_error_code(std::errc::no_such_file_or_directory));

@@ -9,13 +9,14 @@
 #include "../lib/calculations.hpp"
 #include "../lib/lexer_rule.hpp"
 
-#include "../../shared/exit_code.hpp"
-#include "../../shared/file_operations.hpp"
-#include "../../shared/multiset_column_lexer.hpp"
-#include "../../shared/print_compatibility_layer.hpp"
+#include "../../shared/src/column_lexer.hpp"
+#include "../../shared/src/exit_code.hpp"
+#include "../../shared/src/file_operations.hpp"
+#include "../../shared/src/print_compatibility_layer.hpp"
+
 
 auto main(int argc, char const ** argv) -> int {
-    std::expected<std::string, std::error_code> input = aoc::fileops::readFromFile("input.txt");
+    std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
     if (!input) [[unlikely]] {
         std::println(stderr, "Could not open file: {}", input.error().message());
         return aoc::EXIT_CODE_IO_ERROR;

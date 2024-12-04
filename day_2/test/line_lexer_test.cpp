@@ -1,6 +1,7 @@
-#include "../../shared/line_lexer.hpp"
+#include "../../shared/src/line_lexer.hpp"
 #include "../lib/lexer_rule.hpp"
 #include <gtest/gtest.h>
+#include <set>
 
 class LexerTest : public testing::Test {
   protected:

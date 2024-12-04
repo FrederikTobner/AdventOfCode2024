@@ -1,4 +1,3 @@
-
 #include "pattern_matcher.hpp"
 #include <charconv>
 #include <expected>
@@ -63,6 +62,7 @@ std::vector<std::pair<uint16_t, uint16_t>> findMultiplicationPairsWithToggle(std
          ++it) {
 
         if (auto parsed = parseMatch(*it)) {
+#ifdef _MSC_VER
             switch (parsed->type) {
             case MatchType::DisableProcessing:
                 process_matches = false;
@@ -76,6 +76,22 @@ std::vector<std::pair<uint16_t, uint16_t>> findMultiplicationPairsWithToggle(std
                 }
                 break;
             }
+#else // Using computed goto under GCC/Clang
+            static void * dispatch_table[] = {&&multiplication_label, &&disable_label, &&enable_label};
+            goto * dispatch_table[static_cast<int>(parsed->type)];
+
+        multiplication_label:
+            if (process_matches) {
+                matches.push_back(parsed->numbers);
+            }
+            goto continue_label;
+        disable_label:
+            process_matches = false;
+            goto continue_label;
+        enable_label:
+            process_matches = true;
+        continue_label:
+#endif
         }
     }
     return matches;

@@ -3,7 +3,7 @@
 #include <ranges>
 #include <vector>
 
-#include "../../shared/ranges_compatibility_layer.hpp"
+#include "../../shared/src/ranges_compatibility_layer.hpp"
 
 namespace safety_check {
 

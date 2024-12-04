@@ -4,13 +4,13 @@
 #include "../lib/lexer_rule.hpp"
 #include "../lib/safety_check.hpp"
 
-#include "../../shared/exit_code.hpp"
-#include "../../shared/file_operations.hpp"
-#include "../../shared/line_lexer.hpp"
-#include "../../shared/print_compatibility_layer.hpp"
+#include "../../shared/src/exit_code.hpp"
+#include "../../shared/src/file_operations.hpp"
+#include "../../shared/src/line_lexer.hpp"
+#include "../../shared/src/print_compatibility_layer.hpp"
 
 int main(int argc, char const * argv[]) {
-    std::expected<std::string, std::error_code> input = aoc::fileops::readFromFile("input.txt");
+    std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
     if (!input) [[unlikely]] {
         std::println(stderr, "Could not open file: {}", input.error().message());
         return aoc::EXIT_CODE_IO_ERROR;
