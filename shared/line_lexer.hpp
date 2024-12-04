@@ -39,13 +39,26 @@ namespace aoc::lexer::linebased {
  * @param input The input text to tokenize
  * @param tokenProducer Function to convert string tokens into the desired type
  * @param policy Execution policy to use for parallel processing
+ * @param delimiter Character to split tokens on
  * @return Expected vector of vector of tokens, or error code on failure
  */
 template <typename TOKEN_TYPE, size_t EXPECTED_SIZE = 0, typename EXECUTION_POLICY>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
 auto tokenize(std::string_view input,
               std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
-              EXECUTION_POLICY && policy) -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code>;
+              EXECUTION_POLICY && policy, char delimiter = ' ')
+    -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code>;
+
+/// @brief Tokenizes input text into vectors of strongly-typed tokens
+/// @tparam TOKEN_TYPE The type to convert each token into
+/// @param input The input text to tokenize
+/// @param tokenProducer Function to convert string tokens into the desired type
+/// @param delimiter Character to split tokens on
+/// @return Expected vector of vector of tokens, or error code on failure
+template <typename TOKEN_TYPE, size_t EXPECTED_SIZE = 0>
+auto tokenize(std::string_view input,
+              std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
+              char delimiter = ' ') -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code>;
 
 /**
  * @brief Processes a single line of input into tokens for a specific thread
@@ -58,9 +71,21 @@ auto tokenize(std::string_view input,
  * @param tokenProducer Function to convert string tokens into the desired type
  */
 template <typename TOKEN_TYPE, size_t EXPECTED_SIZE>
-void processLineIntoSets(std::string_view const & line, std::vector<std::vector<std::vector<TOKEN_TYPE>>> & tokens,
-                         size_t thread_id, threads::concurrent_context<std::error_code> & context,
-                         std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer);
+static void
+processLineIntoSets(std::string_view const & line, std::vector<std::vector<std::vector<TOKEN_TYPE>>> & tokens,
+                    size_t thread_id, threads::concurrent_context<std::error_code> & context,
+                    std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
+                    char delimiter);
+
+/**
+ * @brief Merges thread-local token sets into a single result vector
+ * @tparam TOKEN_TYPE The type of tokens to merge
+ * @param thread_local_vectors Vector of thread-local token sets to merge
+ * @return Combined vector of all token sets
+ */
+template <typename TOKEN_TYPE>
+static auto mergeVectors(std::vector<std::vector<std::vector<TOKEN_TYPE>>> const & thread_local_vectors)
+    -> std::vector<std::vector<TOKEN_TYPE>>;
 
 /**
  * @brief Tokenizes a single line of input into strongly-typed tokens
@@ -71,25 +96,16 @@ void processLineIntoSets(std::string_view const & line, std::vector<std::vector<
  * @return Expected vector of tokens, or error code on failure
  */
 template <typename TOKEN_TYPE, size_t EXPECTED_SIZE>
-auto tokenizeLine(std::string_view line,
-                  std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer)
-    -> std::expected<std::vector<TOKEN_TYPE>, std::error_code>;
-
-/**
- * @brief Merges thread-local token sets into a single result vector
- * @tparam TOKEN_TYPE The type of tokens to merge
- * @param thread_local_vectors Vector of thread-local token sets to merge
- * @return Combined vector of all token sets
- */
-template <typename TOKEN_TYPE>
-auto mergeVectors(std::vector<std::vector<std::vector<TOKEN_TYPE>>> const & thread_local_vectors)
-    -> std::vector<std::vector<TOKEN_TYPE>>;
+static auto tokenizeLine(std::string_view line,
+                         std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
+                         char delimiter) -> std::expected<std::vector<TOKEN_TYPE>, std::error_code>;
 
 template <typename TOKEN_TYPE, size_t EXPECTED_SIZE, typename EXECUTION_POLICY>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
 auto tokenize(std::string_view input,
               std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
-              EXECUTION_POLICY && policy) -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code> {
+              EXECUTION_POLICY && policy, char delimiter)
+    -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code> {
 
     auto lines = input | std::views::split('\n') |
                  std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
@@ -111,7 +127,7 @@ auto tokenize(std::string_view input,
                   [&](std::string_view const & line) {
                       size_t thread_id = std::hash<std::thread::id>{}(std::this_thread::get_id()) % thread_count;
                       processLineIntoSets<TOKEN_TYPE, EXPECTED_SIZE>(line, thread_local_vectors, thread_id, context,
-                                                                     tokenProducer);
+                                                                     tokenProducer, delimiter);
                   });
 
     if (context.hasValue()) {
@@ -130,14 +146,16 @@ auto tokenize(std::string_view input,
 }
 
 template <typename TOKEN_TYPE, size_t EXPECTED_SIZE>
-void processLineIntoSets(std::string_view const & line, std::vector<std::vector<std::vector<TOKEN_TYPE>>> & tokens,
-                         size_t thread_id, threads::concurrent_context<std::error_code> & context,
-                         std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer) {
+static void
+processLineIntoSets(std::string_view const & line, std::vector<std::vector<std::vector<TOKEN_TYPE>>> & tokens,
+                    size_t thread_id, threads::concurrent_context<std::error_code> & context,
+                    std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
+                    char delimiter) {
     if (context.hasValue()) {
         return;
     }
 
-    auto result = tokenizeLine<TOKEN_TYPE, EXPECTED_SIZE>(line, tokenProducer);
+    auto result = tokenizeLine<TOKEN_TYPE, EXPECTED_SIZE>(line, tokenProducer, delimiter);
     if (!result) {
         context.setValue(result.error());
         return;
@@ -149,11 +167,11 @@ void processLineIntoSets(std::string_view const & line, std::vector<std::vector<
 }
 
 template <typename TOKEN_TYPE, size_t EXPECTED_SIZE>
-auto tokenizeLine(std::string_view line,
-                  std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer)
-    -> std::expected<std::vector<TOKEN_TYPE>, std::error_code> {
+static auto tokenizeLine(std::string_view line,
+                         std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
+                         char delimiter) -> std::expected<std::vector<TOKEN_TYPE>, std::error_code> {
     std::string normalized = normalizeTabs(line);
-    auto tokens = std::string_view{normalized} | std::views::split(' ') |
+    auto tokens = std::string_view{normalized} | std::views::split(delimiter) |
                   std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
                   std::views::filter([](std::string_view sv) { return !isOnlyWhitespace(sv); });
 
@@ -174,7 +192,7 @@ auto tokenizeLine(std::string_view line,
 }
 
 template <typename TOKEN_TYPE>
-auto mergeVectors(std::vector<std::vector<std::vector<TOKEN_TYPE>>> const & thread_local_vectors)
+static auto mergeVectors(std::vector<std::vector<std::vector<TOKEN_TYPE>>> const & thread_local_vectors)
     -> std::vector<std::vector<TOKEN_TYPE>> {
     std::vector<std::vector<TOKEN_TYPE>> result;
 
@@ -184,11 +202,11 @@ auto mergeVectors(std::vector<std::vector<std::vector<TOKEN_TYPE>>> const & thre
     return result;
 }
 
-template <typename TOKEN_TYPE>
+template <typename TOKEN_TYPE, size_t EXPECTED_SIZE>
 auto tokenize(std::string_view input,
-              std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer)
+              std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer, char delimiter)
     -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code> {
-    return tokenize<TOKEN_TYPE>(input, tokenProducer, std::execution::par_unseq);
+    return tokenize<TOKEN_TYPE, EXPECTED_SIZE>(input, tokenProducer, std::execution::par_unseq, delimiter);
 }
 
 } // namespace aoc::lexer::linebased

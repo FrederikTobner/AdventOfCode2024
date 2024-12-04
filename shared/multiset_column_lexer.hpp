@@ -34,6 +34,62 @@
 namespace aoc::lexer::columnbased {
 
 /**
+ * @brief Parses the entire input string into a tuple of two ordered multisets of numbers
+ * @tparam TOKEN The numeric type to store in the multisets
+ * @tparam COLUMN_AMOUNT Number of columns to parse
+ * @tparam EXECUTION_POLICY The execution policy to use for parallel processing
+ * @param input String view containing the entire input
+ * @param mode Processing mode to use for parsing
+ * @param tokenProducer Function to convert string tokens into the desired type
+ * @param policy Execution policy to use
+ * @param delimiter Character to split tokens on
+ * @return array of multisets containing the parsed numbers
+ */
+template <typename TOKEN, size_t COLUMN_AMOUNT, typename EXECUTION_POLICY>
+    requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
+[[nodiscard]] auto tokenize(std::string_view input,
+                            std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
+                            EXECUTION_POLICY && policy, char delimiter = ' ')
+    -> std::expected<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>, std::error_code>;
+
+/// @brief Parses the entire input string into a tuple of two ordered multisets of numbers
+/// @tparam TOKEN The numeric type to store in the multisets
+/// @tparam COLUMN_AMOUNT Number of columns to parse
+/// @param input String view containing the entire input
+/// @param tokenProducery Function to convert string tokens into the desired type
+/// @param delimiter Character to split tokens on
+/// @return array of multisets containing the parsed numbers
+template <typename TOKEN, size_t COLUMN_AMOUNT>
+auto tokenize(std::string_view input,
+              std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducery,
+              char delimiter = ' ') -> std::expected<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>, std::error_code>;
+
+/// @brief Merges thread-local token sets into a single result array
+/// @tparam TOKEN The type of tokens to merge
+/// @tparam COLUMN_AMOUNT Number of columns to merge
+/// @param thread_local_sets Vector of thread-local token sets to merge
+/// @return Combined array of all token sets
+template <typename TOKEN, size_t COLUMN_AMOUNT>
+static auto mergeSets(std::vector<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>> const & thread_local_sets)
+    -> std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>;
+
+/// @brief Processes a single line of input into tokens for a specific thread
+/// @tparam TOKEN The type to store in the multisets
+/// @tparam COLUMN_AMOUNT Number of columns to parse
+/// @param line String view containing the line to parse
+/// @param sets Vector of thread-local token sets to merge
+/// @param thread_id ID of the current thread
+/// @param context Concurrent context for error handling
+/// @param tokenProducer Function to convert string tokens into the desired type
+/// @param delimite Character to split tokens on
+template <typename TOKEN, size_t COLUMN_AMOUNT>
+static void processLineIntoSets(std::string_view const & line,
+                                std::vector<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>> & sets, size_t thread_id,
+                                threads::concurrent_context<std::error_code> & context,
+                                std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
+                                char delimiter);
+
+/**
  * @brief Parses a single line containing N space-separated numbers
  * @tparam TOKEN The numeric type to parse into
  * @tparam COLUMN_AMOUNT Number of columns to parse
@@ -41,35 +97,22 @@ namespace aoc::lexer::columnbased {
  * @return array containing COLUMN_AMOUNT parsed numbers
  */
 template <typename TOKEN, size_t COLUMN_AMOUNT>
-[[nodiscard]] auto tokenizeLine(std::string_view line,
-                                std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer)
+[[nodiscard]] static auto
+tokenizeLine(std::string_view line,
+             std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer, char delimiter)
     -> std::expected<std::array<TOKEN, COLUMN_AMOUNT>, std::error_code>;
-
-/**
- * @brief Parses the entire input string into a tuple of two ordered multisets of numbers
- * @tparam TOKEN The numeric type to store in the multisets
- * @tparam COLUMN_AMOUNT Number of columns to parse (must be 2)
- * @param input String view containing the entire input
- * @param mode Processing mode to use for parsing
- * @return tuple of two multisets containing the parsed numbers
- */
-template <typename TOKEN, size_t COLUMN_AMOUNT, typename EXECUTION_POLICY>
-    requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
-[[nodiscard]] auto tokenize(std::string_view input,
-                            std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
-                            EXECUTION_POLICY && policy)
-    -> std::expected<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>, std::error_code>;
 
 template <typename TOKEN, size_t COLUMN_AMOUNT>
 static void processLineIntoSets(std::string_view const & line,
                                 std::vector<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>> & sets, size_t thread_id,
                                 threads::concurrent_context<std::error_code> & context,
-                                std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer) {
+                                std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
+                                char delimiter) {
     if (context.hasValue()) {
         return;
     }
 
-    auto result = tokenizeLine<TOKEN, COLUMN_AMOUNT>(line, tokenProducer);
+    auto result = tokenizeLine<TOKEN, COLUMN_AMOUNT>(line, tokenProducer, delimiter);
     if (!result) {
         context.setValue(result.error());
         return;
@@ -94,14 +137,14 @@ static auto mergeSets(std::vector<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT
 }
 
 template <typename TOKEN, size_t COLUMN_AMOUNT>
-auto tokenizeLine(std::string_view line,
-                  std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer)
-    -> std::expected<std::array<TOKEN, COLUMN_AMOUNT>, std::error_code> {
+static auto tokenizeLine(std::string_view line,
+                         std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
+                         char delimiter) -> std::expected<std::array<TOKEN, COLUMN_AMOUNT>, std::error_code> {
     using enum std::errc;
 
     std::string normalized = normalizeTabs(line);
     std::vector<std::expected<TOKEN, std::error_code>> tokens =
-        std::string_view{normalized} | std::views::split(' ') |
+        std::string_view{normalized} | std::views::split(delimiter) |
         std::views::transform([](auto && range) { return std::string_view(range.begin(), range.end()); }) |
         std::views::filter([](auto && sv) { return !isOnlyWhitespace(sv); }) | std::views::transform(tokenProducer) |
         aoc::ranges::to<std::vector<std::expected<TOKEN, std::error_code>>>;
@@ -125,7 +168,7 @@ template <typename TOKEN, size_t COLUMN_AMOUNT, typename EXECUTION_POLICY>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
 auto tokenize(std::string_view input,
               std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
-              EXECUTION_POLICY && policy)
+              EXECUTION_POLICY && policy, char delimiter)
     -> std::expected<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>, std::error_code> {
     auto lines = input | std::views::split('\n') |
                  std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
@@ -136,12 +179,13 @@ auto tokenize(std::string_view input,
     std::vector<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>> thread_local_sets(
         aoc::execution_policy_traits::is_parallel_policy_v<EXECUTION_POLICY> ? std::thread::hardware_concurrency() : 1);
 
-    std::for_each(
-        std::forward<EXECUTION_POLICY>(policy), lines.begin(), lines.end(), [&](std::string_view const & line) {
-            unsigned long long thread_id =
-                std::hash<std::thread::id>{}(std::this_thread::get_id()) % thread_local_sets.size();
-            processLineIntoSets<TOKEN, COLUMN_AMOUNT>(line, thread_local_sets, thread_id, context, tokenProducer);
-        });
+    std::for_each(std::forward<EXECUTION_POLICY>(policy), lines.begin(), lines.end(),
+                  [&](std::string_view const & line) {
+                      unsigned long long thread_id =
+                          std::hash<std::thread::id>{}(std::this_thread::get_id()) % thread_local_sets.size();
+                      processLineIntoSets<TOKEN, COLUMN_AMOUNT>(line, thread_local_sets, thread_id, context,
+                                                                tokenProducer, delimiter);
+                  });
 
     if (context.hasValue()) {
         return std::unexpected(context.getValue());
@@ -152,9 +196,9 @@ auto tokenize(std::string_view input,
 
 template <typename TOKEN, size_t COLUMN_AMOUNT>
 auto tokenize(std::string_view input,
-              std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducery)
+              std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducery, char delimiter)
     -> std::expected<std::array<std::multiset<TOKEN>, COLUMN_AMOUNT>, std::error_code> {
-    return tokenize<TOKEN, COLUMN_AMOUNT>(input, tokenProducery, std::execution::unseq);
+    return tokenize<TOKEN, COLUMN_AMOUNT>(input, tokenProducery, std::execution::unseq, delimiter);
 }
 
 } // namespace aoc::lexer::columnbased

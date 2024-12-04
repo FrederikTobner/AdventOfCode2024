@@ -15,7 +15,7 @@
 #include "../../shared/print_compatibility_layer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
-    std::expected<std::string, std::error_code> input = aoc::fileops::readFromFile("input.txt");
+    std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
     if (!input) [[unlikely]] {
         std::println(stderr, "Could not open file: {}", input.error().message());
         return aoc::EXIT_CODE_IO_ERROR;
