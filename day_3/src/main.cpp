@@ -9,18 +9,18 @@
 
 int main(int argc, char const * argv[]) {
 
-    std::expected<std::string, std::error_code> input = fileops::readFromFile("input.txt");
+    std::expected<std::string, std::error_code> input = aoc::fileops::readFromFile("input.txt");
     if (!input) [[unlikely]] {
         std::println(stderr, "Could not open file: {}", input.error().message());
-        return EXIT_CODE_IO_ERROR;
+        return aoc::EXIT_CODE_IO_ERROR;
     }
 
-    auto matches = aoc::pattern_matcher::findMultiplicationPairsWithToggle(*input);
-    for (auto const & match : matches) {
-        std::println("Found numbers: ({}, {})", match.first, match.second);
-    }
-
-    uint64_t result = aoc::calculations::accumulateProducts(matches);
+    uint64_t result = aoc::calculations::accumulateProducts(aoc::pattern_matcher::findMultiplicationPairs(*input));
     std::println("The result is: {:#}", result);
-    return 0;
+
+    uint64_t resultWithToggle =
+        aoc::calculations::accumulateProducts(aoc::pattern_matcher::findMultiplicationPairsWithToggle(*input));
+    std::println("The result is with the toggle is: {:#}", resultWithToggle);
+
+    return aoc::EXIT_CODE_SUCCESS;
 }

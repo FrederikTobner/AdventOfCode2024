@@ -10,7 +10,7 @@
 #include <mutex>
 #include <system_error>
 
-namespace threads {
+namespace aoc::threads {
 
 /**
  * @brief Thread-safe value container
@@ -59,4 +59,4 @@ template <typename T> auto concurrent_context<T>::getValue() const noexcept -> T
     return m_value;
 }
 
-} // namespace threads
+} // namespace aoc::threads

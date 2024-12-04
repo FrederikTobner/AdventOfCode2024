@@ -7,6 +7,8 @@
 
 #pragma once
 
+namespace aoc {
+
 /// @brief Exit codes based on the sysexits from UNIX
 typedef enum {
     /// Signals a successful exit
@@ -16,3 +18,5 @@ typedef enum {
     /// Signals an error opening a file
     EXIT_CODE_IO_ERROR = 74,
 } exit_code_t;
+
+} // namespace aoc

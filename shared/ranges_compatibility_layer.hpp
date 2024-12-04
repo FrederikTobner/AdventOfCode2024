@@ -63,8 +63,8 @@ template <typename CONTAINER, typename RANGE> [[nodiscard]] auto to_container(RA
 /**
  * @brief Helper struct for pipe syntax support
  */
-template <typename CONTAINER> struct to_t {
-    template <std::ranges::range RANGE> friend CONTAINER operator|(RANGE && range, to_t) {
+template <typename CONTAINER> struct Converter {
+    template <std::ranges::range RANGE> friend CONTAINER operator|(RANGE && range, Converter) {
         return to_container<CONTAINER>(std::forward<RANGE>(range));
     }
 };
@@ -72,7 +72,7 @@ template <typename CONTAINER> struct to_t {
 /**
  * @brief Helper variable template for pipe syntax
  */
-template <typename CONTAINER> inline constexpr to_t<CONTAINER> to{};
+template <typename CONTAINER> inline constexpr Converter<CONTAINER> to{};
 
 /**
  * @brief Converts a range to a vector
@@ -101,8 +101,8 @@ template <typename Range> [[nodiscard]] auto to_string(Range && range) -> std::s
  * @tparam Container The target container type
  * @tparam Range The input range type
  */
-template <typename CONTAINER> struct to_helper {
-    template <std::ranges::range RANGE> friend CONTAINER operator|(RANGE && range, to_helper const &) {
+template <typename CONTAINER> struct ConversionHelper {
+    template <std::ranges::range RANGE> friend CONTAINER operator|(RANGE && range, ConversionHelper const &) {
         return to_container<CONTAINER>(std::forward<RANGE>(range));
     }
 };
@@ -110,20 +110,39 @@ template <typename CONTAINER> struct to_helper {
 /**
  * @brief Pipe operator for range-to-container conversion
  */
-template <std::ranges::range RANGE, typename CONTAINER> CONTAINER operator|(RANGE && range, to_t<CONTAINER>) {
+template <std::ranges::range RANGE, typename CONTAINER> CONTAINER operator|(RANGE && range, Converter<CONTAINER>) {
     return to_container<CONTAINER>(std::forward<RANGE>(range));
 }
 
+/// @brief Folds a range from left to right using a binary operator
+/// @tparam EXECUTION_POLICY The execution policy type
+/// @tparam T The result type of the operation
+/// @tparam BINARY_OP The binary operator type
+/// @tparam RANGE The input range type
+/// @param policy The execution policy to use
+/// @param range The input range to fold
+/// @param init The initial value for the operation
+/// @param binary_operator The binary operator to apply
+/// @return The result of the operation
 template <typename EXECUTION_POLICY, std::ranges::range RANGE, typename T, typename BINARY_OP>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
-constexpr auto fold_left(EXECUTION_POLICY && policy, RANGE && range, T init, BINARY_OP op) {
+constexpr auto fold_left(EXECUTION_POLICY && policy, RANGE && range, T init, BINARY_OP binary_operator) {
     auto result = std::move(init);
     std::for_each(std::forward<EXECUTION_POLICY>(policy), std::ranges::begin(range), std::ranges::end(range),
-                  [&](auto && element) { result = op(std::move(result), std::forward<decltype(element)>(element)); });
+                  [&](auto && element) {
+                      result = binary_operator(std::move(result), std::forward<decltype(element)>(element));
+                  });
     return result;
 }
 
-/// @brief Fold left operation for ranges
+/// @brief Folds a range from left to right using a binary operator
+/// @tparam T The result type of the operation
+/// @tparam BINARY_OP The binary operator type
+/// @tparam RANGE The input range type
+/// @param range The input range to fold
+/// @param init The initial value for the operation
+/// @param binary_operator The binary operator to apply
+/// @return The result of the operation
 template <std::ranges::range RANGE, typename T, typename BINARY_OP>
 constexpr auto fold_left(RANGE && range, T init, BINARY_OP binary_operator) {
     auto result = std::move(init);

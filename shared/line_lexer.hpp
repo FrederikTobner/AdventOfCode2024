@@ -25,7 +25,6 @@
 #include "lexer.hpp"
 #include "ranges_compatibility_layer.hpp"
 
-
 /**
  * @brief Namespace containing lexer functionality for parsing and tokenizing input
  * @details Provides utilities for converting text input into tokens, with support for
