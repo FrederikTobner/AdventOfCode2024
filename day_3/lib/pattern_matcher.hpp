@@ -5,9 +5,11 @@
  * @brief Contains utilities for finding multiplication pairs in text patterns
  */
 
+#include <cstdint>
 #include <string_view>
 #include <utility>
 #include <vector>
+
 
 namespace aoc::pattern_matcher {
 
