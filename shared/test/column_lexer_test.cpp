@@ -3,11 +3,13 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <charconv>
 #include <cstdint>
 #include <expected>
 #include <set>
 #include <string_view>
 #include <system_error>
+
 
 class ColumnLexerTest : public ::testing::Test {
   protected:
