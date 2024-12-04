@@ -24,6 +24,8 @@ namespace aoc::word_search {
 struct Position {
     size_t row; ///< Row index in the grid
     size_t col; ///< Column index in the grid
+
+    [[nodiscard]] auto operator<=>(Position const &) const = default;
 };
 
 /**

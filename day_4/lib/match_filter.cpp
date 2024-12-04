@@ -16,6 +16,12 @@ namespace aoc::match_filter {
  */
 [[nodiscard]] static bool hasOverlappingEndpoint(word_search::Match const & match, word_search::Match const & other);
 
+/// @brief Checks if two matches form an overlapping pair
+/// @param first The first match to compare
+/// @param second The second match to compare
+/// @return true if the matches form an overlapping pair
+[[nodiscard]] static bool formsOverlappingPair(word_search::Match const & first, word_search::Match const & second);
+
 /**
  * @brief Determines if a match follows a diagonal pattern
  * @param match The match to analyze
@@ -24,14 +30,15 @@ namespace aoc::match_filter {
 [[nodiscard]] static bool isDiagonalMatch(word_search::Match const & match);
 
 [[nodiscard]] auto countOverlappingDiagonal(std::vector<word_search::Match> const & matches) -> ptrdiff_t {
-    auto sum = aoc::ranges::fold_left(
-        matches | std::views::filter(isDiagonalMatch) | std::views::transform([&](auto const & match) {
-            return std::ranges::count_if(matches,
-                                         [&match](auto const & other) { return hasOverlappingEndpoint(match, other); });
-        }),
-        static_cast<ptrdiff_t>(0), std::plus<>{});
+    auto diagonal_matches = matches | std::views::filter(isDiagonalMatch);
+    return std::ranges::count_if(diagonal_matches, [&](auto const & match1) {
+        return std::ranges::any_of(diagonal_matches,
+                                   [&](auto const & match2) { return formsOverlappingPair(match1, match2); });
+    });
+}
 
-    return sum / 2;
+[[nodiscard]] static bool formsOverlappingPair(word_search::Match const & first, word_search::Match const & second) {
+    return first.coordinates[0] < second.coordinates[0] && hasOverlappingEndpoint(first, second);
 }
 
 [[nodiscard]] static bool isDiagonalMatch(word_search::Match const & match) {
@@ -39,11 +46,10 @@ namespace aoc::match_filter {
 }
 
 [[nodiscard]] static bool hasOverlappingEndpoint(word_search::Match const & match, word_search::Match const & other) {
-    bool const is_different_match =
-        match.coordinates[0].row != other.coordinates[0].row || match.coordinates[0].col != other.coordinates[0].col;
-    bool const has_same_second_pos =
-        match.coordinates[1].row == other.coordinates[1].row && match.coordinates[1].col == other.coordinates[1].col;
-    return is_different_match && has_same_second_pos;
+    return (std::tie(match.coordinates[0].row, match.coordinates[0].col) !=
+            std::tie(other.coordinates[0].row, other.coordinates[0].col)) &&
+           (std::tie(match.coordinates[1].row, match.coordinates[1].col) ==
+            std::tie(other.coordinates[1].row, other.coordinates[1].col));
 }
 
 } // namespace aoc::match_filter

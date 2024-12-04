@@ -26,7 +26,6 @@ auto findWord(std::span<std::string_view const> grid, std::string_view word) -> 
     auto const rows = grid.size();
     auto const cols = grid.front().size();
     std::vector<Match> matches;
-
     for (size_t row = 0; row < rows; ++row) {
         for (size_t col = 0; col < cols; ++col) {
             for (auto [dx, dy] : internal::DIRECTIONS) {
