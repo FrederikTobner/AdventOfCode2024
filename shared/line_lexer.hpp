@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "concurrent_context.hpp"
+#include "execution_policy_traits.hpp"
 #include "lexer.hpp"
 #include "ranges_compatibility_layer.hpp"
 
@@ -37,14 +38,14 @@ namespace aoc::lexer::linebased {
  * @tparam EXPECTED_SIZE Expected number of tokens per line (0 for variable length)
  * @param input The input text to tokenize
  * @param tokenProducer Function to convert string tokens into the desired type
- * @param mode Processing mode (Sequential or Parallel)
+ * @param policy Execution policy to use for parallel processing
  * @return Expected vector of vector of tokens, or error code on failure
  */
-template <typename TOKEN_TYPE, size_t EXPECTED_SIZE = 0>
+template <typename TOKEN_TYPE, size_t EXPECTED_SIZE = 0, typename EXECUTION_POLICY>
+    requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
 auto tokenize(std::string_view input,
               std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
-              ProcessingMode mode = ProcessingMode::Parallel)
-    -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code>;
+              EXECUTION_POLICY && policy) -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code>;
 
 /**
  * @brief Processes a single line of input into tokens for a specific thread
@@ -84,10 +85,11 @@ template <typename TOKEN_TYPE>
 auto mergeVectors(std::vector<std::vector<std::vector<TOKEN_TYPE>>> const & thread_local_vectors)
     -> std::vector<std::vector<TOKEN_TYPE>>;
 
-template <typename TOKEN_TYPE, size_t EXPECTED_SIZE>
+template <typename TOKEN_TYPE, size_t EXPECTED_SIZE, typename EXECUTION_POLICY>
+    requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
 auto tokenize(std::string_view input,
               std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
-              ProcessingMode mode) -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code> {
+              EXECUTION_POLICY && policy) -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code> {
 
     auto lines = input | std::views::split('\n') |
                  std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
@@ -95,7 +97,8 @@ auto tokenize(std::string_view input,
 
     size_t line_count = std::ranges::distance(lines);
 
-    const size_t thread_count = mode == ProcessingMode::Parallel ? std::thread::hardware_concurrency() : 1;
+    const size_t thread_count =
+        aoc::execution_policy_traits::is_parallel_policy_v<EXECUTION_POLICY> ? std::thread::hardware_concurrency() : 1;
     std::vector<std::vector<std::vector<TOKEN_TYPE>>> thread_local_vectors(thread_count);
 
     for (auto & local_vector : thread_local_vectors) {
@@ -104,17 +107,12 @@ auto tokenize(std::string_view input,
 
     threads::concurrent_context<std::error_code> context;
 
-    if (mode == ProcessingMode::Parallel) {
-        std::for_each(std::execution::par_unseq, lines.begin(), lines.end(), [&](std::string_view const & line) {
-            size_t thread_id = std::hash<std::thread::id>{}(std::this_thread::get_id()) % thread_count;
-            processLineIntoSets<TOKEN_TYPE, EXPECTED_SIZE>(line, thread_local_vectors, thread_id, context,
-                                                           tokenProducer);
-        });
-    } else {
-        for (auto const & line : lines) {
-            processLineIntoSets<TOKEN_TYPE, EXPECTED_SIZE>(line, thread_local_vectors, 0, context, tokenProducer);
-        }
-    }
+    std::for_each(std::forward<EXECUTION_POLICY>(policy), lines.begin(), lines.end(),
+                  [&](std::string_view const & line) {
+                      size_t thread_id = std::hash<std::thread::id>{}(std::this_thread::get_id()) % thread_count;
+                      processLineIntoSets<TOKEN_TYPE, EXPECTED_SIZE>(line, thread_local_vectors, thread_id, context,
+                                                                     tokenProducer);
+                  });
 
     if (context.hasValue()) {
         return std::unexpected(context.getValue());
@@ -184,6 +182,13 @@ auto mergeVectors(std::vector<std::vector<std::vector<TOKEN_TYPE>>> const & thre
         result.insert(result.end(), local_vector.begin(), local_vector.end());
     }
     return result;
+}
+
+template <typename TOKEN_TYPE>
+auto tokenize(std::string_view input,
+              std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer)
+    -> std::expected<std::vector<std::vector<TOKEN_TYPE>>, std::error_code> {
+    return tokenize<TOKEN_TYPE>(input, tokenProducer, std::execution::par_unseq);
 }
 
 } // namespace aoc::lexer::linebased

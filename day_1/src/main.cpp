@@ -15,23 +15,23 @@
 #include "../../shared/print_compatibility_layer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
-    std::expected<std::string, std::error_code> input = fileops::readFromFile("input.txt");
+    std::expected<std::string, std::error_code> input = aoc::fileops::readFromFile("input.txt");
     if (!input) [[unlikely]] {
         std::println(stderr, "Could not open file: {}", input.error().message());
-        return EXIT_CODE_IO_ERROR;
+        return aoc::EXIT_CODE_IO_ERROR;
     }
 
     auto tokens = aoc::lexer::columnbased::tokenize<int64_t, 2>(*input, aoc::lexer::rules::numberProducer);
     if (!tokens) [[unlikely]] {
         std::println(stderr, "Failed to parse input: {}", tokens.error().message());
-        return EXIT_CODE_DATA_ERROR;
+        return aoc::EXIT_CODE_DATA_ERROR;
     }
 
     auto const & [leftList, rightList] = *tokens; // array destructuring still works
 
     if (leftList.size() != rightList.size()) [[unlikely]] {
         std::println(stderr, "Lists have different sizes: {} vs {}", leftList.size(), rightList.size());
-        return EXIT_CODE_DATA_ERROR;
+        return aoc::EXIT_CODE_DATA_ERROR;
     }
 
     uint64_t totalDistance = calculations::totalDistance(leftList, rightList);
@@ -40,5 +40,5 @@ auto main(int argc, char const ** argv) -> int {
     std::println("The totalDistance is: {:#}", totalDistance);
     std::println("The similarity score is: {:#}", similarityScore);
 
-    return EXIT_CODE_SUCCESS;
+    return aoc::EXIT_CODE_SUCCESS;
 }

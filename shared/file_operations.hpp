@@ -12,7 +12,7 @@
 #include <string_view>
 #include <system_error>
 
-namespace fileops {
+namespace aoc::fileops {
 
 /**
  * @brief Reads the entire contents of a file into a string
@@ -23,4 +23,4 @@ namespace fileops {
  */
 [[nodiscard]] auto readFromFile(std::string_view path) -> std::expected<std::string, std::error_code>;
 
-} // namespace fileops
+} // namespace aoc::fileops

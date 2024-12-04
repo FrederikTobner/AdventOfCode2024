@@ -3,12 +3,6 @@
 #include "ranges_compatibility_layer.hpp"
 
 namespace aoc::lexer {
-/// @brief Processing mode for tokenizing input - mainly used for performance testing optimizations made using
-/// parallelism
-enum class ProcessingMode {
-    Sequential,
-    Parallel
-};
 
 /// @brief User-defined literal for creating string views of whitespace characters
 [[nodiscard]] constexpr auto operator""_ws(char const * str, size_t len) noexcept {
