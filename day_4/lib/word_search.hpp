@@ -1,69 +1,45 @@
 #pragma once
 
-#include <array>
-#include <ranges>
 #include <span>
-#include <string>
 #include <string_view>
 #include <vector>
 
+/**
+ * @file word_search.hpp
+ * @brief Word search puzzle solver implementation
+ * @details Provides functionality to find words in a 2D grid of characters,
+ *          supporting horizontal, vertical, and diagonal word patterns
+ */
+
+/**
+ * @namespace aoc::word_search
+ * @brief Contains word search puzzle solving functionality
+ */
 namespace aoc::word_search {
 
+/**
+ * @struct Position
+ * @brief Represents a position in the 2D grid
+ */
 struct Position {
-    size_t row;
-    size_t col;
+    size_t row; ///< Row index in the grid
+    size_t col; ///< Column index in the grid
 };
 
+/**
+ * @struct Match
+ * @brief Represents a found word match in the grid
+ */
 struct Match {
-    std::vector<Position> coordinates;
+    std::vector<Position> coordinates; ///< Sequence of positions forming the matched word
 };
 
-struct Direction {
-    int dx;
-    int dy;
-};
-
-static constexpr std::array<Direction, 8> DIRECTIONS{{
-    {0, 1},  // right
-    {1, 0},  // down
-    {1, 1},  // diagonal down-right
-    {1, -1}, // diagonal down-left
-    {0, -1}, // left
-    {-1, 0}, // up
-    {-1, 1}, // diagonal up-right
-    {-1, -1} // diagonal up-left
-}};
-
-[[nodiscard]] auto findWord(std::span<std::string_view const> grid, std::string_view word) -> std::vector<Match> {
-    auto const rows = grid.size();
-    auto const cols = grid.front().size();
-    std::vector<Match> matches;
-
-    for (size_t row = 0; row < rows; ++row) {
-        for (size_t col = 0; col < cols; ++col) {
-            for (auto [dx, dy] : DIRECTIONS) {
-                bool valid_match = true;
-                std::vector<Position> current_match;
-
-                for (size_t i = 0; i < word.size() && valid_match; ++i) {
-                    auto newRow = static_cast<int>(row) + i * dy;
-                    auto newCol = static_cast<int>(col) + i * dx;
-
-                    valid_match =
-                        newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && grid[newRow][newCol] == word[i];
-
-                    if (valid_match) {
-                        current_match.push_back({static_cast<size_t>(newRow), static_cast<size_t>(newCol)});
-                    }
-                }
-
-                if (valid_match && current_match.size() == word.size()) {
-                    matches.push_back(Match{std::move(current_match)});
-                }
-            }
-        }
-    }
-    return matches;
-}
+/**
+ * @brief Searches for all occurrences of a word in the grid
+ * @param grid The 2D character grid to search in
+ * @param word The word to search for
+ * @return Vector of Match objects containing all found occurrences
+ */
+[[nodiscard]] auto findWord(std::span<std::string_view const> grid, std::string_view word) -> std::vector<Match>;
 
 } // namespace aoc::word_search
