@@ -43,7 +43,7 @@ namespace aoc::lexer::linebased {
  * @param delimiter Character to split tokens on
  * @return Expected vector of vector of tokens, or error code on failure
  */
-template <typename TOKEN_TYPE, size_t EXPECTED_SIZE = 0, template <typename...> typename CONTAINER = std::vector,
+template <typename TOKEN_TYPE, template <typename...> typename CONTAINER = std::vector, size_t EXPECTED_SIZE = 0,
           typename EXECUTION_POLICY>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
 auto tokenize(std::string_view input,
@@ -57,7 +57,7 @@ auto tokenize(std::string_view input,
 /// @param tokenProducer Function to convert string tokens into the desired type
 /// @param delimiter Character to split tokens on
 /// @return Expected vector of vector of tokens, or error code on failure
-template <typename TOKEN_TYPE, size_t EXPECTED_SIZE = 0, template <typename...> typename CONTAINER = std::vector>
+template <typename TOKEN_TYPE, template <typename...> typename CONTAINER = std::vector, size_t EXPECTED_SIZE = 0>
 auto tokenize(std::string_view input,
               std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
               char delimiter = ' ') -> std::expected<std::vector<CONTAINER<TOKEN_TYPE>>, std::error_code>;
@@ -72,7 +72,7 @@ auto tokenize(std::string_view input,
  * @param context Concurrent context for error handling
  * @param tokenProducer Function to convert string tokens into the desired type
  */
-template <typename TOKEN_TYPE, size_t EXPECTED_SIZE, template <typename...> typename CONTAINER>
+template <typename TOKEN_TYPE, template <typename...> typename CONTAINER, size_t EXPECTED_SIZE>
 static void
 processLineIntoSets(std::string_view const & line, std::vector<CONTAINER<TOKEN_TYPE>> & thread_local_vector,
                     size_t thread_id, threads::concurrent_context<std::error_code> & context,
@@ -97,12 +97,12 @@ static auto mergeVectors(std::vector<std::vector<CONTAINER<TOKEN_TYPE>>> const &
  * @param tokenProducer Function to convert string tokens into the desired type
  * @return Expected vector of tokens, or error code on failure
  */
-template <typename TOKEN_TYPE, size_t EXPECTED_SIZE, template <typename...> typename CONTAINER>
+template <typename TOKEN_TYPE, template <typename...> typename CONTAINER, size_t EXPECTED_SIZE>
 static auto tokenizeLine(std::string_view line,
                          std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
                          char delimiter) -> std::expected<CONTAINER<TOKEN_TYPE>, std::error_code>;
 
-template <typename TOKEN_TYPE, size_t EXPECTED_SIZE, template <typename...> typename CONTAINER,
+template <typename TOKEN_TYPE, template <typename...> typename CONTAINER, size_t EXPECTED_SIZE,
           typename EXECUTION_POLICY>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
 auto tokenize(std::string_view input,
@@ -129,7 +129,7 @@ auto tokenize(std::string_view input,
     std::for_each(std::forward<EXECUTION_POLICY>(policy), lines.begin(), lines.end(),
                   [&](std::string_view const & line) {
                       size_t thread_id = std::hash<std::thread::id>{}(std::this_thread::get_id()) % thread_count;
-                      processLineIntoSets<TOKEN_TYPE, EXPECTED_SIZE, CONTAINER>(
+                      processLineIntoSets<TOKEN_TYPE, CONTAINER, EXPECTED_SIZE>(
                           line, thread_local_vectors[thread_id], thread_id, context, tokenProducer, delimiter);
                   });
 
@@ -147,7 +147,7 @@ auto tokenize(std::string_view input,
     return result;
 }
 
-template <typename TOKEN_TYPE, size_t EXPECTED_SIZE, template <typename...> typename CONTAINER>
+template <typename TOKEN_TYPE, template <typename...> typename CONTAINER, size_t EXPECTED_SIZE>
 static void
 processLineIntoSets(std::string_view const & line, std::vector<CONTAINER<TOKEN_TYPE>> & thread_local_vector,
                     size_t thread_id, threads::concurrent_context<std::error_code> & context,
@@ -157,7 +157,7 @@ processLineIntoSets(std::string_view const & line, std::vector<CONTAINER<TOKEN_T
         return;
     }
 
-    auto result = tokenizeLine<TOKEN_TYPE, EXPECTED_SIZE, CONTAINER>(line, tokenProducer, delimiter);
+    auto result = tokenizeLine<TOKEN_TYPE, CONTAINER, EXPECTED_SIZE>(line, tokenProducer, delimiter);
     if (!result) {
         context.setValue(result.error());
         return;
@@ -168,13 +168,21 @@ processLineIntoSets(std::string_view const & line, std::vector<CONTAINER<TOKEN_T
     thread_local_vector.push_back(std::move(*result));
 }
 
-template <typename TOKEN_TYPE, size_t EXPECTED_SIZE, template <typename...> typename CONTAINER>
+template <typename TOKEN_TYPE, template <typename...> typename CONTAINER, size_t EXPECTED_SIZE>
 static auto tokenizeLine(std::string_view line,
                          std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
                          char delimiter) -> std::expected<CONTAINER<TOKEN_TYPE>, std::error_code> {
     std::string normalized = normalizeTabs(line);
     auto tokens = std::string_view{normalized} | std::views::split(delimiter) |
-                  std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
+                  std::views::transform([](auto && chars) {
+                      auto sv = std::string_view(chars.begin(), chars.end());
+                      auto start = sv.find_first_not_of(WHITESPACE_CHARS);
+                      if (start == std::string_view::npos) {
+                          return std::string_view{};
+                      }
+                      auto end = sv.find_last_not_of(WHITESPACE_CHARS);
+                      return sv.substr(start, end - start + 1);
+                  }) |
                   std::views::filter([](std::string_view sv) { return !isOnlyWhitespace(sv); });
 
     CONTAINER<TOKEN_TYPE> result;
@@ -212,11 +220,11 @@ static auto mergeVectors(std::vector<std::vector<CONTAINER<TOKEN_TYPE>>> const &
     return result;
 }
 
-template <typename TOKEN_TYPE, size_t EXPECTED_SIZE, template <typename...> typename CONTAINER>
+template <typename TOKEN_TYPE, template <typename...> typename CONTAINER, size_t EXPECTED_SIZE>
 auto tokenize(std::string_view input,
               std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer, char delimiter)
     -> std::expected<std::vector<CONTAINER<TOKEN_TYPE>>, std::error_code> {
-    return tokenize<TOKEN_TYPE, EXPECTED_SIZE, CONTAINER>(input, tokenProducer, std::execution::par_unseq, delimiter);
+    return tokenize<TOKEN_TYPE, CONTAINER, EXPECTED_SIZE>(input, tokenProducer, std::execution::par_unseq, delimiter);
 }
 
 } // namespace aoc::lexer::linebased

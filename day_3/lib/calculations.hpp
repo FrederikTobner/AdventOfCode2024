@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "../../shared/ranges_compatibility_layer.hpp"
+#include "../../shared/src/ranges_compatibility_layer.hpp"
 
 namespace aoc::calculations {
 

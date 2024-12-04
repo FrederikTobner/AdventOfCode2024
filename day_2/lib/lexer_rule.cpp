@@ -4,7 +4,7 @@
 #include <charconv>
 #include <ranges>
 
-#include "../../shared/ranges_compatibility_layer.hpp"
+#include "../../shared/src/ranges_compatibility_layer.hpp"
 
 auto aoc::lexer::rules::handleToken(std::string_view token) -> std::expected<uint8_t, std::error_code> {
     uint8_t value;

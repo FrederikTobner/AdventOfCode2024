@@ -1,4 +1,4 @@
-name: Tests
+name: Benchmarks
 on:
   pull_request:
     branches: [ master ]
@@ -25,7 +25,7 @@ jobs:
         path: |
           ~\AppData\Local\Temp\chocolatey
           C:\ProgramData\chocolatey\lib\ninja
-        key: ${{ runner.os }}-choco-${{ hashFiles('**/Test.yaml') }}
+        key: ${{ runner.os }}-choco-${{ hashFiles('**/Benchmarks.yaml') }}
 
     - name: Setup Ninja under Windows
       if: runner.os == 'Windows'
@@ -64,15 +64,11 @@ jobs:
 
     - name: Configure CMake under Windows
       if: runner.os == 'Windows'
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DBUILD_TESTS=ON -DBUILD_SOLUTIONS=OFF
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DBUILD_BENCHMARKS=ON -DBUILD_SOLUTIONS=OFF
 
     - name: Configure Cmake under Linux or MacOS
       if: runner.os == 'Linux' || runner.os == 'macOS'
-      run: cmake -D CMAKE_C_COMPILER=gcc-13 -D CMAKE_CXX_COMPILER=g++-13 -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DBUILD_TESTS=ON -DBUILD_SOLUTIONS=OFF
+      run: cmake -D CMAKE_C_COMPILER=gcc-13 -D CMAKE_CXX_COMPILER=g++-13 -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DBUILD_BENCHMARKS=ON -DBUILD_SOLUTIONS=OFF
 
-    - name: Build tests
+    - name: Build benchmarks
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Run tests
-      working-directory: ${{github.workspace}}/build
-      run: ctest -C ${{env.BUILD_TYPE}}

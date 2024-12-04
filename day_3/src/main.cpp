@@ -3,9 +3,9 @@
 #include "../lib/calculations.hpp"
 #include "../lib/pattern_matcher.hpp"
 
-#include "../../shared/exit_code.hpp"
-#include "../../shared/file_operations.hpp"
-#include "../../shared/print_compatibility_layer.hpp"
+#include "../../shared/src/exit_code.hpp"
+#include "../../shared/src/file_operations.hpp"
+#include "../../shared/src/print_compatibility_layer.hpp"
 
 int main(int argc, char const * argv[]) {
 

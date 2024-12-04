@@ -1,4 +1,4 @@
-#include "../../shared/multiset_column_lexer.hpp"
+#include "../../shared/src/multiset_column_lexer.hpp"
 #include "../lib/lexer_rule.hpp"
 #include <gtest/gtest.h>
 

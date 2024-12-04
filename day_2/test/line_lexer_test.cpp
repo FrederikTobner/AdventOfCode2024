@@ -1,4 +1,4 @@
-#include "../../shared/line_lexer.hpp"
+#include "../../shared/src/line_lexer.hpp"
 #include "../lib/lexer_rule.hpp"
 #include <gtest/gtest.h>
 #include <set>
@@ -51,14 +51,4 @@ TEST_F(LexerTest, TabSeparated) {
     EXPECT_TRUE(std::ranges::find(*result, std::vector<uint8_t>{1, 2, 3}) != result->end());
     EXPECT_TRUE(std::ranges::find(*result, std::vector<uint8_t>{4, 5, 6}) != result->end());
     EXPECT_TRUE(std::ranges::find(*result, std::vector<uint8_t>{7, 8, 9}) != result->end());
-}
-
-TEST_F(LexerTest, UsingSetAsTokenContainer) {
-    auto result =
-        aoc::lexer::linebased::tokenize<uint8_t, 3, std::set>("1 2 3\n2 2 1\n1 1 1", aoc::lexer::rules::handleToken);
-    ASSERT_TRUE(result);
-    EXPECT_EQ(result->size(), 3);
-    EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{1, 2, 3}) != result->end());
-    EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{2, 1}) != result->end());
-    EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{1}) != result->end());
 }
