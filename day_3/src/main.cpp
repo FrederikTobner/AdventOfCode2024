@@ -7,8 +7,7 @@
 #include "../../shared/src/file_operations.hpp"
 #include "../../shared/src/print_compatibility_layer.hpp"
 
-int main(int argc, char const * argv[]) {
-
+auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
     if (!input) [[unlikely]] {
         std::println(stderr, "Could not open file: {}", input.error().message());
