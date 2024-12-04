@@ -10,7 +10,6 @@
 #include <string_view>
 #include <system_error>
 
-
 class ColumnLexerTest : public ::testing::Test {
   protected:
     void assertSetsEqual(std::multiset<int64_t> const & expected, std::multiset<int64_t> const & actual) {
@@ -27,7 +26,7 @@ class ColumnLexerTest : public ::testing::Test {
     }
 };
 
-auto handleToken(std::string_view token) -> std::expected<uint64_t, std::error_code> {
+auto handle_int64_t(std::string_view token) -> std::expected<uint64_t, std::error_code> {
     uint8_t value;
     auto [ptr, ec] = std::from_chars(token.data(), token.data() + token.size(), value);
     if (ec != std::errc()) {
@@ -38,7 +37,7 @@ auto handleToken(std::string_view token) -> std::expected<uint64_t, std::error_c
 
 TEST_F(ColumnLexerTest, UsingSetAsTokenContainer) {
     auto result =
-        aoc::lexer::columnbased::tokenize<int64_t, 2, std::set>("1 2\n1 5\n7 8", handleToken, std::execution::seq);
+        aoc::lexer::columnbased::tokenize<int64_t, 2, std::set>("1 2\n1 5\n7 8", handle_int64_t, std::execution::seq);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -47,7 +46,7 @@ TEST_F(ColumnLexerTest, UsingSetAsTokenContainer) {
 }
 
 TEST_F(ColumnLexerTest, UsingAnotherDelimiter) {
-    auto result = aoc::lexer::columnbased::tokenize<int64_t, 2, std::vector>("1,2\n1,5\n7,8", handleToken,
+    auto result = aoc::lexer::columnbased::tokenize<int64_t, 2, std::vector>("1,2\n1,5\n7,8", handle_int64_t,
                                                                              std::execution::seq, ',');
     ASSERT_TRUE(result) << result.error().message();
 
@@ -60,7 +59,7 @@ TEST_F(ColumnLexerTest, UsingAnotherDelimiter) {
 
 TEST_F(ColumnLexerTest, TrimsWhiteSpaceCharactersAroundTokens) {
     auto result = aoc::lexer::columnbased::tokenize<int64_t, 2, std::set>(" 1 , 2 \n 1 , \t\t5  \n 7 ,  8 ",
-                                                                          handleToken, std::execution::seq, ',');
+                                                                          handle_int64_t, std::execution::seq, ',');
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;

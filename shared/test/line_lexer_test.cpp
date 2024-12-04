@@ -18,7 +18,7 @@ class LineLexerTest : public testing::Test {
     const std::vector<std::vector<uint8_t>> empty{};
 };
 
-auto handleToken(std::string_view token) -> std::expected<uint8_t, std::error_code> {
+auto handle_uint8_t(std::string_view token) -> std::expected<uint8_t, std::error_code> {
     uint8_t value;
     auto [ptr, ec] = std::from_chars(token.data(), token.data() + token.size(), value);
     if (ec != std::errc()) {
@@ -28,7 +28,7 @@ auto handleToken(std::string_view token) -> std::expected<uint8_t, std::error_co
 }
 
 TEST_F(LineLexerTest, UsingSetAsTokenContainer) {
-    auto result = aoc::lexer::linebased::tokenize<uint8_t, std::set>("1 2 3\n2 2 1\n1 1 1", handleToken);
+    auto result = aoc::lexer::linebased::tokenize<uint8_t, std::set>("1 2 3\n2 2 1\n1 1 1", handle_uint8_t);
     ASSERT_TRUE(result);
     EXPECT_EQ(result->size(), 3);
     EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{1, 2, 3}) != result->end());
@@ -37,7 +37,7 @@ TEST_F(LineLexerTest, UsingSetAsTokenContainer) {
 }
 
 TEST_F(LineLexerTest, UsingAnotherDelimiter) {
-    auto result = aoc::lexer::linebased::tokenize<uint8_t, std::set>("1,2,3\n2,2,1\n1,1,1", handleToken, ',');
+    auto result = aoc::lexer::linebased::tokenize<uint8_t, std::set>("1,2,3\n2,2,1\n1,1,1", handle_uint8_t, ',');
     ASSERT_TRUE(result);
     EXPECT_EQ(result->size(), 3);
     EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{1, 2, 3}) != result->end());
@@ -47,7 +47,7 @@ TEST_F(LineLexerTest, UsingAnotherDelimiter) {
 
 TEST_F(LineLexerTest, TrimsWhiteSpaceCharactersAroundTokens) {
     auto result = aoc::lexer::linebased::tokenize<uint8_t, std::set>(" 1 ,  2 \t\t ,\t 3 \n 2  , 2,1 \n 1 ,\t1,\t1\t",
-                                                                     handleToken, ',');
+                                                                     handle_uint8_t, ',');
     ASSERT_TRUE(result);
     EXPECT_EQ(result->size(), 3);
     EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{1, 2, 3}) != result->end());
