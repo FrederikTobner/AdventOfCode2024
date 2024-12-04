@@ -1,4 +1,4 @@
-name: Benchmarks
+name: Benchmark
 on:
   pull_request:
     branches: [ master ]
@@ -6,7 +6,7 @@ on:
     branches: [ master ]
 
 jobs:
-  test:
+  bechnmark:
     runs-on: ${{matrix.operatingsystems}}
     env:
       BUILD_TYPE: ${{matrix.buildtypes}}
@@ -25,7 +25,7 @@ jobs:
         path: |
           ~\AppData\Local\Temp\chocolatey
           C:\ProgramData\chocolatey\lib\ninja
-        key: ${{ runner.os }}-choco-${{ hashFiles('**/Benchmarks.yaml') }}
+        key: ${{ runner.os }}-choco-${{ hashFiles('**/Benchmark.yaml') }}
 
     - name: Setup Ninja under Windows
       if: runner.os == 'Windows'

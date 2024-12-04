@@ -13,7 +13,7 @@
 
 #include "../src/ranges_compatibility_layer.hpp"
 
-class LexerTest : public testing::Test {
+class LineLexerTest : public testing::Test {
   protected:
     const std::vector<std::vector<uint8_t>> empty{};
 };
@@ -27,7 +27,7 @@ auto handleToken(std::string_view token) -> std::expected<uint8_t, std::error_co
     return value;
 }
 
-TEST_F(LexerTest, UsingSetAsTokenContainer) {
+TEST_F(LineLexerTest, UsingSetAsTokenContainer) {
     auto result = aoc::lexer::linebased::tokenize<uint8_t, std::set>("1 2 3\n2 2 1\n1 1 1", handleToken);
     ASSERT_TRUE(result);
     EXPECT_EQ(result->size(), 3);
@@ -36,8 +36,18 @@ TEST_F(LexerTest, UsingSetAsTokenContainer) {
     EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{1}) != result->end());
 }
 
-TEST_F(LexerTest, UsingCommaAsDelimiter) {
-    auto result = aoc::lexer::linebased::tokenize<uint8_t, std::set>("1, 2,3\n2,2,1\n1,1,1", handleToken, ',');
+TEST_F(LineLexerTest, UsingAnotherDelimiter) {
+    auto result = aoc::lexer::linebased::tokenize<uint8_t, std::set>("1,2,3\n2,2,1\n1,1,1", handleToken, ',');
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->size(), 3);
+    EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{1, 2, 3}) != result->end());
+    EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{2, 1}) != result->end());
+    EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{1}) != result->end());
+}
+
+TEST_F(LineLexerTest, TrimsWhiteSpaceCharactersAroundTokens) {
+    auto result = aoc::lexer::linebased::tokenize<uint8_t, std::set>(" 1 ,  2 \t\t ,\t 3 \n 2  , 2,1 \n 1 ,\t1,\t1\t",
+                                                                     handleToken, ',');
     ASSERT_TRUE(result);
     EXPECT_EQ(result->size(), 3);
     EXPECT_TRUE(std::ranges::find(*result, std::set<uint8_t>{1, 2, 3}) != result->end());

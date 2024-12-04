@@ -1,3 +1,10 @@
+/**
+ * @file container_traits.hpp
+ * @brief Traits for container operations
+ * @details Provides a generic interface for container operations like insertion and reservation,
+ * allowing algorithms to work with different container types uniformly.
+ */
+
 #pragma once
 
 #include <array>
@@ -7,9 +14,14 @@
 
 namespace aoc::container {
 
-// Primary template
-template <typename Container> struct container_traits {
-    template <typename T> static void insert(Container & container, T && value) {
+/// @brief Primary template for container operations
+/// @tparam CONTAINER The container type to provide operations for
+template <typename CONTAINER> struct container_traits {
+    /// @brief Inserts a value into the container
+    /// @tparam T The type of value to insert
+    /// @param container The container to insert into
+    /// @param value The value to insert
+    template <typename T> static void insert(CONTAINER & container, T && value) {
         if constexpr (requires { container.push_back(std::forward<T>(value)); }) {
             container.push_back(std::forward<T>(value));
         } else if constexpr (requires { container.insert(std::forward<T>(value)); }) {
@@ -19,7 +31,10 @@ template <typename Container> struct container_traits {
         }
     }
 
-    static void reserve(Container & container, size_t size) {
+    /// @brief Reserves space in the container if supported
+    /// @param container The container to reserve space in
+    /// @param size The amount of space to reserve
+    static void reserve(CONTAINER & container, size_t size) {
         if constexpr (requires { container.reserve(size); }) {
             container.reserve(size);
         }
@@ -29,18 +44,23 @@ template <typename Container> struct container_traits {
     template <typename T> static constexpr bool always_false = false;
 };
 
-template <typename T, size_t N> struct container_traits<std::array<T, N>> {
-    static_assert(N > 0, "Array size must be greater than 0");
+/// @brief Specialization for fixed-size arrays
+template <typename T, size_t SIZE> struct container_traits<std::array<T, SIZE>> {
+    static_assert(SIZE > 0, "Array size must be greater than 0");
 
-    template <typename U> static void insert(std::array<T, N> & container, U && value) {
+    /// @brief Inserts a value into the array at the next available position
+    /// @tparam CONVERTABLE The type of value to insert (must be convertible to T)
+    /// @param container The array to insert into
+    /// @param value The value to insert
+    template <typename CONVERTABLE> static void insert(std::array<T, SIZE> & container, CONVERTABLE && value) {
         static size_t index = 0;
-        if (index < N) {
-            container[index++] = std::forward<U>(value);
+        if (index < SIZE) {
+            container[index++] = std::forward<CONVERTABLE>(value);
         }
     }
 
-    static void reserve(std::array<T, N> &, size_t) {
-        // Arrays have fixed size, no reserve needed
+    /// @brief No-op for arrays (fixed size)
+    static void reserve(std::array<T, SIZE> &, size_t) {
     }
 };
 

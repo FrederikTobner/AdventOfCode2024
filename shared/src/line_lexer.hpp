@@ -1,8 +1,9 @@
 /**
- * @file Lexer.hpp
- * @brief This file contains the implementation of a lexer for tokenizing input text in lines
- * @details The processing mode can be set to either Sequential or Parallel, with the latter being
- * out of order but potentially faster for large inputs
+ * @file line_lexer.hpp
+ * @brief Implementation of a line-based lexer for tokenizing input text
+ * @details Provides interfaces for parsing input data line by line into configurable containers.
+ * Supports both sequential and parallel processing modes with error handling through std::expected.
+ * Container types can be specified through template parameters, with std::vector as the default.
  */
 
 #pragma once
@@ -34,14 +35,16 @@
 namespace aoc::lexer::linebased {
 
 /**
- * @brief Tokenizes input text into vectors of strongly-typed tokens
+ * @brief Tokenizes input text into containers of strongly-typed tokens
  * @tparam TOKEN_TYPE The type to convert each token into
+ * @tparam CONTAINER Container type to store the tokens (defaults to std::vector)
  * @tparam EXPECTED_SIZE Expected number of tokens per line (0 for variable length)
+ * @tparam EXECUTION_POLICY The execution policy to use for parallel processing
  * @param input The input text to tokenize
  * @param tokenProducer Function to convert string tokens into the desired type
  * @param policy Execution policy to use for parallel processing
  * @param delimiter Character to split tokens on
- * @return Expected vector of vector of tokens, or error code on failure
+ * @return Expected vector of containers of tokens, or error code on failure
  */
 template <typename TOKEN_TYPE, template <typename...> typename CONTAINER = std::vector, size_t EXPECTED_SIZE = 0,
           typename EXECUTION_POLICY>
@@ -51,26 +54,32 @@ auto tokenize(std::string_view input,
               EXECUTION_POLICY && policy, char delimiter = ' ')
     -> std::expected<std::vector<CONTAINER<TOKEN_TYPE>>, std::error_code>;
 
-/// @brief Tokenizes input text into vectors of strongly-typed tokens
-/// @tparam TOKEN_TYPE The type to convert each token into
-/// @param input The input text to tokenize
-/// @param tokenProducer Function to convert string tokens into the desired type
-/// @param delimiter Character to split tokens on
-/// @return Expected vector of vector of tokens, or error code on failure
+/**
+ * @brief Tokenizes input text into containers of strongly-typed tokens using sequential processing
+ * @tparam TOKEN_TYPE The type to convert each token into
+ * @tparam CONTAINER Container type to store the tokens (defaults to std::vector)
+ * @tparam EXPECTED_SIZE Expected number of tokens per line (0 for variable length)
+ * @param input The input text to tokenize
+ * @param tokenProducer Function to convert string tokens into the desired type
+ * @param delimiter Character to split tokens on
+ * @return Expected vector of containers of tokens, or error code on failure
+ */
 template <typename TOKEN_TYPE, template <typename...> typename CONTAINER = std::vector, size_t EXPECTED_SIZE = 0>
 auto tokenize(std::string_view input,
               std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
               char delimiter = ' ') -> std::expected<std::vector<CONTAINER<TOKEN_TYPE>>, std::error_code>;
 
 /**
- * @brief Processes a single line of input into tokens for a specific thread
+ * @brief Processes a single line of input into tokens
  * @tparam TOKEN_TYPE The type to convert each token into
+ * @tparam CONTAINER Container type to store the tokens
  * @tparam EXPECTED_SIZE Expected number of tokens in the line
- * @param line The input line to process
- * @param tokens Thread-local storage for token results
+ * @param line String view containing the line to parse
+ * @param tokens Output container for parsed tokens
  * @param thread_id ID of the current thread
  * @param context Concurrent context for error handling
  * @param tokenProducer Function to convert string tokens into the desired type
+ * @param delimiter Character to split tokens on
  */
 template <typename TOKEN_TYPE, template <typename...> typename CONTAINER, size_t EXPECTED_SIZE>
 static void
