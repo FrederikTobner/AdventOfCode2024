@@ -15,6 +15,7 @@
 #include "../../shared/src/line_splitter.hpp"
 #include "../../shared/src/parsing_rules.hpp"
 #include "../../shared/src/print_compatibility_layer.hpp"
+#include "../../shared/src/ranges_compatibility_layer.hpp"
 
 auto parse_input(std::string_view input) {
     constexpr auto delimiters = std::array{"\r\n\r\n", "\n\n"};
@@ -39,7 +40,7 @@ auto parse_rules(std::string_view rules_str) {
     }
     return *rules_result | std::views::transform([](auto const & rule) {
         return aoc::day_5::page_ordering_rule{rule[0], rule[1]};
-    }) | std::ranges::to<std::vector>();
+    }) | aoc::ranges::to<std::vector<aoc::day_5::page_ordering_rule>>;
 }
 
 auto main(int argc, char const ** argv) -> int {
