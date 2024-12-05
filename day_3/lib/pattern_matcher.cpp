@@ -4,25 +4,25 @@
 #include <regex>
 #include <string>
 
-namespace aoc::pattern_matcher {
+namespace aoc::day_3 {
 
-enum class MatchType {
-    Multiplication,
-    DisableProcessing,
-    EnableProcessing
+enum class match_type {
+    MULTIPLICATION,
+    DISABLE_PROCESSING,
+    ENABLE_PROCESSING
 };
 
-struct ParsedMatch {
-    MatchType type;
+struct parsed_match {
+    match_type type;
     std::pair<uint16_t, uint16_t> numbers{0, 0};
 };
 
-[[nodiscard]] std::expected<ParsedMatch, std::string> parseMatch(std::smatch const & match) {
+[[nodiscard]] std::expected<parsed_match, std::string> parseMatch(std::smatch const & match) {
     if (match[4].matched) {
-        return ParsedMatch{MatchType::DisableProcessing};
+        return parsed_match{match_type::DISABLE_PROCESSING};
     }
     if (match[5].matched) {
-        return ParsedMatch{MatchType::EnableProcessing};
+        return parsed_match{match_type::ENABLE_PROCESSING};
     }
     if (match[1].matched) {
         uint16_t num1{}, num2{};
@@ -33,7 +33,7 @@ struct ParsedMatch {
         auto [ptr2, ec2] = std::from_chars(num2_str.data(), num2_str.data() + num2_str.size(), num2);
 
         if (ec1 == std::errc{} && ec2 == std::errc{}) {
-            return ParsedMatch{MatchType::Multiplication, {num1, num2}};
+            return parsed_match{match_type::MULTIPLICATION, {num1, num2}};
         }
         return std::unexpected("Failed to parse numbers");
     }
@@ -64,13 +64,13 @@ std::vector<std::pair<uint16_t, uint16_t>> findMultiplicationPairsWithToggle(std
         if (auto parsed = parseMatch(*it)) {
 #ifdef _MSC_VER
             switch (parsed->type) {
-            case MatchType::DisableProcessing:
+            case match_type::DISABLE_PROCESSING:
                 process_matches = false;
                 break;
-            case MatchType::EnableProcessing:
+            case match_type::ENABLE_PROCESSING:
                 process_matches = true;
                 break;
-            case MatchType::Multiplication:
+            case match_type::MULTIPLICATION:
                 if (process_matches) {
                     matches.push_back(parsed->numbers);
                 }
@@ -97,4 +97,4 @@ std::vector<std::pair<uint16_t, uint16_t>> findMultiplicationPairsWithToggle(std
     return matches;
 }
 
-} // namespace aoc::pattern_matcher
+} // namespace aoc::day_3

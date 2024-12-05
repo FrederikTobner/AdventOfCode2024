@@ -17,10 +17,10 @@
  */
 
 /**
- * @namespace aoc::grid_processor
- * @brief Contains grid processing and validation utilities
+ * @namespace aoc::day_4
+ * @brief Contains the code for Day 4 puzzle solutions
  */
-namespace aoc::grid_processor {
+namespace aoc::day_4 {
 
 /**
  * @brief Processes input string into lines suitable for grid operations
@@ -36,4 +36,4 @@ namespace aoc::grid_processor {
  */
 [[nodiscard]] auto validateGrid(std::span<std::string_view const> lines) -> bool;
 
-} // namespace aoc::grid_processor
+} // namespace aoc::day_4

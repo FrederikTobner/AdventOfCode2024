@@ -31,15 +31,15 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
-    auto const & [leftList, rightList] = *tokens; // array destructuring still works
+    auto const & [leftList, rightList] = *tokens;
 
     if (leftList.size() != rightList.size()) [[unlikely]] {
         std::println(stderr, "Lists have different sizes: {} vs {}", leftList.size(), rightList.size());
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
-    uint64_t totalDistance = calculations::totalDistance(leftList, rightList);
-    uint64_t similarityScore = calculations::similarityScore(leftList, rightList);
+    uint64_t totalDistance = aoc::day_1::totalDistance(leftList, rightList);
+    uint64_t similarityScore = aoc::day_1::similarityScore(leftList, rightList);
 
     std::println("The totalDistance is: {:#}", totalDistance);
     std::println("The similarity score is: {:#}", similarityScore);

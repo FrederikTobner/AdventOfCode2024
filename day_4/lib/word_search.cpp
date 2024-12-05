@@ -2,7 +2,7 @@
 
 #include <array>
 
-namespace aoc::word_search {
+namespace aoc::day_4 {
 
 namespace internal {
 struct Direction {
@@ -22,15 +22,15 @@ static constexpr std::array<Direction, 8> DIRECTIONS{{
 }};
 } // namespace internal
 
-auto findWord(std::span<std::string_view const> grid, std::string_view word) -> std::vector<Match> {
+auto findWord(std::span<std::string_view const> grid, std::string_view word) -> std::vector<match> {
     auto const rows = grid.size();
     auto const cols = grid.front().size();
-    std::vector<Match> matches;
+    std::vector<match> matches;
     for (size_t row = 0; row < rows; ++row) {
         for (size_t col = 0; col < cols; ++col) {
             for (auto [dx, dy] : internal::DIRECTIONS) {
                 bool valid_match = true;
-                std::vector<Position> current_match;
+                std::vector<position> current_match;
 
                 for (size_t i = 0; i < word.size() && valid_match; ++i) {
                     auto newRow = static_cast<int>(row) + i * dy;
@@ -45,7 +45,7 @@ auto findWord(std::span<std::string_view const> grid, std::string_view word) -> 
                 }
 
                 if (valid_match && current_match.size() == word.size()) {
-                    matches.push_back(Match{std::move(current_match)});
+                    matches.push_back(match{std::move(current_match)});
                 }
             }
         }
@@ -53,4 +53,4 @@ auto findWord(std::span<std::string_view const> grid, std::string_view word) -> 
     return matches;
 }
 
-} // namespace aoc::word_search
+} // namespace aoc::day_4

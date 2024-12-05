@@ -5,8 +5,7 @@ class SafetyCheckTest : public testing::TestWithParam<std::pair<std::vector<uint
 
 TEST_P(SafetyCheckTest, ValidatesSequenceCorrectly) {
     auto const & [sequence, expected] = GetParam();
-    EXPECT_EQ(safety_check::isSafe(sequence), expected)
-        << "Failed for sequence: " << ::testing::PrintToString(sequence);
+    EXPECT_EQ(aoc::day_2::isSafe(sequence), expected) << "Failed for sequence: " << ::testing::PrintToString(sequence);
 }
 
 INSTANTIATE_TEST_SUITE_P(SafeSequences, SafetyCheckTest,

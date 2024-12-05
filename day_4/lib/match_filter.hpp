@@ -10,17 +10,13 @@
  *          particularly focusing on diagonal and overlapping patterns
  */
 
-/**
- * @namespace aoc::match_filter
- * @brief Namespace containing match filtering and analysis functionality
- */
-namespace aoc::match_filter {
+namespace aoc::day_4 {
 
 /**
  * @brief Counts the number of overlapping diagonal matches
  * @param matches Vector of matches to analyze
  * @return Number of overlapping diagonal matches, where overlapping pairs are counted once
  */
-[[nodiscard]] auto countOverlappingDiagonal(std::vector<word_search::Match> const & matches) -> ptrdiff_t;
+[[nodiscard]] auto countOverlappingDiagonal(std::vector<match> const & matches) -> ptrdiff_t;
 
-} // namespace aoc::match_filter
+} // namespace aoc::day_4

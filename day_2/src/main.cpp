@@ -25,10 +25,10 @@ auto main(int argc, char const ** argv) -> int {
     }
 
     ptrdiff_t const safe_count =
-        std::ranges::count_if(*parsed, [](auto const & line) { return safety_check::isSafe(line); });
+        std::ranges::count_if(*parsed, [](auto const & line) { return aoc::day_2::isSafe(line); });
 
     ptrdiff_t const fixable_count =
-        std::ranges::count_if(*parsed, [](auto const & line) { return safety_check::canBeMadeSafe(line); });
+        std::ranges::count_if(*parsed, [](auto const & line) { return aoc::day_2::canBeMadeSafe(line); });
 
     std::println("The number of safe levels is: {:#}", safe_count);
     std::println("The number of safe levels with one violation is: {:#}", fixable_count);

@@ -13,7 +13,7 @@
 
 #include "../../shared/src/ranges_compatibility_layer.hpp"
 
-namespace aoc::calculations {
+namespace aoc::day_3 {
 
 /**
  * @brief Concept that constrains types to numeric types (integral or floating point)
@@ -29,9 +29,9 @@ concept Numeric = std::integral<T> || std::floating_point<T>;
  * @return Sum of all products of the pairs
  */
 template <Numeric T = uint64_t> [[nodiscard]] auto accumulateProducts(std::ranges::range auto const & matches) {
-    // Accumulations are commutative, so we can use parallel execution and process the results out of order
-    return aoc::ranges::fold_left(std::execution::par_unseq, matches, T{0},
-                                  [](auto acc, auto const & pair) { return acc + pair.first * pair.second; });
+    return std::transform_reduce(
+        std::execution::par_unseq, std::ranges::begin(matches), std::ranges::end(matches), T{0}, std::plus<T>{},
+        [](auto const & pair) -> T { return static_cast<T>(pair.first) * static_cast<T>(pair.second); });
 }
 
-} // namespace aoc::calculations
+} // namespace aoc::day_3

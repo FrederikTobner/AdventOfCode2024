@@ -14,11 +14,10 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_IO_ERROR;
     }
 
-    uint64_t result = aoc::calculations::accumulateProducts(aoc::pattern_matcher::findMultiplicationPairs(*input));
+    uint64_t result = aoc::day_3::accumulateProducts(aoc::day_3::findMultiplicationPairs(*input));
     std::println("The result is: {:#}", result);
 
-    uint64_t resultWithToggle =
-        aoc::calculations::accumulateProducts(aoc::pattern_matcher::findMultiplicationPairsWithToggle(*input));
+    uint64_t resultWithToggle = aoc::day_3::accumulateProducts(aoc::day_3::findMultiplicationPairsWithToggle(*input));
     std::println("The result is with the toggle is: {:#}", resultWithToggle);
 
     return aoc::EXIT_CODE_SUCCESS;

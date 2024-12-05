@@ -30,7 +30,7 @@ static void BM_CalulculateDistance(benchmark::State & state) {
     std::multiset<int64_t> leftList = createNewSet(1000000);
     std::multiset<int64_t> rightList = createNewSet(1000000);
     for (auto _ : state) {
-        auto result = calculations::totalDistance(leftList, rightList);
+        auto result = aoc::day_1::totalDistance(leftList, rightList);
     }
     state.SetItemsProcessed(state.iterations() * leftList.size());
 }
@@ -45,7 +45,7 @@ static void BM_CalulculateSimilarity(benchmark::State & state) {
     std::multiset<int64_t> leftList = createNewSet(10000);
     std::multiset<int64_t> rightList = createNewSet(10000);
     for (auto _ : state) {
-        auto result = calculations::similarityScore(leftList, rightList);
+        auto result = aoc::day_1::similarityScore(leftList, rightList);
     }
     state.SetItemsProcessed(state.iterations() * leftList.size());
 }

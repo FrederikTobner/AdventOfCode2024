@@ -6,7 +6,7 @@
 TEST(PatternMatcher, FindMultiplicationPairs) {
     std::string text = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
 
-    auto matches = aoc::pattern_matcher::findMultiplicationPairs(text);
+    auto matches = aoc::day_3::findMultiplicationPairs(text);
     ASSERT_EQ(matches.size(), 4);
     ASSERT_EQ(matches[0].first, 2);
     ASSERT_EQ(matches[0].second, 4);
@@ -21,7 +21,7 @@ TEST(PatternMatcher, FindMultiplicationPairs) {
 TEST(PatternMatcher, FindMultiplicationPairsWithToggle) {
     std::string text = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
 
-    auto matches = aoc::pattern_matcher::findMultiplicationPairsWithToggle(text);
+    auto matches = aoc::day_3::findMultiplicationPairsWithToggle(text);
     ASSERT_EQ(matches.size(), 2);
     ASSERT_EQ(matches[0].first, 2);
     ASSERT_EQ(matches[0].second, 4);
