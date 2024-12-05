@@ -10,8 +10,7 @@
 #include <utility>
 #include <vector>
 
-
-namespace aoc::pattern_matcher {
+namespace aoc::day_3 {
 
 /**
  * @brief Finds pairs of numbers that should be multiplied based on pattern matching
@@ -28,4 +27,4 @@ namespace aoc::pattern_matcher {
 [[nodiscard]] auto findMultiplicationPairsWithToggle(std::string_view text)
     -> std::vector<std::pair<uint16_t, uint16_t>>;
 
-} // namespace aoc::pattern_matcher
+} // namespace aoc::day_3

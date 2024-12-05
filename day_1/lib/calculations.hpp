@@ -14,7 +14,7 @@
 #include <ranges>
 
 /// @brief Namespace containing numerical calculation utilities
-namespace calculations {
+namespace aoc::day_1 {
 
 /**
  * @brief Calculates the total distance between corresponding elements in two ranges
@@ -51,4 +51,4 @@ template <std::ranges::input_range RANGE>
         std::ranges::begin(leftList), std::ranges::end(leftList), uint64_t{0}, std::plus{},
         [&](auto const num) { return static_cast<uint64_t>(std::ranges::count(rightList, num) * num); });
 }
-} // namespace calculations
+} // namespace aoc::day_1

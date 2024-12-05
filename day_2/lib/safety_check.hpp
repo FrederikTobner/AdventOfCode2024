@@ -4,7 +4,7 @@
 #include <span>
 #include <vector>
 
-namespace safety_check {
+namespace aoc::day_2 {
 
 /**
  * @brief Checks if a sequence of numbers follows safety rules
@@ -26,4 +26,4 @@ namespace safety_check {
  */
 [[nodiscard]] auto canBeMadeSafe(std::span<uint8_t const> input) -> bool;
 
-} // namespace safety_check
+} // namespace aoc::day_2

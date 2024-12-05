@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using namespace aoc::word_search;
+using namespace aoc::day_4;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;

@@ -1,4 +1,3 @@
-
 #include "rules_validator.hpp"
 
 namespace aoc::day_5 {
@@ -11,10 +10,12 @@ bool rules_validator::validate_and_fix(page_update & update) {
 
 restart:
     for (auto const & rule : rules) {
-        if (!rule.isFullfilled(update.updateValues)) {
-            rule.fixPage(update.updateValues);
-            made_changes = true;
-            goto restart;
+        if (auto match = update.find_rule_pages(rule)) {
+            if (match->needs_swap()) {
+                std::iter_swap(match->pre_it, match->post_it);
+                made_changes = true;
+                goto restart;
+            }
         }
     }
 

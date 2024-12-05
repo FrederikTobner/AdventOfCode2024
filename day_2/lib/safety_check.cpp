@@ -5,7 +5,7 @@
 
 #include "../../shared/src/ranges_compatibility_layer.hpp"
 
-namespace safety_check {
+namespace aoc::day_2 {
 
 auto isSafe(std::span<uint8_t const> input) -> bool {
     return std::ranges::adjacent_find(input, [](uint8_t a, uint8_t b) { return a == b || std::abs(a - b) > 3; }) ==
@@ -25,4 +25,4 @@ auto canBeMadeSafe(std::span<uint8_t const> input) -> bool {
     });
 }
 
-} // namespace safety_check
+} // namespace aoc::day_2
