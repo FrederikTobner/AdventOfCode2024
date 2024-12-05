@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <stdexcept>
 #include <vector>
 
 /*!
@@ -19,10 +20,33 @@ struct page_update {
     //! The collection of page values to be updated
     std::vector<uint8_t> updateValues;
 
+    page_update() = delete;
+
+    explicit page_update(std::vector<uint8_t> && values) : updateValues(std::move(values)) {
+        validate_size();
+    }
+
+    explicit page_update(std::vector<uint8_t> const & values) : updateValues(values) {
+        validate_size();
+    }
+
+    page_update(page_update const &) = delete;
+    page_update & operator=(page_update const &) = delete;
+    page_update(page_update &&) = default;
+    page_update & operator=(page_update &&) = default;
+
+  private:
+    void validate_size() const {
+        if (updateValues.size() % 2 == 0) {
+            throw std::invalid_argument("Update values must have an odd number of elements");
+        }
+    }
+
+  public:
     /*!
      * @brief Gets the middle element from the update values
-     * @return The middle element if it exists, std::nullopt otherwise
+     * @return The middle element
      */
-    [[nodiscard]] std::optional<uint8_t> getMiddleElement() const;
+    [[nodiscard]] uint8_t getMiddleElement() const;
 };
 } // namespace aoc::day_5

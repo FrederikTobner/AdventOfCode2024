@@ -70,7 +70,8 @@ template <typename CONTAINER> struct Converter {
 };
 
 /**
- * @brief Helper variable template for pipe syntax
+ * @brief Converts a range to a specified container type - only needed under GCC 13 because ranges::to is implemented
+ * yet
  */
 template <typename CONTAINER> inline constexpr Converter<CONTAINER> to{};
 
