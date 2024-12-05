@@ -1,5 +1,5 @@
-#include "page_ordering_rule.hpp"
-#include "rules_validator.hpp"
+#include "../lib/page_ordering_rule.hpp"
+#include "../lib/rules_validator.hpp"
 
 #include <algorithm>
 #include <array>
