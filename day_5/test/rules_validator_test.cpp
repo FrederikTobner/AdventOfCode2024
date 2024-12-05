@@ -2,44 +2,53 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using testing::ElementsAre;
+struct OrderTestCase {
+    std::vector<uint8_t> input;
+    std::vector<uint8_t> expected;
+    bool should_be_valid;
+};
 
-class RulesValidatorTest : public ::testing::Test {
+class RulesValidatorTest : public ::testing::TestWithParam<OrderTestCase> {
   protected:
-    // Rule set where: 1 must come before 2, and 2 must come before 3
     std::vector<aoc::day_5::page_ordering_rule> basic_rules{{1, 2}, {2, 3}};
     aoc::day_5::rules_validator validator{basic_rules};
 };
 
-TEST_F(RulesValidatorTest, ValidatesCorrectOrder) {
-    aoc::day_5::page_update update{{1, 4, 2, 5, 3}};
-    EXPECT_TRUE(validator.validate_and_fix(update));
-    EXPECT_THAT(update.updateValues, ElementsAre(1, 4, 2, 5, 3));
+TEST_P(RulesValidatorTest, ValidatesAndFixesOrder) {
+    auto const & param = GetParam();
+    aoc::day_5::page_update update{param.input};
+    EXPECT_EQ(validator.validate_and_fix(update), param.should_be_valid);
+    auto const updateIter = update.cbegin();
+    for (size_t i = 0; i < param.expected.size(); ++i) {
+        EXPECT_EQ(updateIter[i], param.expected[i]);
+    }
 }
 
-TEST_F(RulesValidatorTest, FixesAndValidatesSimpleSwap) {
-    aoc::day_5::page_update update{{2, 1, 3}};
-    EXPECT_FALSE(validator.validate_and_fix(update));
-    EXPECT_THAT(update.updateValues, ElementsAre(1, 2, 3));
-}
+INSTANTIATE_TEST_SUITE_P(OrderingTests, RulesValidatorTest,
+                         ::testing::Values(OrderTestCase{{1, 4, 2, 5, 3}, {1, 4, 2, 5, 3}, true},
+                                           OrderTestCase{{2, 1, 3}, {1, 2, 3}, false},
+                                           OrderTestCase{{3, 2, 1}, {1, 2, 3}, false},
+                                           OrderTestCase{{1, 4, 5}, {1, 4, 5}, true},
+                                           OrderTestCase{{5, 4, 3, 2, 1}, {5, 4, 1, 2, 3}, false}));
 
-TEST_F(RulesValidatorTest, HandlesMultipleRuleViolations) {
-    aoc::day_5::page_update update{{3, 2, 1}};
-    EXPECT_FALSE(validator.validate_and_fix(update));
-    EXPECT_THAT(update.updateValues, ElementsAre(1, 2, 3));
-}
-
-TEST_F(RulesValidatorTest, HandlesMissingElements) {
-    aoc::day_5::page_update update{{1, 4, 5}};
-    EXPECT_TRUE(validator.validate_and_fix(update));
-    EXPECT_THAT(update.updateValues, ElementsAre(1, 4, 5));
-}
-
-TEST_F(RulesValidatorTest, HandlesComplexRuleSet) {
+// Add new test fixture for complex rules
+class ComplexRulesValidatorTest : public ::testing::TestWithParam<OrderTestCase> {
+  protected:
     std::vector<aoc::day_5::page_ordering_rule> complex_rules{{1, 2}, {2, 3}, {3, 4}, {4, 5}};
-    aoc::day_5::rules_validator complex_validator{complex_rules};
+    aoc::day_5::rules_validator validator{complex_rules};
+};
 
-    aoc::day_5::page_update update{{5, 4, 3, 2, 1}};
-    EXPECT_FALSE(complex_validator.validate_and_fix(update));
-    EXPECT_THAT(update.updateValues, ElementsAre(1, 2, 3, 4, 5));
+TEST_P(ComplexRulesValidatorTest, ValidatesAndFixesOrder) {
+    auto const & param = GetParam();
+    aoc::day_5::page_update update{param.input};
+
+    EXPECT_EQ(validator.validate_and_fix(update), param.should_be_valid);
+    auto const updateIter = update.cbegin();
+    for (size_t i = 0; i < param.expected.size(); ++i) {
+        EXPECT_EQ(updateIter[i], param.expected[i]);
+    }
 }
+
+INSTANTIATE_TEST_SUITE_P(ComplexOrderingTests, ComplexRulesValidatorTest,
+                         ::testing::Values(OrderTestCase{{5, 4, 3, 2, 1}, {1, 2, 3, 4, 5}, false},
+                                           OrderTestCase{{1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}, true}));

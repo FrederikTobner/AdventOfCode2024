@@ -1,8 +1,7 @@
 #include <algorithm>
-#include <array>
+#include <cstdint>
 #include <execution>
 #include <expected>
-#include <iostream>
 #include <ranges>
 #include <string>
 #include <string_view>
@@ -43,9 +42,9 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
-    std::expected<std::vector<std::vector<uint8_t>, std::allocator<std::vector<uint8_t>>>, std::error_code>
-        parsed_update_input = aoc::splitter::linebased::split<uint8_t, std::vector>(
-            updates_input, aoc::parser::rules::parse_number<uint8_t>, std::execution::seq, ',');
+    std::expected<std::vector<std::vector<uint8_t>>, std::error_code> parsed_update_input =
+        aoc::splitter::linebased::split<uint8_t, std::vector>(updates_input, aoc::parser::rules::parse_number<uint8_t>,
+                                                              std::execution::seq, ',');
 
     if (!parsed_update_input) {
         std::println(stderr, "Failed to parse updates: {}", parsed_update_input.error().message());
@@ -60,14 +59,14 @@ auto main(int argc, char const ** argv) -> int {
 
     auto validator = aoc::day_5::rules_validator(*std::move(page_ordering_rules));
 
-    auto [sum_valid, sum_invalid] =
-        aoc::ranges::fold_left(updates_transformed, aoc::day_5::result_summary{},
-                               [&validator](aoc::day_5::result_summary accumulator, aoc::day_5::page_update & update) {
-                                   bool is_valid = validator.validate_and_fix(update);
-                                   uint8_t middle = update.getMiddleElement();
-                                   accumulator.add(middle, is_valid);
-                                   return accumulator;
-                               });
+    auto [sum_valid, sum_invalid] = aoc::ranges::fold_left(
+        updates_transformed, aoc::day_5::result_summary{},
+        [&validator](aoc::day_5::result_summary summary_accumulation, aoc::day_5::page_update & update) {
+            bool is_valid = validator.validate_and_fix(update);
+            uint8_t middle = update.getMiddleElement();
+            summary_accumulation.add(middle, is_valid);
+            return summary_accumulation;
+        });
 
     std::println("The sum of valid middle elements is: {:#}", sum_valid);
     std::println("The sum of invalid middle elements is: {:#}", sum_invalid);

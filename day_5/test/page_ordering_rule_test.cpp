@@ -1,73 +1,64 @@
 #include "../lib/page_ordering_rule.hpp"
+#include "../lib/page_update.hpp"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+
 using testing::ElementsAre;
 
-class PageOrderingRuleTest : public ::testing::Test {
+class PageUpdateTest : public ::testing::Test {
   protected:
     // Simple rule where 1 must come before 2
     aoc::day_5::page_ordering_rule basic_rule{1, 2};
 };
 
-TEST_F(PageOrderingRuleTest, RuleIsFullfilledWhenPrePageNotPresent) {
-    std::vector<uint8_t> pages{2, 3, 4};
-    EXPECT_TRUE(basic_rule.isFullfilled(pages));
+TEST_F(PageUpdateTest, FindRulePagesReturnsNulloptWhenPrePageNotPresent) {
+    aoc::day_5::page_update update({2, 3, 4});
+    EXPECT_FALSE(update.find_rule_pages(basic_rule).has_value());
 }
 
-TEST_F(PageOrderingRuleTest, RuleIsFullfilledWhenPostPageNotPresent) {
-    std::vector<uint8_t> pages{1, 3, 4};
-    EXPECT_TRUE(basic_rule.isFullfilled(pages));
+TEST_F(PageUpdateTest, FindRulePagesReturnsNulloptWhenPostPageNotPresent) {
+    aoc::day_5::page_update update({1, 3, 4});
+    EXPECT_FALSE(update.find_rule_pages(basic_rule).has_value());
 }
 
-TEST_F(PageOrderingRuleTest, RuleIsFullfilledWhenOrderIsCorrect) {
-    std::vector<uint8_t> pages{1, 3, 2};
-    EXPECT_TRUE(basic_rule.isFullfilled(pages));
+TEST_F(PageUpdateTest, FindRulePagesReturnsMatchWhenBothPagesPresent) {
+    aoc::day_5::page_update update({1, 3, 2});
+    auto match = update.find_rule_pages(basic_rule);
+    EXPECT_TRUE(match.has_value());
+    EXPECT_FALSE(match->needs_swap());
 }
 
-TEST_F(PageOrderingRuleTest, RuleIsNotFullfilledWhenOrderIsIncorrect) {
-    std::vector<uint8_t> pages{2, 3, 1};
-    EXPECT_FALSE(basic_rule.isFullfilled(pages));
+TEST_F(PageUpdateTest, FindRulePagesIndicatesSwapNeededWhenOrderIncorrect) {
+    aoc::day_5::page_update update({2, 3, 1});
+    auto match = update.find_rule_pages(basic_rule);
+    EXPECT_TRUE(match.has_value());
+    EXPECT_TRUE(match->needs_swap());
 }
 
-TEST_F(PageOrderingRuleTest, FixPageSwapsElementsWhenBothPresent) {
-    std::vector<uint8_t> pages{2, 3, 1};
-    basic_rule.fixPage(pages);
-    EXPECT_THAT(pages, ElementsAre(1, 3, 2));
+TEST_F(PageUpdateTest, FixSwapsElementsWhenNeeded) {
+    aoc::day_5::page_update update({2, 3, 1});
+    auto match = update.find_rule_pages(basic_rule);
+    ASSERT_TRUE(match.has_value());
+    aoc::day_5::page_update::fix(*match);
+    // Verify the fix worked by checking if a new match needs swapping
+    auto new_match = update.find_rule_pages(basic_rule);
+    EXPECT_TRUE(new_match.has_value());
+    EXPECT_FALSE(new_match->needs_swap());
 }
 
-TEST_F(PageOrderingRuleTest, FixPageDoesNothingWhenPrePageMissing) {
-    std::vector<uint8_t> pages{2, 3, 4};
-    auto original = pages;
-    basic_rule.fixPage(pages);
-    EXPECT_THAT(pages, ElementsAre(2, 3, 4));
+TEST_F(PageUpdateTest, HandlesElementsAtEdges) {
+    aoc::day_5::page_update update({2, 3, 4, 5, 1}); // 1 at end, 2 at start
+    auto match = update.find_rule_pages(basic_rule);
+    ASSERT_TRUE(match.has_value());
+    EXPECT_TRUE(match->needs_swap());
+    aoc::day_5::page_update::fix(*match);
+    auto new_match = update.find_rule_pages(basic_rule);
+    EXPECT_TRUE(new_match.has_value());
+    EXPECT_FALSE(new_match->needs_swap());
 }
 
-TEST_F(PageOrderingRuleTest, FixPageDoesNothingWhenPostPageMissing) {
-    std::vector<uint8_t> pages{1, 3, 4};
-    auto original = pages;
-    basic_rule.fixPage(pages);
-    EXPECT_THAT(pages, ElementsAre(1, 3, 4));
-}
-
-TEST_F(PageOrderingRuleTest, HandlesEmptyVector) {
-    std::vector<uint8_t> empty;
-    EXPECT_TRUE(basic_rule.isFullfilled(empty));
-    basic_rule.fixPage(empty);
-    EXPECT_TRUE(empty.empty());
-}
-
-TEST_F(PageOrderingRuleTest, HandlesVectorWithSingleElement) {
-    std::vector<uint8_t> single{1};
-    EXPECT_TRUE(basic_rule.isFullfilled(single));
-    basic_rule.fixPage(single);
-    EXPECT_EQ(single.size(), 1);
-    EXPECT_EQ(single[0], 1);
-}
-
-TEST_F(PageOrderingRuleTest, HandlesElementsAtEdges) {
-    std::vector<uint8_t> pages{2, 3, 4, 5, 1}; // 1 at end, 2 at start
-    EXPECT_FALSE(basic_rule.isFullfilled(pages));
-    basic_rule.fixPage(pages);
-    EXPECT_THAT(pages, ElementsAre(1, 3, 4, 5, 2));
+TEST_F(PageUpdateTest, GetMiddleElementReturnsCorrectValue) {
+    aoc::day_5::page_update update({1, 2, 3});
+    EXPECT_EQ(update.getMiddleElement(), 2);
 }
