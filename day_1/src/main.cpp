@@ -6,14 +6,17 @@
  * and provides appropriate exit codes.
  */
 
-#include "../lib/calculations.hpp"
-#include "../lib/lexer_rule.hpp"
+#include <cstdint>
+#include <expected>
+#include <string>
 
-#include "../../shared/src/column_lexer.hpp"
+#include "../lib/calculations.hpp"
+
+#include "../../shared/src/column_splitter.hpp"
 #include "../../shared/src/exit_code.hpp"
 #include "../../shared/src/file_operations.hpp"
+#include "../../shared/src/parsing_rules.hpp"
 #include "../../shared/src/print_compatibility_layer.hpp"
-
 
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
@@ -22,7 +25,7 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_IO_ERROR;
     }
 
-    auto tokens = aoc::lexer::columnbased::tokenize<int64_t, 2>(*input, aoc::lexer::rules::numberProducer);
+    auto tokens = aoc::splitter::columnbased::split<int64_t, 2>(*input, aoc::parser::rules::parse_number<int64_t>);
     if (!tokens) [[unlikely]] {
         std::println(stderr, "Failed to parse input: {}", tokens.error().message());
         return aoc::EXIT_CODE_DATA_ERROR;

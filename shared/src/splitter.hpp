@@ -2,7 +2,7 @@
 
 #include "ranges_compatibility_layer.hpp"
 
-namespace aoc::lexer {
+namespace aoc::splitter {
 
 /// @brief User-defined literal for creating string views of whitespace characters
 [[nodiscard]] constexpr auto operator""_ws(char const * str, size_t len) noexcept {
@@ -30,4 +30,4 @@ inline constexpr auto WHITESPACE_CHARS = " \t\n\r"_ws;
     return str | std::views::transform([](char c) { return c == '\t' ? ' ' : c; }) | aoc::ranges::to<std::string>;
 }
 
-} // namespace aoc::lexer
+} // namespace aoc::splitter
