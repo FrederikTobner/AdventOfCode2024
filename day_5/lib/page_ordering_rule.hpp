@@ -1,8 +1,10 @@
 #pragma once
 
 #include <concepts>
+#include <cstdint>
 #include <ranges>
 #include <vector>
+
 
 namespace aoc::day_5 {
 
