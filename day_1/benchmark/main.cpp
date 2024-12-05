@@ -1,10 +1,14 @@
 #include <benchmark/benchmark.h>
-#include <iostream>
+
+#include <cstdint>
+#include <execution>
+#include <set>
+#include <string>
 
 #include "../lib/calculations.hpp"
-#include "../lib/lexer_rule.hpp"
 
-#include "../../shared/src/column_lexer.hpp"
+#include "../../shared/src/column_splitter.hpp"
+#include "../../shared/src/parsing_rules.hpp"
 
 static std::string createInput(size_t size) {
     std::string input;
@@ -57,7 +61,7 @@ static void BM_ParseLinesInParrallel(benchmark::State & state) {
 
     for (auto _ : state) {
         state.PauseTiming();
-        auto result = aoc::lexer::columnbased::tokenize<int64_t, 2>(input, aoc::lexer::rules::numberProducer,
+        auto result = aoc::splitter::columnbased::split<int64_t, 2>(input, aoc::parser::rules::parse_number<int64_t>,
                                                                     std::execution::par_unseq);
         state.ResumeTiming();
 
@@ -80,7 +84,7 @@ static void BM_ParseLinesInSequence(benchmark::State & state) {
 
     for (auto _ : state) {
         state.PauseTiming();
-        auto result = aoc::lexer::columnbased::tokenize<int64_t, 2>(input, aoc::lexer::rules::numberProducer,
+        auto result = aoc::splitter::columnbased::split<int64_t, 2>(input, aoc::parser::rules::parse_number<int64_t>,
                                                                     std::execution::seq);
         state.ResumeTiming();
         if (!result) {

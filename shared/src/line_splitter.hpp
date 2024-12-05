@@ -24,15 +24,15 @@
 #include "concurrent_context.hpp"
 #include "container_traits.hpp"
 #include "execution_policy_traits.hpp"
-#include "lexer.hpp"
 #include "ranges_compatibility_layer.hpp"
+#include "splitter.hpp"
 
 /**
  * @brief Namespace containing lexer functionality for parsing and tokenizing input
  * @details Provides utilities for converting text input into tokens, with support for
  *          both sequential and parallel processing modes
  */
-namespace aoc::lexer::linebased {
+namespace aoc::splitter::linebased {
 
 /**
  * @brief Tokenizes input text into containers of strongly-typed tokens
@@ -49,9 +49,9 @@ namespace aoc::lexer::linebased {
 template <typename TOKEN_TYPE, template <typename...> typename CONTAINER = std::vector, size_t EXPECTED_SIZE = 0,
           typename EXECUTION_POLICY>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
-auto tokenize(std::string_view input,
-              std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
-              EXECUTION_POLICY && policy, char delimiter = ' ')
+auto split(std::string_view input,
+           std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
+           EXECUTION_POLICY && policy, char delimiter = ' ')
     -> std::expected<std::vector<CONTAINER<TOKEN_TYPE>>, std::error_code>;
 
 /**
@@ -65,9 +65,9 @@ auto tokenize(std::string_view input,
  * @return Expected vector of containers of tokens, or error code on failure
  */
 template <typename TOKEN_TYPE, template <typename...> typename CONTAINER = std::vector, size_t EXPECTED_SIZE = 0>
-auto tokenize(std::string_view input,
-              std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
-              char delimiter = ' ') -> std::expected<std::vector<CONTAINER<TOKEN_TYPE>>, std::error_code>;
+auto split(std::string_view input,
+           std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
+           char delimiter = ' ') -> std::expected<std::vector<CONTAINER<TOKEN_TYPE>>, std::error_code>;
 
 /**
  * @brief Processes a single line of input into tokens
@@ -114,9 +114,9 @@ static auto tokenizeLine(std::string_view line,
 template <typename TOKEN_TYPE, template <typename...> typename CONTAINER, size_t EXPECTED_SIZE,
           typename EXECUTION_POLICY>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
-auto tokenize(std::string_view input,
-              std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
-              EXECUTION_POLICY && policy, char delimiter)
+auto split(std::string_view input,
+           std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer,
+           EXECUTION_POLICY && policy, char delimiter)
     -> std::expected<std::vector<CONTAINER<TOKEN_TYPE>>, std::error_code> {
 
     auto lines = input | std::views::split('\n') |
@@ -230,10 +230,10 @@ static auto mergeVectors(std::vector<std::vector<CONTAINER<TOKEN_TYPE>>> const &
 }
 
 template <typename TOKEN_TYPE, template <typename...> typename CONTAINER, size_t EXPECTED_SIZE>
-auto tokenize(std::string_view input,
-              std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer, char delimiter)
+auto split(std::string_view input,
+           std::function<std::expected<TOKEN_TYPE, std::error_code>(std::string_view)> tokenProducer, char delimiter)
     -> std::expected<std::vector<CONTAINER<TOKEN_TYPE>>, std::error_code> {
-    return tokenize<TOKEN_TYPE, CONTAINER, EXPECTED_SIZE>(input, tokenProducer, std::execution::par_unseq, delimiter);
+    return split<TOKEN_TYPE, CONTAINER, EXPECTED_SIZE>(input, tokenProducer, std::execution::par_unseq, delimiter);
 }
 
-} // namespace aoc::lexer::linebased
+} // namespace aoc::splitter::linebased

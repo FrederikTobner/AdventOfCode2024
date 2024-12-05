@@ -28,11 +28,11 @@
 #include "concurrent_context.hpp"
 #include "container_traits.hpp"
 #include "execution_policy_traits.hpp"
-#include "lexer.hpp"
 #include "ranges_compatibility_layer.hpp"
+#include "splitter.hpp"
 
-/// @brief Namespace containing lexer functionality for parsing and tokenizing input
-namespace aoc::lexer::columnbased {
+/// @brief Namespace containing splitter functionality for splitting input into columns
+namespace aoc::splitter::columnbased {
 
 /**
  * @brief Parses the entire input string into columns of numbers using specified container type
@@ -49,9 +49,9 @@ namespace aoc::lexer::columnbased {
 template <typename TOKEN, size_t COLUMN_AMOUNT, template <typename...> typename CONTAINER = std::multiset,
           typename EXECUTION_POLICY>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
-[[nodiscard]] auto tokenize(std::string_view input,
-                            std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
-                            EXECUTION_POLICY && policy, char delimiter = ' ')
+[[nodiscard]] auto split(std::string_view input,
+                         std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
+                         EXECUTION_POLICY && policy, char delimiter = ' ')
     -> std::expected<std::array<CONTAINER<TOKEN>, COLUMN_AMOUNT>, std::error_code>;
 
 /// @brief Parses the entire input string into columns of numbers using specified container type
@@ -63,9 +63,8 @@ template <typename TOKEN, size_t COLUMN_AMOUNT, template <typename...> typename 
 /// @param delimiter Character to split tokens on
 /// @return Array of containers containing the parsed numbers
 template <typename TOKEN, size_t COLUMN_AMOUNT, template <typename...> typename CONTAINER = std::multiset>
-auto tokenize(std::string_view input,
-              std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
-              char delimiter = ' ') -> std::expected<std::array<CONTAINER<TOKEN>, COLUMN_AMOUNT>, std::error_code>;
+auto split(std::string_view input, std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
+           char delimiter = ' ') -> std::expected<std::array<CONTAINER<TOKEN>, COLUMN_AMOUNT>, std::error_code>;
 
 /**
  * @brief Parses a single line containing N space-separated numbers
@@ -107,9 +106,8 @@ static void processLineIntoSets(std::string_view const & line,
 
 template <typename TOKEN, size_t COLUMN_AMOUNT, template <typename...> typename CONTAINER, typename EXECUTION_POLICY>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
-auto tokenize(std::string_view input,
-              std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
-              EXECUTION_POLICY && policy, char delimiter)
+auto split(std::string_view input, std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducer,
+           EXECUTION_POLICY && policy, char delimiter)
     -> std::expected<std::array<CONTAINER<TOKEN>, COLUMN_AMOUNT>, std::error_code> {
     auto lines = input | std::views::split('\n') |
                  std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
@@ -136,10 +134,10 @@ auto tokenize(std::string_view input,
 }
 
 template <typename TOKEN, size_t COLUMN_AMOUNT, template <typename...> typename CONTAINER>
-auto tokenize(std::string_view input,
-              std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducery, char delimiter)
+auto split(std::string_view input,
+           std::function<std::expected<TOKEN, std::error_code>(std::string_view)> tokenProducery, char delimiter)
     -> std::expected<std::array<CONTAINER<TOKEN>, COLUMN_AMOUNT>, std::error_code> {
-    return tokenize<TOKEN, COLUMN_AMOUNT, CONTAINER>(input, tokenProducery, std::execution::unseq, delimiter);
+    return split<TOKEN, COLUMN_AMOUNT, CONTAINER>(input, tokenProducery, std::execution::unseq, delimiter);
 }
 
 template <typename TOKEN, size_t COLUMN_AMOUNT, template <typename...> typename CONTAINER>
@@ -213,4 +211,4 @@ static auto tokenizeLine(std::string_view line,
     return result;
 }
 
-} // namespace aoc::lexer::columnbased
+} // namespace aoc::splitter::columnbased
