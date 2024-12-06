@@ -1,4 +1,4 @@
-#include "../lib/grid_processor.hpp"
+#include "../src/grid_processor.hpp"
 
 #include <gtest/gtest.h>
 

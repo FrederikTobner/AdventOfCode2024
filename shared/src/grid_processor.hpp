@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-#include "../../shared/src/ranges_compatibility_layer.hpp"
+#include "ranges_compatibility_layer.hpp"
 
 /**
  * @file grid_processor.hpp

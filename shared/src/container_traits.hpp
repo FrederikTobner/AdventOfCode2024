@@ -12,6 +12,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "assertions.hpp"
+
 namespace aoc::container {
 
 /// @brief Primary template for container operations
@@ -37,6 +39,8 @@ template <typename CONTAINER> struct container_traits {
     static void reserve(CONTAINER & container, size_t size) {
         if constexpr (requires { container.reserve(size); }) {
             container.reserve(size);
+        } else {
+            static_assert(aoc::assertions::always_false<CONTAINER>, "CONTAINER must support reserve");
         }
     }
 
@@ -59,8 +63,11 @@ template <typename T, size_t SIZE> struct container_traits<std::array<T, SIZE>> 
         }
     }
 
-    /// @brief No-op for arrays (fixed size)
-    static void reserve(std::array<T, SIZE> &, size_t) {
+    /// @brief Reserves space in the array (no-op)
+    /// @param container The array to reserve space in
+    /// @param size The amount of space to reserve
+    static void reserve(std::array<T, SIZE> & container, size_t size) {
+        // No-op for arrays
     }
 };
 

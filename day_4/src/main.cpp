@@ -3,9 +3,10 @@
 
 #include "../../shared/src/exit_code.hpp"
 #include "../../shared/src/file_operations.hpp"
+#include "../../shared/src/grid_processor.hpp"
 #include "../../shared/src/print_compatibility_layer.hpp"
 
-#include "../lib/grid_processor.hpp"
+
 #include "../lib/match_filter.hpp"
 #include "../lib/word_search.hpp"
 

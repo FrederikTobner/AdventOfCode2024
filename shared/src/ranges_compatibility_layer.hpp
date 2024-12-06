@@ -14,30 +14,13 @@
 #include <type_traits>
 #include <vector>
 
+#include "container_traits.hpp"
+
 /**
  * @brief Compatibility layer for ranges operations
  * @namespace aoc::ranges
  */
 namespace aoc::ranges {
-
-template <typename CONTAINER> struct container_traits {
-    static void reserve(CONTAINER & c, size_t) {
-    }
-};
-
-template <> struct container_traits<std::string> {
-    using value_type = char;
-    static void reserve(std::string & c, size_t size) {
-        c.reserve(size);
-    }
-};
-
-template <> struct container_traits<std::vector<std::string>> {
-    static void reserve(std::vector<std::string> & c, size_t size) {
-        c.reserve(size);
-    }
-};
-
 /**
  * @brief Converts a range to a specified container type
  * @tparam Container The target container type
@@ -47,8 +30,10 @@ template <> struct container_traits<std::vector<std::string>> {
  */
 template <typename CONTAINER, typename RANGE> [[nodiscard]] auto to_container(RANGE && range) -> CONTAINER {
     CONTAINER result;
-    if constexpr (requires { container_traits<CONTAINER>::reserve(result, std::ranges::size(range)); }) {
-        container_traits<CONTAINER>::reserve(result, std::ranges::size(range));
+    if constexpr (requires {
+                      aoc::container::container_traits<CONTAINER>::reserve(result, std::ranges::size(range));
+                  }) {
+        aoc::container::container_traits<CONTAINER>::reserve(result, std::ranges::size(range));
     }
     for (auto && element : range) {
         if constexpr (std::is_same_v<CONTAINER, std::string>) {
