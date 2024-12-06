@@ -13,8 +13,86 @@
 
 namespace aoc::day_6 {
 
+// New enum for movement results
+enum class MovementResult {
+    Moved,
+    Blocked,
+    OutOfBounds
+};
+
 /// @brief A Map storing a 2D grid of tiles
 class PuzzleMap {
+
+    // Helper methods for movement
+    [[nodiscard]] auto tryMoveUp(size_t row, size_t col) const -> MovementResult {
+        if (row == 0) {
+            return MovementResult::OutOfBounds;
+        }
+        if (map[row - 1][col] == TileType::Obstacle) {
+            return MovementResult::Blocked;
+        }
+        return MovementResult::Moved;
+    }
+
+    [[nodiscard]] auto tryMoveDown(size_t row, size_t col) const -> MovementResult {
+        if (row == map.size() - 1) {
+            return MovementResult::OutOfBounds;
+        }
+        if (map[row + 1][col] == TileType::Obstacle) {
+            return MovementResult::Blocked;
+        }
+        return MovementResult::Moved;
+    }
+
+    [[nodiscard]] auto tryMoveLeft(size_t row, size_t col) const -> MovementResult {
+        if (col == 0) {
+            return MovementResult::OutOfBounds;
+        }
+        if (map[row][col - 1] == TileType::Obstacle) {
+            return MovementResult::Blocked;
+        }
+        return MovementResult::Moved;
+    }
+
+    [[nodiscard]] auto tryMoveRight(size_t row, size_t col) const -> MovementResult {
+        if (col == map[row].size() - 1) {
+            return MovementResult::OutOfBounds;
+        }
+        if (map[row][col + 1] == TileType::Obstacle) {
+            return MovementResult::Blocked;
+        }
+        return MovementResult::Moved;
+    }
+
+    [[nodiscard]] auto calculateNewPosition(size_t row, size_t col) const -> std::pair<int64_t, int64_t> {
+        switch (guardDirection) {
+        case FacingDirection::Up:
+            return {row - 1, col};
+        case FacingDirection::Down:
+            return {row + 1, col};
+        case FacingDirection::Left:
+            return {row, col - 1};
+        case FacingDirection::Right:
+            return {row, col + 1};
+        }
+        throw std::runtime_error("Invalid direction");
+    }
+
+    void updateGuardPosition(size_t row, size_t col, MovementResult result, FacingDirection newDirection) {
+        switch (result) {
+        case MovementResult::OutOfBounds:
+            guardOutOfBounds = true;
+            break;
+        case MovementResult::Blocked:
+            guardDirection = newDirection;
+            break;
+        case MovementResult::Moved:
+            map[row][col] = TileType::Empty;
+            guardPosition = calculateNewPosition(row, col);
+            map[guardPosition.first][guardPosition.second] = TileType::Guard;
+            break;
+        }
+    }
 
   public:
     PuzzleMap(std::span<std::string_view const> grid) {
@@ -100,52 +178,34 @@ class PuzzleMap {
         if (guardOutOfBounds) {
             return true;
         }
-        visitedPositions.insert(VisitedPosition(guardPosition.first, guardPosition.second, guardDirection));
+
         auto [row, col] = guardPosition;
+        visitedPositions.insert(VisitedPosition{static_cast<size_t>(row), static_cast<size_t>(col), guardDirection});
+
+        MovementResult result;
+        FacingDirection newDirection;
+
         switch (guardDirection) {
         case FacingDirection::Up:
-            if (row == 0) {
-                guardOutOfBounds = true;
-            } else if (map[row - 1][col] == TileType::Obstacle) {
-                guardDirection = FacingDirection::Right;
-            } else {
-                guardPosition = {row - 1, col};
-            }
+            result = tryMoveUp(row, col);
+            newDirection = FacingDirection::Right;
             break;
         case FacingDirection::Down:
-            if (row == map.size() - 1) {
-                guardOutOfBounds = true;
-            } else if (map[row + 1][col] == TileType::Obstacle) {
-                guardDirection = FacingDirection::Left;
-            } else {
-                guardPosition = {row + 1, col};
-            }
+            result = tryMoveDown(row, col);
+            newDirection = FacingDirection::Left;
             break;
         case FacingDirection::Left:
-            if (col == 0) {
-                guardOutOfBounds = true;
-            } else if (map[row][col - 1] == TileType::Obstacle) {
-                guardDirection = FacingDirection::Up;
-            } else {
-                guardPosition = {row, col - 1};
-            }
+            result = tryMoveLeft(row, col);
+            newDirection = FacingDirection::Up;
             break;
         case FacingDirection::Right:
-            if (col == map[row].size() - 1) {
-                guardOutOfBounds = true;
-            } else if (map[row][col + 1] == TileType::Obstacle) {
-                guardDirection = FacingDirection::Down;
-            } else {
-                guardPosition = {row, col + 1};
-            }
+            result = tryMoveRight(row, col);
+            newDirection = FacingDirection::Down;
             break;
         }
-        if (row != guardPosition.first || col != guardPosition.second) {
-            map[row][col] = TileType::Empty;
-            map[guardPosition.first][guardPosition.second] = TileType::Guard;
-            return !guardLoopsAround();
-        }
-        return true;
+
+        updateGuardPosition(row, col, result, newDirection);
+        return result == MovementResult::Moved ? !guardLoopsAround() : true;
     }
 
     bool isGuardOutOfBounds() const {
