@@ -8,7 +8,9 @@
 #include <numeric>
 #include <string>
 
+#include "../lib/grid_parser.hpp"
 #include "../lib/puzzle_map.hpp"
+
 
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
@@ -22,7 +24,14 @@ auto main(int argc, char const ** argv) -> int {
         std::println(stderr, "Lines have different lengths");
         return aoc::EXIT_CODE_DATA_ERROR;
     }
-    aoc::day_6::PuzzleMap map(lines);
+
+    auto parsedGrid = aoc::day_6::parseGrid(lines);
+    if (!parsedGrid) {
+        std::println(stderr, "Failed to parse grid: {}", parsedGrid.error());
+        return aoc::EXIT_CODE_DATA_ERROR;
+    }
+
+    aoc::day_6::PuzzleMap map(parsedGrid->map, parsedGrid->guardPosition, parsedGrid->guardDirection);
 
     // Part 1
     while (!map.isGuardOutOfBounds()) {
@@ -39,7 +48,7 @@ auto main(int argc, char const ** argv) -> int {
     std::println("Part 1: Visited positions: {:#}", visitedPositionsFiltered.size());
 
     // Part 2
-    aoc::day_6::PuzzleMap map2(lines);
+    aoc::day_6::PuzzleMap map2(parsedGrid->map, parsedGrid->guardPosition, parsedGrid->guardDirection);
 
     auto result =
         std::transform_reduce(std::execution::par, visitedPositionsFiltered.begin(), visitedPositionsFiltered.end(),
