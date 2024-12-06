@@ -11,7 +11,6 @@
 #include "tile_type.hpp"
 #include "visited_position.hpp"
 
-
 namespace aoc::day_6 {
 
 /// @brief A Map storing a 2D grid of tiles
@@ -187,3 +186,10 @@ class PuzzleMap {
 };
 
 } // namespace aoc::day_6
+
+/// @brief Formatter for the PuzzleMap class
+template <> struct std::formatter<aoc::day_6::PuzzleMap> : std::formatter<std::string_view> {
+    [[nodiscard]] auto format(aoc::day_6::PuzzleMap map, format_context & ctx) const {
+        return formatter<string_view>::format(map.toString(), ctx);
+    }
+};

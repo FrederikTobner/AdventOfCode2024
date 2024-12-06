@@ -6,11 +6,9 @@
 #include <atomic>
 #include <execution>
 #include <numeric>
-#include <span>
 #include <string>
 
 #include "../lib/puzzle_map.hpp"
-#include "../lib/puzzle_map_formatter.hpp"
 
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
@@ -19,13 +17,12 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_IO_ERROR;
     }
 
-    std::vector<std::string_view> lines = aoc::day_4::processLines(*input);
-    if (!aoc::day_4::validateGrid(lines)) {
+    std::vector<std::string_view> lines = aoc::grid_processor::processLines(*input);
+    if (!aoc::grid_processor::validateGrid(lines)) {
         std::println(stderr, "Lines have different lengths");
         return aoc::EXIT_CODE_DATA_ERROR;
     }
-    auto const grid = std::span{lines};
-    aoc::day_6::PuzzleMap map(grid);
+    aoc::day_6::PuzzleMap map(lines);
 
     // Part 1
     while (!map.isGuardOutOfBounds()) {
@@ -42,7 +39,7 @@ auto main(int argc, char const ** argv) -> int {
     std::println("Part 1: Visited positions: {:#}", visitedPositionsFiltered.size());
 
     // Part 2
-    aoc::day_6::PuzzleMap map2(grid);
+    aoc::day_6::PuzzleMap map2(lines);
 
     auto result =
         std::transform_reduce(std::execution::par, visitedPositionsFiltered.begin(), visitedPositionsFiltered.end(),
