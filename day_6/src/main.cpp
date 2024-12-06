@@ -43,19 +43,19 @@ auto main(int argc, char const ** argv) -> int {
 
     // Part 2
     aoc::day_6::PuzzleMap map2(grid);
-    auto freePositions = map2.getFreePositions();
 
-    auto result = std::transform_reduce(std::execution::par, freePositions.begin(), freePositions.end(), size_t{0},
-                                        std::plus<>{}, [&map2](auto const & position) {
-                                            aoc::day_6::PuzzleMap mapCopy(map2);
-                                            mapCopy.insertObstacle(position);
-                                            while (!mapCopy.isGuardOutOfBounds()) {
-                                                if (!mapCopy.update()) {
-                                                    return size_t{1};
-                                                }
-                                            }
-                                            return size_t{0};
-                                        });
+    auto result =
+        std::transform_reduce(std::execution::par, visitedPositionsFiltered.begin(), visitedPositionsFiltered.end(),
+                              size_t{0}, std::plus<>{}, [&map2](auto const & position) {
+                                  aoc::day_6::PuzzleMap mapCopy(map2);
+                                  mapCopy.insertObstacle(position);
+                                  while (!mapCopy.isGuardOutOfBounds()) {
+                                      if (!mapCopy.update()) {
+                                          return size_t{1};
+                                      }
+                                  }
+                                  return size_t{0};
+                              });
 
     std::println("Part 2: Amount of possible loops: {:#}", result);
     return 0;
