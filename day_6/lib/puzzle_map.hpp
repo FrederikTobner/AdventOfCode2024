@@ -3,32 +3,16 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
+#include "facing_direction.hpp"
+#include "tile_type.hpp"
+#include "visited_position.hpp"
+
+
 namespace aoc::day_6 {
-
-enum class TileType {
-    Empty,   // .
-    Guard,   // ^ up, v down, < left, > right
-    Obstacle // #
-};
-
-enum FacingDirection {
-    Up,
-    Down,
-    Left,
-    Right
-};
-
-struct VisitedPosition {
-    size_t row;
-    size_t col;
-    FacingDirection direction;
-
-    // Spaceship operator
-    auto operator<=>(VisitedPosition const &) const = default;
-};
 
 /// @brief A Map storing a 2D grid of tiles
 class PuzzleMap {
@@ -117,10 +101,7 @@ class PuzzleMap {
         if (guardOutOfBounds) {
             return true;
         }
-        auto visitedPosition =
-            VisitedPosition(this->guardPosition.first, this->guardPosition.second, this->guardDirection);
-        visitedPositions.insert(visitedPosition);
-        map[guardPosition.first][guardPosition.second] = TileType::Empty;
+        visitedPositions.insert(VisitedPosition(guardPosition.first, guardPosition.second, guardDirection));
         auto [row, col] = guardPosition;
         switch (guardDirection) {
         case FacingDirection::Up:
@@ -160,13 +141,6 @@ class PuzzleMap {
             }
             break;
         }
-        if (guardPosition.first >= map.size() || guardPosition.second >= map[guardPosition.first].size()) {
-            guardOutOfBounds = true;
-        } else if (guardPosition.first < 0 || guardPosition.second < 0) {
-            guardOutOfBounds = true;
-        } else {
-            map[guardPosition.first][guardPosition.second] = TileType::Guard;
-        }
         if (row != guardPosition.first || col != guardPosition.second) {
             map[row][col] = TileType::Empty;
             map[guardPosition.first][guardPosition.second] = TileType::Guard;
@@ -179,7 +153,7 @@ class PuzzleMap {
         return guardOutOfBounds;
     }
 
-    [[nodiscard]] auto getVisitedPositions() const -> std::set<VisitedPosition> {
+    [[nodiscard]] auto getVisitedPositions() const -> std::unordered_set<VisitedPosition> {
         return visitedPositions;
     }
 
@@ -209,7 +183,7 @@ class PuzzleMap {
     std::pair<int64_t, int64_t> guardPosition;
     FacingDirection guardDirection;
     bool guardOutOfBounds = false;
-    std::set<VisitedPosition> visitedPositions;
+    std::unordered_set<VisitedPosition, std::hash<VisitedPosition>> visitedPositions;
 };
 
 } // namespace aoc::day_6
