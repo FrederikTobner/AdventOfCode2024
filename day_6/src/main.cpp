@@ -24,28 +24,33 @@ auto main(int argc, char const ** argv) -> int {
         std::println(stderr, "Lines have different lengths");
         return aoc::EXIT_CODE_DATA_ERROR;
     }
-
     auto const grid = std::span{lines};
     aoc::day_6::PuzzleMap map(grid);
 
     // Part 1
     while (!map.isGuardOutOfBounds()) {
-        if (map.update()) {
+        if (!map.update()) {
             std::println("Player loop detected");
             break;
         }
     }
-    std::println("Part 1: Visited positions: {:#}", map.getVisitedPositions().size());
+
+    auto visitedPositionsFiltered = std::set<std::pair<size_t, size_t>>{};
+    for (auto const & position : map.getVisitedPositions()) {
+        visitedPositionsFiltered.insert({position.row, position.col});
+    }
+    std::println("Part 1: Visited positions: {:#}", visitedPositionsFiltered.size());
 
     // Part 2
-    auto freePositions = map.getFreePositions();
+    aoc::day_6::PuzzleMap map2(grid);
+    auto freePositions = map2.getFreePositions();
 
     auto result = std::transform_reduce(std::execution::par, freePositions.begin(), freePositions.end(), size_t{0},
-                                        std::plus<>{}, [&map](auto const & position) {
-                                            aoc::day_6::PuzzleMap mapCopy(map);
+                                        std::plus<>{}, [&map2](auto const & position) {
+                                            aoc::day_6::PuzzleMap mapCopy(map2);
                                             mapCopy.insertObstacle(position);
                                             while (!mapCopy.isGuardOutOfBounds()) {
-                                                if (mapCopy.update()) {
+                                                if (!mapCopy.update()) {
                                                     return size_t{1};
                                                 }
                                             }

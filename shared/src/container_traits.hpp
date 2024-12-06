@@ -10,6 +10,7 @@
 #include <array>
 #include <set>
 #include <type_traits>
+#include <unordered_set>
 #include <vector>
 
 #include "assertions.hpp"
@@ -39,6 +40,11 @@ template <typename CONTAINER> struct container_traits {
     static void reserve(CONTAINER & container, size_t size) {
         if constexpr (requires { container.reserve(size); }) {
             container.reserve(size);
+        } else if (std::is_same_v<CONTAINER, std::set<typename CONTAINER::value_type>> ||
+                   std::is_same_v<CONTAINER, std::multiset<typename CONTAINER::value_type>> ||
+                   std::is_same_v<CONTAINER, std::unordered_set<typename CONTAINER::value_type>> ||
+                   std::is_same_v<CONTAINER, std::unordered_multiset<typename CONTAINER::value_type>>) {
+            // No-op for sets
         } else {
             static_assert(aoc::assertions::always_false<CONTAINER>, "CONTAINER must support reserve");
         }

@@ -115,7 +115,7 @@ class PuzzleMap {
     // If the path is blocked, the player turns right
     bool update() {
         if (guardOutOfBounds) {
-            return false;
+            return true;
         }
         auto visitedPosition =
             VisitedPosition(this->guardPosition.first, this->guardPosition.second, this->guardDirection);
@@ -170,9 +170,9 @@ class PuzzleMap {
         if (row != guardPosition.first || col != guardPosition.second) {
             map[row][col] = TileType::Empty;
             map[guardPosition.first][guardPosition.second] = TileType::Guard;
-            return guardLoopsAround();
+            return !guardLoopsAround();
         }
-        return false;
+        return true;
     }
 
     bool isGuardOutOfBounds() const {
