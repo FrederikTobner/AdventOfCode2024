@@ -17,6 +17,17 @@
 
 namespace aoc::container {
 
+namespace detail {
+/// @brief Type trait to determine if a type is a set
+template <typename T> struct is_set : std::false_type {};
+template <typename... Args> struct is_set<std::set<Args...>> : std::true_type {};
+template <typename... Args> struct is_set<std::multiset<Args...>> : std::true_type {};
+template <typename... Args> struct is_set<std::unordered_set<Args...>> : std::true_type {};
+template <typename... Args> struct is_set<std::unordered_multiset<Args...>> : std::true_type {};
+
+template <typename T> inline constexpr bool is_set_v = is_set<T>::value;
+} // namespace detail
+
 /// @brief Primary template for container operations
 /// @tparam CONTAINER The container type to provide operations for
 template <typename CONTAINER> struct container_traits {
@@ -40,10 +51,7 @@ template <typename CONTAINER> struct container_traits {
     static void reserve(CONTAINER & container, size_t size) {
         if constexpr (requires { container.reserve(size); }) {
             container.reserve(size);
-        } else if (std::is_same_v<CONTAINER, std::set<typename CONTAINER::value_type>> ||
-                   std::is_same_v<CONTAINER, std::multiset<typename CONTAINER::value_type>> ||
-                   std::is_same_v<CONTAINER, std::unordered_set<typename CONTAINER::value_type>> ||
-                   std::is_same_v<CONTAINER, std::unordered_multiset<typename CONTAINER::value_type>>) {
+        } else if constexpr (detail::is_set_v<CONTAINER>) {
             // No-op for sets
         } else {
             static_assert(aoc::assertions::always_false<CONTAINER>, "CONTAINER must support reserve");

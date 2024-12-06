@@ -30,7 +30,7 @@ struct VisitedPosition {
     auto operator<=>(VisitedPosition const &) const = default;
 };
 
-/// @brief A Map storing a 2D grid of
+/// @brief A Map storing a 2D grid of tiles
 class PuzzleMap {
 
   public:
