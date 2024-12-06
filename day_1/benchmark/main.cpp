@@ -84,8 +84,8 @@ static void BM_ParseLinesInSequence(benchmark::State & state) {
 
     for (auto _ : state) {
         state.PauseTiming();
-        auto result = aoc::splitter::columnbased::split<int64_t, 2>(input, aoc::parser::rules::parse_number<int64_t>,
-                                                                    std::execution::seq);
+        auto result = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>(
+            input, aoc::parser::rules::parse_number<int64_t>, std::execution::seq);
         state.ResumeTiming();
         if (!result) {
             state.SkipWithError("Parser error occurred");

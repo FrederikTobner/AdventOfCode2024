@@ -36,7 +36,8 @@ auto handle_int64_t = [](std::string_view token) -> std::expected<int64_t, std::
 };
 
 TEST_F(ColumnSplitterTest, ValidInput_Sequential) {
-    auto result = aoc::splitter::columnbased::split<int64_t, 2>("1 2\n4 5\n7 8", handle_int64_t, std::execution::seq);
+    auto result = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>("1 2\n4 5\n7 8", handle_int64_t,
+                                                                               std::execution::seq);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -45,8 +46,8 @@ TEST_F(ColumnSplitterTest, ValidInput_Sequential) {
 }
 
 TEST_F(ColumnSplitterTest, ValidInput_Parallel) {
-    auto result =
-        aoc::splitter::columnbased::split<int64_t, 2>("1 2\n4 5\n7 8", handle_int64_t, std::execution::par_unseq);
+    auto result = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>("1 2\n4 5\n7 8", handle_int64_t,
+                                                                               std::execution::par_unseq);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -55,7 +56,7 @@ TEST_F(ColumnSplitterTest, ValidInput_Parallel) {
 }
 
 TEST_F(ColumnSplitterTest, EmptyInput) {
-    auto result = aoc::splitter::columnbased::split<int64_t, 2>("", handle_int64_t);
+    auto result = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>("", handle_int64_t);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -64,7 +65,7 @@ TEST_F(ColumnSplitterTest, EmptyInput) {
 }
 
 TEST_F(ColumnSplitterTest, WhitespaceOnly) {
-    auto result = aoc::splitter::columnbased::split<int64_t, 2>("  \n\t\r  \n  ", handle_int64_t);
+    auto result = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>("  \n\t\r  \n  ", handle_int64_t);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -73,7 +74,7 @@ TEST_F(ColumnSplitterTest, WhitespaceOnly) {
 }
 
 TEST_F(ColumnSplitterTest, SingleLine) {
-    auto result = aoc::splitter::columnbased::split<int64_t, 2>("42 99", handle_int64_t);
+    auto result = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>("42 99", handle_int64_t);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -82,25 +83,26 @@ TEST_F(ColumnSplitterTest, SingleLine) {
 }
 
 TEST_F(ColumnSplitterTest, InvalidNumber) {
-    auto result = aoc::splitter::columnbased::split<int64_t, 2>("1 2\nabc def\n3 4", handle_int64_t);
+    auto result = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>("1 2\nabc def\n3 4", handle_int64_t);
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), std::make_error_code(std::errc::invalid_argument));
 }
 
 TEST_F(ColumnSplitterTest, MissingNumber) {
-    auto result = aoc::splitter::columnbased::split<int64_t, 2>("1 2\n3\n4 5", handle_int64_t);
+    auto result = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>("1 2\n3\n4 5", handle_int64_t);
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), std::make_error_code(std::errc::invalid_argument));
 }
 
 TEST_F(ColumnSplitterTest, ExtraNumbers) {
-    auto result = aoc::splitter::columnbased::split<int64_t, 2>("1 2\n3 4 5\n6 7", handle_int64_t);
+    auto result = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>("1 2\n3 4 5\n6 7", handle_int64_t);
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), std::make_error_code(std::errc::invalid_argument));
 }
 
 TEST_F(ColumnSplitterTest, MultipleWhitespace) {
-    auto result = aoc::splitter::columnbased::split<int64_t, 2>("1   2\n  4  5   \n7    8", handle_int64_t);
+    auto result =
+        aoc::splitter::columnbased::split<int64_t, 2, std::multiset>("1   2\n  4  5   \n7    8", handle_int64_t);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;
@@ -109,7 +111,7 @@ TEST_F(ColumnSplitterTest, MultipleWhitespace) {
 }
 
 TEST_F(ColumnSplitterTest, TabSeparated) {
-    auto result = aoc::splitter::columnbased::split<int64_t, 2>("1\t2\n4\t5\n7\t8", handle_int64_t);
+    auto result = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>("1\t2\n4\t5\n7\t8", handle_int64_t);
     ASSERT_TRUE(result) << result.error().message();
 
     auto const & [first, second] = *result;

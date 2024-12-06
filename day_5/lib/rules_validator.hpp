@@ -27,6 +27,6 @@ class rules_validator {
      * @return true if no changes were needed (valid ordering), false if changes were made
      * @note This method will continue fixing the ordering until all rules are satisfied
      */
-    [[nodiscard]] bool validate_and_fix(page_update & update);
+    [[nodiscard]] auto validate_and_fix(page_update & update) -> bool;
 };
 } // namespace aoc::day_5
