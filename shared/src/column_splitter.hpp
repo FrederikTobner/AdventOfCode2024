@@ -38,7 +38,7 @@ namespace aoc::splitter::columnbased {
  * @brief Parses the entire input string into columns of numbers using specified container type
  * @tparam TOKEN The numeric type to store in the containers
  * @tparam COLUMN_AMOUNT Number of columns to parse
- * @tparam CONTAINER Container type to store the values (defaults to std::multiset)
+ * @tparam CONTAINER Container type to store the values (defaults to std::vector)
  * @tparam EXECUTION_POLICY The execution policy to use for parallel processing
  * @param input String view containing the entire input
  * @param tokenProducer Function to convert string tokens into the desired type
@@ -46,7 +46,7 @@ namespace aoc::splitter::columnbased {
  * @param delimiter Character to split tokens on
  * @return Array of containers containing the parsed numbers
  */
-template <typename TOKEN, size_t COLUMN_AMOUNT, template <typename...> typename CONTAINER = std::multiset,
+template <typename TOKEN, size_t COLUMN_AMOUNT, template <typename...> typename CONTAINER = std::vector,
           typename EXECUTION_POLICY>
     requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
 [[nodiscard]] auto split(std::string_view input,

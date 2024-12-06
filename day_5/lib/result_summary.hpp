@@ -19,7 +19,7 @@ struct result_summary {
      * @param value The value to add
      * @param isValid If true, adds to valid total; if false, adds to invalid total
      */
-    void add(uint64_t value, bool isValid);
+    auto add(uint64_t value, bool isValid) -> void;
 };
 
 } // namespace aoc::day_5

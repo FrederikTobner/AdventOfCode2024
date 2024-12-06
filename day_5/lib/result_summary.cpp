@@ -1,6 +1,6 @@
 #include "result_summary.hpp"
 
-void aoc::day_5::result_summary::add(uint64_t value, bool isValid) {
+auto aoc::day_5::result_summary::add(uint64_t value, bool isValid) -> void {
     if (isValid) {
         valid_ += value;
     } else {

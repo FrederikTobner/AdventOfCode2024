@@ -18,14 +18,14 @@ class LineSplitterTest : public testing::Test {
     const std::vector<std::vector<uint8_t>> empty{};
 };
 
-auto handle_uint8_t(std::string_view token) -> std::expected<uint8_t, std::error_code> {
+auto handle_uint8_t = [](std::string_view token) -> std::expected<uint8_t, std::error_code> {
     uint8_t value;
     auto [ptr, ec] = std::from_chars(token.data(), token.data() + token.size(), value);
     if (ec != std::errc()) {
         return std::unexpected(std::make_error_code(ec));
     }
     return value;
-}
+};
 
 TEST_F(LineSplitterTest, HandlesEmptyInput) {
     EXPECT_EQ(aoc::splitter::linebased::split<uint8_t>("", handle_uint8_t)->size(), 0);

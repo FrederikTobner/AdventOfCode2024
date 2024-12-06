@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "page_ordering_rule.hpp"
+#include "rule_match.hpp"
 
 /*!
  * @namespace aoc::day_5
@@ -27,13 +28,6 @@ concept PageContainer = std::ranges::forward_range<T> && std::same_as<std::range
  * @brief Represents a collection of page values that can be updated
  */
 struct page_update {
-    struct rule_match {
-        std::vector<uint8_t>::iterator pre_it;
-        std::vector<uint8_t>::iterator post_it;
-        bool needs_swap() const {
-            return post_it < pre_it;
-        }
-    };
 
     page_update() = delete;
 
@@ -52,7 +46,7 @@ struct page_update {
 
     /// @brief Gets the middle element from the update values
     /// @return The middle element
-    [[nodiscard]] uint8_t getMiddleElement() const;
+    [[nodiscard]] auto getMiddleElement() const -> uint8_t;
 
     /**
      * @brief Checks if the rule is fulfilled in the given page container
@@ -60,7 +54,7 @@ struct page_update {
      * @param pages Container of page numbers to check
      * @return true if the rule is fulfilled or pages are not found, false otherwise
      */
-    [[nodiscard]] std::optional<rule_match> find_rule_pages(page_ordering_rule const & rule) {
+    [[nodiscard]] auto find_rule_pages(page_ordering_rule const & rule) -> std::optional<rule_match> {
         auto pre_it = std::ranges::find(updateValues, rule.pre_page);
         auto post_it = std::ranges::find(updateValues, rule.post_page);
 
@@ -70,13 +64,13 @@ struct page_update {
         return std::nullopt;
     }
 
-    static void fix(rule_match const & match) {
+    static auto fix(rule_match const & match) -> void {
         std::iter_swap(match.pre_it, match.post_it);
     }
 
-    auto cbegin() const {
-        return updateValues.cbegin();
-    }
+    /// @brief Gets a const iterator to the beginning of the update values
+    /// @return Const iterator to the beginning
+    [[nodiscard]] auto cbegin() const -> std::vector<uint8_t>::const_iterator;
 
     /// @brief The collection of page values to be updated
   private:
