@@ -10,9 +10,23 @@
 #include <array>
 #include <set>
 #include <type_traits>
+#include <unordered_set>
 #include <vector>
 
+#include "assertions.hpp"
+
 namespace aoc::container {
+
+namespace detail {
+/// @brief Type trait to determine if a type is a set
+template <typename T> struct is_set : std::false_type {};
+template <typename... Args> struct is_set<std::set<Args...>> : std::true_type {};
+template <typename... Args> struct is_set<std::multiset<Args...>> : std::true_type {};
+template <typename... Args> struct is_set<std::unordered_set<Args...>> : std::true_type {};
+template <typename... Args> struct is_set<std::unordered_multiset<Args...>> : std::true_type {};
+
+template <typename T> inline constexpr bool is_set_v = is_set<T>::value;
+} // namespace detail
 
 /// @brief Primary template for container operations
 /// @tparam CONTAINER The container type to provide operations for
@@ -37,6 +51,10 @@ template <typename CONTAINER> struct container_traits {
     static void reserve(CONTAINER & container, size_t size) {
         if constexpr (requires { container.reserve(size); }) {
             container.reserve(size);
+        } else if constexpr (detail::is_set_v<CONTAINER>) {
+            // No-op for sets
+        } else {
+            static_assert(aoc::assertions::always_false<CONTAINER>, "CONTAINER must support reserve");
         }
     }
 
@@ -59,8 +77,11 @@ template <typename T, size_t SIZE> struct container_traits<std::array<T, SIZE>> 
         }
     }
 
-    /// @brief No-op for arrays (fixed size)
-    static void reserve(std::array<T, SIZE> &, size_t) {
+    /// @brief Reserves space in the array (no-op)
+    /// @param container The array to reserve space in
+    /// @param size The amount of space to reserve
+    static void reserve(std::array<T, SIZE> & container, size_t size) {
+        // No-op for arrays
     }
 };
 

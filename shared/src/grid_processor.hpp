@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-#include "../../shared/src/ranges_compatibility_layer.hpp"
+#include "ranges_compatibility_layer.hpp"
 
 /**
  * @file grid_processor.hpp
@@ -17,10 +17,10 @@
  */
 
 /**
- * @namespace aoc::day_4
- * @brief Contains the code for Day 4 puzzle solutions
+ * @namespace aoc::grid_processor
+ * @brief Contains the code for the grid processing utilities
  */
-namespace aoc::day_4 {
+namespace aoc::grid_processor {
 
 /**
  * @brief Processes input string into lines suitable for grid operations
@@ -36,4 +36,4 @@ namespace aoc::day_4 {
  */
 [[nodiscard]] auto validateGrid(std::span<std::string_view const> lines) -> bool;
 
-} // namespace aoc::day_4
+} // namespace aoc::grid_processor
