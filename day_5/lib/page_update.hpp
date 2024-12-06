@@ -70,7 +70,7 @@ struct page_update {
 
     /// @brief Gets a const iterator to the beginning of the update values
     /// @return Const iterator to the beginning
-    [[nodiscard]] auto cbegin() const;
+    [[nodiscard]] auto cbegin() const -> std::vector<uint8_t>::const_iterator;
 
     /// @brief The collection of page values to be updated
   private:
