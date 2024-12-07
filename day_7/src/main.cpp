@@ -25,25 +25,33 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_IO_ERROR;
     }
 
-    auto basic_ops = std::span<aoc::day_7::equation_operator_t<> const * const, aoc::day_7::BASIC_OPERATORS_SIZE<>>{
-        aoc::day_7::BASIC_OPERATORS_T<>.data(), std::size(aoc::day_7::BASIC_OPERATORS_T<>)};
+    std::expected<std::vector<aoc::day_7::equation_puzzle<>>, std::error_code> puzzles =
+        aoc::day_7::parsePuzzles<>(*input);
 
-    auto all_ops = std::span<aoc::day_7::equation_operator_t<> const * const, aoc::day_7::ALL_OPERATORS_SIZE<>>{
-        aoc::day_7::ALL_OPERATORS_T<>.data(), std::size(aoc::day_7::ALL_OPERATORS_T<>)};
+    if (!puzzles) [[unlikely]] {
+        std::println(stderr, "Failed to parse puzzles: {}", puzzles.error().message());
+        return aoc::EXIT_CODE_DATA_ERROR;
+    }
 
     auto calculate_sum = [](auto ops) {
         return [ops](auto const & puzzle) {
-            return aoc::day_7::isSolvable<size_t>(puzzle, ops) ? puzzle.result.raw() : 0;
+            return aoc::day_7::isSolvable<size_t>(puzzle, ops) ? puzzle.result.getRawValue() : 0;
         };
     };
 
-    std::vector<aoc::day_7::equation_puzzle<>> puzzles = aoc::day_7::parsePuzzles<>(*input);
+    auto basic_operators =
+        std::span<aoc::day_7::equation_operator_t<> const * const, std::size(aoc::day_7::BASIC_OPERATORS_T<>)>{
+            aoc::day_7::BASIC_OPERATORS_T<>.data(), std::size(aoc::day_7::BASIC_OPERATORS_T<>)};
 
-    size_t part_1_sum =
-        aoc::ranges::fold_left(puzzles | std::views::transform(calculate_sum(basic_ops)), size_t{0}, std::plus{});
+    size_t part_1_sum = aoc::ranges::fold_left(*puzzles | std::views::transform(calculate_sum(basic_operators)),
+                                               size_t{0}, std::plus{});
+
+    auto all_operators =
+        std::span<aoc::day_7::equation_operator_t<> const * const, std::size(aoc::day_7::ALL_OPERATORS_T<>)>{
+            aoc::day_7::ALL_OPERATORS_T<>.data(), std::size(aoc::day_7::ALL_OPERATORS_T<>)};
 
     size_t part_2_sum =
-        aoc::ranges::fold_left(puzzles | std::views::transform(calculate_sum(all_ops)), size_t{0}, std::plus{});
+        aoc::ranges::fold_left(*puzzles | std::views::transform(calculate_sum(all_operators)), size_t{0}, std::plus{});
 
     std::println("Sum of all results: {} using basic operators", part_1_sum);
     std::println("Sum of all results: {} using all operators", part_2_sum);
