@@ -48,7 +48,7 @@ template <typename T>
 template <typename T>
 [[nodiscard]] auto
 solveEquationPuzzle(equation_puzzle<T> const & equation,
-                    std::span<equation_operator_t<T> const * const> allowedOperators = ALL_OPERATORS<T>)
+                    std::span<equation_operator_t<T> const * const> allowedOperators = ALL_OPERATORS_T<T>)
     -> std::expected<std::vector<equation_operator_t<T> const *>, std::error_code> {
     if (equation.values.empty()) {
         return std::unexpected(std::make_error_code(std::errc::invalid_argument));
@@ -73,7 +73,7 @@ solveEquationPuzzle(equation_puzzle<T> const & equation,
 /// @throws std::system_error if the puzzle is invalid
 template <typename T>
 [[nodiscard]] auto isSolvable(equation_puzzle<T> const & eq,
-                              std::span<equation_operator_t<T> const * const> allowedOperators = ALL_OPERATORS<T>)
+                              std::span<equation_operator_t<T> const * const> allowedOperators = ALL_OPERATORS_T<T>)
     -> bool {
     auto result = solveEquationPuzzle<T>(eq, allowedOperators);
     if (result) {
