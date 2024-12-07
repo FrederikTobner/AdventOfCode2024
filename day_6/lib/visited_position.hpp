@@ -2,6 +2,8 @@
 
 #include "facing_direction.hpp"
 
+#include <memory> // for std::hash
+
 namespace aoc::day_6 {
 
 /// @brief Represents a position that has been visited by the guard
@@ -15,8 +17,12 @@ struct VisitedPosition {
     /// @brief The direction the guard was facing at this position
     FacingDirection direction;
 
-    /// @brief Enables three-way comparison for sorting and containers
-    auto operator<=>(VisitedPosition const &) const = default;
+    /// @brief Equality operator for comparing VisitedPositions
+    /// @param other The other VisitedPosition to compare against
+    /// @return True if the positions are equal, false otherwise
+    [[nodiscard]] auto operator==(VisitedPosition const & other) const -> bool {
+        return row == other.row && col == other.col && direction == other.direction;
+    }
 };
 
 } // namespace aoc::day_6
