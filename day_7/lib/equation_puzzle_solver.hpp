@@ -5,7 +5,6 @@
 
 namespace aoc::day_7 {
 
-// Update span type to be more specific
 using operator_span = std::span<operator_desc const * const>;
 
 bool tryOperatorCombinations(equation_puzzle const & equation, size_t depth, size_t maxDepth,

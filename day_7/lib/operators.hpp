@@ -1,6 +1,6 @@
 #pragma once
+
 #include <array>
-#include <cstddef>
 #include <string_view>
 
 #include "equation_result.hpp"
