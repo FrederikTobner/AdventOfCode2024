@@ -18,7 +18,7 @@ auto main(int argc, char const ** argv) -> int {
     }
 
     std::expected<std::vector<std::vector<uint8_t>>, std::error_code> parsed = aoc::splitter::linebased::split<uint8_t>(
-        *input, aoc::parser::rules::parse_number<uint8_t>, std::execution::par_unseq);
+        *input, aoc::parser::rules::parse_number<uint8_t>, std::execution::par);
     if (!parsed) [[unlikely]] {
         std::println(stderr, "Failed to parse input: {}", parsed.error().message());
         return aoc::EXIT_CODE_DATA_ERROR;

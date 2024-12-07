@@ -11,7 +11,6 @@
 #include "../lib/grid_parser.hpp"
 #include "../lib/puzzle_map.hpp"
 
-
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
     if (!input) [[unlikely]] {

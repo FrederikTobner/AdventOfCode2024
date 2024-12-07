@@ -11,7 +11,7 @@ TEST(EquationOperatorTest, Addition) {
     EXPECT_EQ(add_op.name, " + ");
 
     auto result = add_op.apply(equation_result<>{5}, equation_result<>{3});
-    EXPECT_EQ(result.raw(), 8);
+    EXPECT_EQ(result.getRawValue(), 8);
 }
 
 TEST(EquationOperatorTest, Multiplication) {
@@ -20,7 +20,7 @@ TEST(EquationOperatorTest, Multiplication) {
     EXPECT_EQ(mul_op.name, " * ");
 
     auto result = mul_op.apply(equation_result<>{5}, equation_result<>{3});
-    EXPECT_EQ(result.raw(), 15);
+    EXPECT_EQ(result.getRawValue(), 15);
 }
 
 TEST(EquationOperatorTest, Concatenation) {
@@ -29,7 +29,7 @@ TEST(EquationOperatorTest, Concatenation) {
     EXPECT_EQ(concat_op.name, " || ");
 
     auto result = concat_op.apply(equation_result<>{5}, equation_result<>{3});
-    EXPECT_EQ(result.raw(), 53);
+    EXPECT_EQ(result.getRawValue(), 53);
 }
 
 TEST(EquationOperatorTest, BasicOperatorsContainAddAndMultiply) {

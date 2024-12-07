@@ -1,12 +1,15 @@
 #pragma once
 
+#include <concepts>
 #include <cstddef>
 
 namespace aoc::day_7 {
 
 /// Represents a wrapped numeric value with custom arithmetic operations
 /// @tparam T The underlying numeric type used for calculations (defaults to size_t)
-template <typename T = size_t> class equation_result {
+template <typename T = size_t>
+    requires std::integral<T>
+class equation_result {
     T val_;
 
   public:
@@ -17,7 +20,7 @@ template <typename T = size_t> class equation_result {
 
     /// Gets the raw underlying value
     /// @return The wrapped value
-    [[nodiscard]] constexpr T raw() const {
+    [[nodiscard]] constexpr T getRawValue() const {
         return val_;
     }
 
@@ -51,9 +54,28 @@ template <typename T = size_t> class equation_result {
         return equation_result{lhs.val_ * multiplier + rhs.val_};
     }
 
-    /// Compares two equation results for equality
+    /// @brief Compares two equation results for equality
+    /// @param lhs The left-hand operand
+    /// @param rhs The right-hand operand
+    /// @return true if the two equation results are equal
     friend bool operator==(equation_result lhs, equation_result rhs) {
         return lhs.val_ == rhs.val_;
+    }
+
+    /// @brief Compares two equation results and checks if the left-hand operand is less than the right-hand operand
+    /// @param lhs The left-hand operand
+    /// @param rhs The right-hand operand
+    /// @return true if the left-hand operand is less than the right-hand operand
+    friend bool operator<(equation_result lhs, equation_result rhs) {
+        return lhs.val_ < rhs.val_;
+    }
+
+    /// @brief Compares two equation results and checks if the left-hand operand is greater than the right-hand operand
+    /// @param lhs The left-hand operand
+    /// @param rhs The right-hand operand
+    /// @return true if the left-hand operand is greater than the right-hand operand
+    friend bool operator>(equation_result lhs, equation_result rhs) {
+        return lhs.val_ > rhs.val_;
     }
 };
 } // namespace aoc::day_7
