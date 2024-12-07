@@ -1,44 +1,30 @@
 #pragma once
+#include <array>
 #include <cstddef>
+#include <string_view>
+
+#include "equation_result.hpp"
 
 namespace aoc::day_7 {
 
-enum class operator_type {
+enum class op_type {
     add,
     multiply,
-    concatinate,
-    AMOUNT // Only used for loops
+    concat
 };
 
-namespace detail {
-[[nodiscard]] inline size_t add(size_t a, size_t b) {
-    return a + b;
-}
-[[nodiscard]] inline size_t multiply(size_t a, size_t b) {
-    return a * b;
-}
-[[nodiscard]] inline size_t concatinate(size_t a, size_t b) {
-    size_t multiplier = 10;
-    size_t temp = b;
-    while (temp >= 10) {
-        multiplier *= 10;
-        temp /= 10;
-    }
-    return a * multiplier + b;
-}
-} // namespace detail
+struct operator_desc {
+    op_type type;
+    std::string_view name;
+    equation_result<> (*operation)(equation_result<>, equation_result<>);
+};
 
-[[nodiscard]] inline size_t applyOperator(size_t currentResult, operator_type op, size_t value) {
-    switch (op) {
-    case operator_type::add:
-        return detail::add(currentResult, value);
-    case operator_type::multiply:
-        return detail::multiply(currentResult, value);
-    case operator_type::concatinate:
-        return detail::concatinate(currentResult, value);
-    default:
-        return currentResult;
-    }
-}
+inline constexpr operator_desc operators[] = {
+    {op_type::add, " + ", [](equation_result<> a, equation_result<> b) { return a + b; }},
+    {op_type::multiply, " * ", [](equation_result<> a, equation_result<> b) { return a * b; }},
+    {op_type::concat, " || ", [](equation_result<> a, equation_result<> b) { return a | b; }}};
+
+inline operator_desc const * BASIC_OPERATORS[] = {&operators[0], &operators[1]};
+inline operator_desc const * ALL_OPERATORS[] = {&operators[0], &operators[1], &operators[2]};
 
 } // namespace aoc::day_7
