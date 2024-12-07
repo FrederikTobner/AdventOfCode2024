@@ -39,7 +39,7 @@ auto main(int argc, char const ** argv) -> int {
                            return std::pair{result, values_str};
                        });
 
-    size_t sum = 0;
+    size_t part_1_sum = 0;
     for (auto && [result, values] : split_lines) {
         aoc::day_7::equation eq{result, {}};
         // Split the values by spaces
@@ -51,24 +51,29 @@ auto main(int argc, char const ** argv) -> int {
         for (auto && value : values_split) {
             eq.values.push_back(std::stoul(std::string(value)));
         }
-        auto result = aoc::day_7::solveEquation(eq);
-        if (!result) {
-            std::println(stderr, "Could not find a solution for equation with result {}", eq.result);
-        } else {
-            std::string result_str;
-            for (auto && op : *result) {
-                if (op == aoc::day_7::operator_type::add) {
-                    result_str += " + ";
-                } else if (op == aoc::day_7::operator_type::multiply) {
-                    result_str += " * ";
-                } else {
-                    result_str += " || ";
-                }
-            }
-            std::println("Equation with result {} has solution: {}", eq.result, result_str);
-            sum += eq.result;
+        auto result = aoc::day_7::solveEquation(eq, aoc::day_7::BASIC_OPERATORS);
+        if (result) {
+            part_1_sum += eq.result;
         }
     }
-    std::println("Sum of all results: {}", sum);
+    std::println("Sum of all results: {} using basic operators", part_1_sum);
+    size_t part_2_sum = 0;
+    for (auto && [result, values] : split_lines) {
+        aoc::day_7::equation eq{result, {}};
+        // Split the values by spaces
+        auto values_split = values | std::views::split(' ') | std::views::transform([](auto && value) {
+                                return std::string_view{value.begin(), value.end()};
+                            }) |
+                            std::views::filter([](auto && value) { return !value.empty(); }) |
+                            aoc::ranges::to<std::vector<std::string_view>>;
+        for (auto && value : values_split) {
+            eq.values.push_back(std::stoul(std::string(value)));
+        }
+        auto result = aoc::day_7::solveEquation(eq, aoc::day_7::ALL_OPERATORS);
+        if (result) {
+            part_2_sum += eq.result;
+        }
+    }
+    std::println("Sum of all results: {} using all operators", part_2_sum);
     return 0;
 }
