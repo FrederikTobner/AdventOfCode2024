@@ -44,7 +44,7 @@ auto main(int argc, char const ** argv) -> int {
 
     std::expected<std::vector<std::vector<uint8_t>>, std::error_code> parsed_update_input =
         aoc::splitter::linebased::split<uint8_t, std::vector>(updates_input, aoc::parser::rules::parse_number<uint8_t>,
-                                                              std::execution::par_unseq, ',');
+                                                              std::execution::par, ',');
 
     if (!parsed_update_input) {
         std::println(stderr, "Failed to parse updates: {}", parsed_update_input.error().message());

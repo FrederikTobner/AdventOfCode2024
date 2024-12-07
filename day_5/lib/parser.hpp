@@ -13,7 +13,7 @@ namespace aoc::day_5 {
 
 /*!
  * @brief Splits input into two parts separated by double newline
- * @param input The getRawValue input string to parse
+ * @param input The raw input string to parse
  * @return A pair of string_views representing the two parts, or an error if parsing fails
  */
 auto parse_input(std::string_view input)

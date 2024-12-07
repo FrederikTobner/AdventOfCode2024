@@ -39,19 +39,10 @@ auto main(int argc, char const ** argv) -> int {
         };
     };
 
-    auto basic_operators =
-        std::span<aoc::day_7::equation_operator_t<> const * const, std::size(aoc::day_7::BASIC_OPERATORS_T<>)>{
-            aoc::day_7::BASIC_OPERATORS_T<>.data(), std::size(aoc::day_7::BASIC_OPERATORS_T<>)};
-
-    size_t part_1_sum = aoc::ranges::fold_left(*puzzles | std::views::transform(calculate_sum(basic_operators)),
-                                               size_t{0}, std::plus{});
-
-    auto all_operators =
-        std::span<aoc::day_7::equation_operator_t<> const * const, std::size(aoc::day_7::ALL_OPERATORS_T<>)>{
-            aoc::day_7::ALL_OPERATORS_T<>.data(), std::size(aoc::day_7::ALL_OPERATORS_T<>)};
-
-    size_t part_2_sum =
-        aoc::ranges::fold_left(*puzzles | std::views::transform(calculate_sum(all_operators)), size_t{0}, std::plus{});
+    size_t part_1_sum = aoc::ranges::fold_left(
+        *puzzles | std::views::transform(calculate_sum(aoc::day_7::BASIC_OPERATORS<>)), size_t{0}, std::plus{});
+    size_t part_2_sum = aoc::ranges::fold_left(
+        *puzzles | std::views::transform(calculate_sum(aoc::day_7::ALL_OPERATORS<>)), size_t{0}, std::plus{});
 
     std::println("Sum of all results: {} using basic operators", part_1_sum);
     std::println("Sum of all results: {} using all operators", part_2_sum);

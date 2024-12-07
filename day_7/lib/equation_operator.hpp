@@ -41,6 +41,18 @@ inline constexpr std::array<equation_operator_t<T> const *, 3> ALL_OPERATORS_T{
 
 template <typename T = size_t>
     requires std::integral<T>
+inline constexpr auto ALL_OPERATORS =
+    std::span<aoc::day_7::equation_operator_t<T> const * const, std::size(aoc::day_7::ALL_OPERATORS_T<T>)>{
+        aoc::day_7::ALL_OPERATORS_T<T>.data(), std::size(aoc::day_7::ALL_OPERATORS_T<T>)};
+
+template <typename T = size_t>
+    requires std::integral<T>
 inline constexpr auto BASIC_OPERATORS_T = std::array{ALL_OPERATORS_T<T>[0], ALL_OPERATORS_T<T>[1]};
+
+template <typename T = size_t>
+    requires std::integral<T>
+inline constexpr auto BASIC_OPERATORS =
+    std::span<aoc::day_7::equation_operator_t<T> const * const, std::size(aoc::day_7::BASIC_OPERATORS_T<T>)>{
+        aoc::day_7::BASIC_OPERATORS_T<T>.data(), std::size(aoc::day_7::BASIC_OPERATORS_T<T>)};
 
 } // namespace aoc::day_7

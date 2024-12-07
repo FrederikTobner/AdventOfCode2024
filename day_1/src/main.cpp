@@ -26,7 +26,7 @@ auto main(int argc, char const ** argv) -> int {
     }
 
     auto tokens = aoc::splitter::columnbased::split<int64_t, 2, std::multiset>(
-        *input, aoc::parser::rules::parse_number<int64_t>, std::execution::par_unseq);
+        *input, aoc::parser::rules::parse_number<int64_t>, std::execution::par);
     if (!tokens) [[unlikely]] {
         std::println(stderr, "Failed to parse input: {}", tokens.error().message());
         return aoc::EXIT_CODE_DATA_ERROR;
