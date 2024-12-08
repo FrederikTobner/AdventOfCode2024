@@ -1,6 +1,6 @@
 /**
- * @file line_lexer.hpp
- * @brief Implementation of a line-based lexer for tokenizing input text
+ * @file line_splitter.hpp
+ * @brief Implementation of a line-based splitter for tokenizing input text
  * @details Provides interfaces for parsing input data line by line into configurable containers.
  * Supports both sequential and parallel processing modes with error handling through std::expected.
  * Container types can be specified through template parameters, with std::vector as the default.
