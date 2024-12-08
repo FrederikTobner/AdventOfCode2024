@@ -15,9 +15,15 @@ class RulesValidatorTest : public ::testing::TestWithParam<OrderTestCase> {
 };
 
 TEST_P(RulesValidatorTest, ValidatesAndFixesOrder) {
+    // Arrange
     auto const & param = GetParam();
     aoc::day_5::page_update update{param.input};
-    EXPECT_EQ(validator.validate_and_fix(update), param.should_be_valid);
+
+    // Act
+    auto result = validator.validate_and_fix(update);
+
+    // Assert
+    EXPECT_EQ(result, param.should_be_valid);
     auto const updateIter = update.cbegin();
     for (size_t i = 0; i < param.expected.size(); ++i) {
         EXPECT_EQ(updateIter[i], param.expected[i]);
@@ -39,10 +45,15 @@ class ComplexRulesValidatorTest : public ::testing::TestWithParam<OrderTestCase>
 };
 
 TEST_P(ComplexRulesValidatorTest, ValidatesAndFixesOrder) {
+    // Arrange
     auto const & param = GetParam();
     aoc::day_5::page_update update{param.input};
 
-    EXPECT_EQ(validator.validate_and_fix(update), param.should_be_valid);
+    // Act
+    auto result = validator.validate_and_fix(update);
+
+    // Assert
+    EXPECT_EQ(result, param.should_be_valid);
     auto const updateIter = update.cbegin();
     for (size_t i = 0; i < param.expected.size(); ++i) {
         EXPECT_EQ(updateIter[i], param.expected[i]);

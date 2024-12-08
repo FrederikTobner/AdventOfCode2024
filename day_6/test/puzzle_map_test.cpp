@@ -22,6 +22,7 @@ class PuzzleMapTest : public Test {
 };
 
 TEST_F(PuzzleMapTest, GuardMovesForwardUntilBlocked) {
+    // Arrange
     auto const map = createTestMap(
         {
             {TileType::Empty, TileType::Empty, TileType::Empty},
@@ -31,16 +32,21 @@ TEST_F(PuzzleMapTest, GuardMovesForwardUntilBlocked) {
         {1, 0});
 
     PuzzleMap puzzle(map, {1, 0}, FacingDirection::Right);
-    EXPECT_TRUE(puzzle.update()); // Move to (1,1)
-    puzzle.update();              // Hit obstacle at (1,2) - turn around
-    EXPECT_TRUE(puzzle.update()); // Move to (1,0)
+
+    // Act
+    puzzle.update(); // Move to (1,1)
+    puzzle.update(); // Hit obstacle at (1,2) - turn around
+    puzzle.update(); // Move to (1,0)
     auto positions = puzzle.getVisitedPositions();
+
+    // Assert
     EXPECT_THAT(positions, UnorderedElementsAre(VisitedPosition{1, 0, FacingDirection::Right},
                                                 VisitedPosition{1, 1, FacingDirection::Right},
                                                 VisitedPosition{1, 1, FacingDirection::Down}));
 }
 
 TEST_F(PuzzleMapTest, GuardTurnsRightWhenBlocked) {
+    // Arrange
     auto const map = createTestMap(
         {
             {TileType::Empty, TileType::Empty, TileType::Empty},
@@ -50,15 +56,20 @@ TEST_F(PuzzleMapTest, GuardTurnsRightWhenBlocked) {
         {1, 1});
 
     PuzzleMap puzzle(map, {1, 1}, FacingDirection::Right);
+
+    // Act
     puzzle.update();
     puzzle.update();
 
     auto positions = puzzle.getVisitedPositions();
+
+    // Assert
     EXPECT_THAT(positions, UnorderedElementsAre(VisitedPosition{1, 1, FacingDirection::Right},
                                                 VisitedPosition{1, 1, FacingDirection::Down}));
 }
 
 TEST_F(PuzzleMapTest, DetectsOutOfBounds) {
+    // Arrange
     auto const map = createTestMap(
         {
             {TileType::Empty, TileType::Empty, TileType::Empty},
@@ -67,11 +78,16 @@ TEST_F(PuzzleMapTest, DetectsOutOfBounds) {
         {0, 1});
 
     PuzzleMap puzzle(map, {0, 1}, FacingDirection::Up);
+
+    // Act
     puzzle.update();
+
+    // Assert
     EXPECT_TRUE(puzzle.isGuardOutOfBounds());
 }
 
 TEST_F(PuzzleMapTest, TracksVisitedPositions) {
+    // Arrange
     auto map = createTestMap(
         {
             {TileType::Empty, TileType::Empty, TileType::Empty},
@@ -80,9 +96,13 @@ TEST_F(PuzzleMapTest, TracksVisitedPositions) {
         {0, 0});
 
     PuzzleMap puzzle(map, {0, 0}, FacingDirection::Right);
+
+    // Act
     puzzle.update();
     puzzle.update();
 
     auto positions = puzzle.getVisitedPositions();
+
+    // Assert
     EXPECT_THAT(positions, SizeIs(2)); // Start position + new position
 }

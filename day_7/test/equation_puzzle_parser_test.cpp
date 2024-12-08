@@ -6,7 +6,13 @@
 using namespace aoc::day_7;
 
 TEST(EquationPuzzleParserTest, ParsesSinglePuzzle) {
-    auto puzzles = parsePuzzles("42: 6 7");
+    // Arrange
+    auto input = "42: 6 7";
+
+    // Act
+    auto puzzles = parsePuzzles(input);
+
+    // Assert
     ASSERT_TRUE(puzzles);
     auto puzzleExtracted = *puzzles;
     ASSERT_EQ(puzzleExtracted.size(), 1);
@@ -17,7 +23,13 @@ TEST(EquationPuzzleParserTest, ParsesSinglePuzzle) {
 }
 
 TEST(EquationPuzzleParserTest, ParsesMultiplePuzzles) {
-    auto puzzles = parsePuzzles("15: 7 8\n42: 6 7");
+    // Arrange
+    auto input = "15: 7 8\n42: 6 7";
+
+    // Act
+    auto puzzles = parsePuzzles(input);
+
+    // Assert
     ASSERT_TRUE(puzzles);
     auto puzzleExtracted = *puzzles;
     ASSERT_EQ(puzzleExtracted.size(), 2);
@@ -34,14 +46,26 @@ TEST(EquationPuzzleParserTest, ParsesMultiplePuzzles) {
 }
 
 TEST(EquationPuzzleParserTest, HandlesEmptyInput) {
-    auto puzzles = parsePuzzles("");
+    // Arrange
+    auto input = "";
+
+    // Act
+    auto puzzles = parsePuzzles(input);
+
+    // Assert
     ASSERT_TRUE(puzzles);
     auto puzzleExtracted = *puzzles;
     EXPECT_TRUE(puzzleExtracted.empty());
 }
 
 TEST(EquationPuzzleParserTest, HandlesWindowsLineEndings) {
-    auto puzzles = parsePuzzles("15: 7 8\r\n42: 6 7");
+    // Arrange
+    auto input = "15: 7 8\r\n42: 6 7";
+
+    // Act
+    auto puzzles = parsePuzzles(input);
+
+    // Assert
     ASSERT_TRUE(puzzles);
     auto puzzleExtracted = *puzzles;
     ASSERT_EQ(puzzleExtracted.size(), 2);
@@ -50,7 +74,13 @@ TEST(EquationPuzzleParserTest, HandlesWindowsLineEndings) {
 }
 
 TEST(EquationPuzzleParserTest, HandlesPuzzleWithMultipleValues) {
-    auto puzzles = parsePuzzles("142: 1 4 2");
+    // Arrange
+    auto input = "142: 1 4 2";
+
+    // Act
+    auto puzzles = parsePuzzles(input);
+
+    // Assert
     ASSERT_TRUE(puzzles);
     auto puzzleExtracted = *puzzles;
     ASSERT_EQ(puzzleExtracted.size(), 1);
@@ -62,7 +92,13 @@ TEST(EquationPuzzleParserTest, HandlesPuzzleWithMultipleValues) {
 }
 
 TEST(EquationPuzzleParserTest, HandlesExtraWhitespace) {
-    auto puzzles = parsePuzzles("42:  6     7  ");
+    // Arrange
+    auto input = "42:  6     7  ";
+
+    // Act
+    auto puzzles = parsePuzzles(input);
+
+    // Assert
     ASSERT_TRUE(puzzles);
     auto puzzleExtracted = *puzzles;
     ASSERT_EQ(puzzleExtracted.size(), 1);

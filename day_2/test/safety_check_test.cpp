@@ -4,8 +4,14 @@
 class SafetyCheckTest : public testing::TestWithParam<std::pair<std::vector<uint8_t>, bool>> {};
 
 TEST_P(SafetyCheckTest, ValidatesSequenceCorrectly) {
+    // Arrange
     auto const & [sequence, expected] = GetParam();
-    EXPECT_EQ(aoc::day_2::isSafe(sequence), expected) << "Failed for sequence: " << ::testing::PrintToString(sequence);
+
+    // Act
+    auto result = aoc::day_2::isSafe(sequence);
+
+    // Assert
+    EXPECT_EQ(result, expected) << "Failed for sequence: " << ::testing::PrintToString(sequence);
 }
 
 INSTANTIATE_TEST_SUITE_P(SafeSequences, SafetyCheckTest,

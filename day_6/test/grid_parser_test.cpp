@@ -14,13 +14,17 @@ class GridParserTest : public Test {
 };
 
 TEST_F(GridParserTest, ParsesValidGridWithGuardUp) {
+    // Arrange
     auto grid = makeGrid({
         "...",
         ".^.",
         "...",
     });
 
+    // Act
     auto result = parseGrid(grid);
+
+    // Assert
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result->guardPosition.first, 1);
     EXPECT_EQ(result->guardPosition.second, 1);
@@ -38,34 +42,46 @@ struct GuardDirectionTestParams {
 };
 
 TEST_F(GridParserTest, RejectsMultipleGuards) {
+    // Arrange
     auto grid = makeGrid({
         "^..",
         ".>.",
     });
 
+    // Act
     auto result = parseGrid(grid);
+
+    // Assert
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), "Multiple guards found in grid");
 }
 
 TEST_F(GridParserTest, RejectsNoGuard) {
+    // Arrange
     auto grid = makeGrid({
         "...",
         "...",
     });
 
+    // Act
     auto result = parseGrid(grid);
+
+    // Assert
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), "No guard found in grid");
 }
 
 TEST_F(GridParserTest, RejectsInvalidCharacter) {
+    // Arrange
     auto grid = makeGrid({
         "..x",
         ".^.",
     });
 
+    // Act
     auto result = parseGrid(grid);
+
+    // Assert
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), "Invalid tile type");
 }

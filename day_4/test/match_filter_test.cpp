@@ -18,26 +18,49 @@ class MatchFilterTest : public ::testing::Test {
 };
 
 TEST_F(MatchFilterTest, NoOverlappingMatches) {
+    // Arrange
     std::vector<aoc::day_4::match> matches{createMatch({{0, 0}, {1, 1}, {2, 2}}),
                                            createMatch({{1, 1}, {2, 2}, {3, 3}})};
-    EXPECT_EQ(aoc::day_4::countOverlappingDiagonal(matches), 0);
+    // Act
+    auto result = aoc::day_4::countOverlappingDiagonal(matches);
+
+    // Assert
+    EXPECT_EQ(result, 0);
 }
 
 TEST_F(MatchFilterTest, TwoOverlappingMatches) {
+    // Arrange
     std::vector<aoc::day_4::match> matches{createMatch({{0, 0}, {1, 1}, {2, 2}}),
                                            createMatch({{2, 2}, {1, 1}, {0, 0}})};
-    EXPECT_EQ(aoc::day_4::countOverlappingDiagonal(matches), 1);
+
+    // Act
+    auto result = aoc::day_4::countOverlappingDiagonal(matches);
+
+    // Assert
+    EXPECT_EQ(result, 1);
 }
 
 TEST_F(MatchFilterTest, NonDiagonalMatchesIgnored) {
+    // Arrange
     std::vector<aoc::day_4::match> matches{
         createMatch({{0, 0}, {0, 1}, {0, 2}}), // horizontal
         createMatch({{0, 0}, {1, 0}, {2, 0}})  // vertical
     };
-    EXPECT_EQ(aoc::day_4::countOverlappingDiagonal(matches), 0);
+
+    // Act
+    auto result = aoc::day_4::countOverlappingDiagonal(matches);
+
+    // Assert
+    EXPECT_EQ(result, 0);
 }
 
 TEST_F(MatchFilterTest, EmptyMatchList) {
+    // Arrange
     std::vector<aoc::day_4::match> matches;
-    EXPECT_EQ(aoc::day_4::countOverlappingDiagonal(matches), 0);
+
+    // Act
+    auto result = aoc::day_4::countOverlappingDiagonal(matches);
+
+    // Assert
+    EXPECT_EQ(result, 0);
 }

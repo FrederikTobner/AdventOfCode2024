@@ -17,30 +17,61 @@ class WordSearchTest : public ::testing::Test {
 };
 
 TEST_F(WordSearchTest, FindsHorizontalWord) {
-    auto matches = findWord(grid, "ABC");
+    // Arrange
+    auto input = "ABC";
+
+    // Act
+    auto matches = findWord(grid, input);
+
+    // Assert
     ASSERT_EQ(matches.size(), 1);
     EXPECT_THAT(matches[0].coordinates, ElementsAre(IsPosition(0, 0), IsPosition(0, 1), IsPosition(0, 2)));
 }
 
 TEST_F(WordSearchTest, FindsVerticalWord) {
-    auto matches = findWord(grid, "AFK");
+    // Arrange
+    auto input = "AFK";
+
+    // Act
+    auto matches = findWord(grid, input);
+
+    // Assert
     ASSERT_EQ(matches.size(), 1);
     EXPECT_THAT(matches[0].coordinates, ElementsAre(IsPosition(0, 0), IsPosition(1, 0), IsPosition(2, 0)));
 }
 
 TEST_F(WordSearchTest, FindsDiagonalWord) {
-    auto matches = findWord(grid, "AGM");
+    // Arrange
+    auto input = "AGM";
+
+    // Act
+    auto matches = findWord(grid, input);
+
+    // Assert
     ASSERT_EQ(matches.size(), 1);
     EXPECT_THAT(matches[0].coordinates, ElementsAre(IsPosition(0, 0), IsPosition(1, 1), IsPosition(2, 2)));
 }
 
 TEST_F(WordSearchTest, FindsMultipleInstances) {
+    // Arrange
     std::vector<std::string_view> repeatingGrid = {"ABA", "BAB", "AAA"};
-    auto matches = findWord(repeatingGrid, "AAA");
-    ASSERT_EQ(matches.size(), 6); // 2 horizontal, 0 vertical, 4 diagonal
+    auto input = "AAA";
+
+    // Act
+    auto matches = findWord(repeatingGrid, input);
+    auto matches_size = matches.size();
+
+    // Assert
+    ASSERT_EQ(matches_size, 6); // 2 horizontal, 0 vertical, 4 diagonal
 }
 
 TEST_F(WordSearchTest, HandlesMissingWord) {
-    auto matches = findWord(grid, "ZZZ");
+    // Arrange
+    auto input = "ZZZ";
+
+    // Act
+    auto matches = findWord(grid, input);
+
+    // Assert
     EXPECT_TRUE(matches.empty());
 }

@@ -11,7 +11,10 @@ class GridProcessorTest : public ::testing::Test {
 };
 
 TEST_F(GridProcessorTest, ProcessLinesNormalInput) {
+    // Act
     auto result = aoc::grid_processor::processLines(normal_input);
+
+    // Assert
     ASSERT_EQ(result.size(), 3);
     EXPECT_EQ(result[0], "abc");
     EXPECT_EQ(result[1], "def");
@@ -19,7 +22,10 @@ TEST_F(GridProcessorTest, ProcessLinesNormalInput) {
 }
 
 TEST_F(GridProcessorTest, ProcessLinesWithCarriageReturn) {
+    // Act
     auto result = aoc::grid_processor::processLines(input_with_cr);
+
+    // Assert
     ASSERT_EQ(result.size(), 3);
     EXPECT_EQ(result[0], "abc");
     EXPECT_EQ(result[1], "def");
@@ -27,27 +33,54 @@ TEST_F(GridProcessorTest, ProcessLinesWithCarriageReturn) {
 }
 
 TEST_F(GridProcessorTest, ProcessLinesSingleLine) {
+    // Act
     auto result = aoc::grid_processor::processLines(single_line);
+
+    // Assert
     ASSERT_EQ(result.size(), 1);
     EXPECT_EQ(result[0], "abc");
 }
 
 TEST_F(GridProcessorTest, ValidateGridValid) {
+    // Arrange
     std::vector<std::string_view> grid = {"abc", "def", "ghi"};
-    EXPECT_TRUE(aoc::grid_processor::validateGrid(grid));
+
+    // Act
+    auto result = aoc::grid_processor::validateGrid(grid);
+
+    // Assert
+    EXPECT_TRUE(result);
 }
 
 TEST_F(GridProcessorTest, ValidateGridInvalid) {
+    // Arrange
     std::vector<std::string_view> grid = {"abc", "de", "ghi"};
-    EXPECT_FALSE(aoc::grid_processor::validateGrid(grid));
+
+    // Act
+    auto result = aoc::grid_processor::validateGrid(grid);
+
+    // Assert
+    EXPECT_FALSE(result);
 }
 
 TEST_F(GridProcessorTest, ValidateGridEmpty) {
+    // Arrange
     std::vector<std::string_view> grid;
-    EXPECT_TRUE(aoc::grid_processor::validateGrid(grid));
+
+    // Act
+    auto result = aoc::grid_processor::validateGrid(grid);
+
+    // Assert
+    EXPECT_TRUE(result);
 }
 
 TEST_F(GridProcessorTest, ValidateGridSingleLine) {
+    // Arrange
     std::vector<std::string_view> grid = {"abc"};
-    EXPECT_TRUE(aoc::grid_processor::validateGrid(grid));
+
+    // Act
+    auto result = aoc::grid_processor::validateGrid(grid);
+
+    // Assert
+    EXPECT_TRUE(result);
 }
