@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "../../shared/src/print_compatibility_layer.hpp"
+#include "../../shared/src/ranges_compatibility_layer.hpp"
 
 #include "../lib/coordinate.hpp"
 
@@ -25,16 +26,19 @@ auto renderResult(std::vector<std::string_view> lines, std::unordered_set<aoc::d
                   int64_t max_x_coordinate, int64_t max_y_coordinate) -> void {
     auto to_char = [&](coordinate pos) { return antinodes.contains(pos) ? '#' : lines[pos.y][pos.x]; };
 
-    auto grid =
-        std::views::cartesian_product(std::views::iota(int64_t{0}, max_y_coordinate),
-                                      std::views::iota(int64_t{0}, max_x_coordinate)) |
-        std::views::chunk_by([](auto a, auto b) { return std::get<0>(a) == std::get<0>(b); }) |
-        std::views::transform([&](auto row) {
-            return std::views::transform(row, [&](auto pos) { return to_char({std::get<0>(pos), std::get<1>(pos)}); });
-        });
+    auto grid = std::views::cartesian_product(std::views::iota(int64_t{0}, max_y_coordinate),
+                                              std::views::iota(int64_t{0}, max_x_coordinate)) |
+                std::views::chunk_by([](auto a, auto b) { return std::get<0>(a) == std::get<0>(b); }) |
+                std::views::transform([&](auto row) {
+                    return std::views::transform(row,
+                                                 [&](auto pos) {
+                                                     return to_char({std::get<0>(pos), std::get<1>(pos)});
+                                                 }) |
+                           std::views::common;
+                });
 
     for (auto row : grid) {
-        std::println("{}", std::string(row.begin(), row.end()));
+        std::println("{}", row | aoc::ranges::to<std::string>);
     }
     std::println("Found {} antinodes", antinodes.size());
 }
