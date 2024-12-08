@@ -112,7 +112,7 @@ auto split(std::string_view input, std::function<std::expected<TOKEN, std::error
     auto lines = input | std::views::split('\n') |
                  std::views::transform([](auto && chars) { return std::string_view(chars.begin(), chars.end()); }) |
                  std::views::filter([](auto sv) { return !isOnlyWhitespace(sv); }) |
-                 aoc::ranges::to<std::vector<std::string_view>>;
+                 std::ranges::to<std::vector<std::string_view>>();
 
     threads::concurrent_context<std::error_code> context;
     std::vector<std::array<CONTAINER<TOKEN>, COLUMN_AMOUNT>> thread_local_sets(
@@ -194,7 +194,7 @@ static auto tokenizeLine(std::string_view line,
             return sv.substr(start, end - start + 1);
         }) |
         std::views::filter([](auto && sv) { return !isOnlyWhitespace(sv); }) | std::views::transform(tokenProducer) |
-        aoc::ranges::to<std::vector<std::expected<TOKEN, std::error_code>>>;
+        std::ranges::to<std::vector<std::expected<TOKEN, std::error_code>>>();
 
     if (tokens.size() != COLUMN_AMOUNT) {
         return std::unexpected(std::make_error_code(invalid_argument));

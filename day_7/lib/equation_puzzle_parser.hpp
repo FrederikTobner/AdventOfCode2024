@@ -47,7 +47,7 @@ template <typename T>
                }) |
                std::views::filter([](auto && line) { return !line.empty(); }) |
                std::views::transform([](auto && line) { return parsePuzzle<T>(line); }) |
-               aoc::ranges::to<std::vector<equation_puzzle<T>>>;
+               std::ranges::to<std::vector<equation_puzzle<T>>>();
     } catch (...) {
         return std::unexpected(std::make_error_code(std::errc::invalid_argument));
     }
@@ -76,7 +76,7 @@ template <typename T>
                                             }
                                             return *parsedValue;
                                         }) |
-                                        aoc::ranges::to<std::vector<uint16_t>>)};
+                                        std::ranges::to<std::vector<uint16_t>>())};
 }
 
 } // namespace aoc::day_7

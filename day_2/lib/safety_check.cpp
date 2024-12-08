@@ -21,7 +21,7 @@ auto canBeMadeSafe(std::span<uint8_t const> input) -> bool {
         return isSafe(input | std::views::enumerate |
                       std::views::filter([index](const auto & pair) { return std::get<0>(pair) != index; }) |
                       std::views::transform([](const auto & pair) { return std::get<1>(pair); }) |
-                      aoc::ranges::to<std::vector<uint8_t>>);
+                      std::ranges::to<std::vector<uint8_t>>());
     });
 }
 
