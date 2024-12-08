@@ -25,6 +25,10 @@ struct coordinate {
         return {y + other.y, x + other.x};
     }
 
+    auto operator*(int64_t scalar) const -> coordinate {
+        return {y * scalar, x * scalar};
+    }
+
     auto operator+=(coordinate const & other) -> coordinate & {
         y += other.y;
         x += other.x;
