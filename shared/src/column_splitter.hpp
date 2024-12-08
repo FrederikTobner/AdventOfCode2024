@@ -1,5 +1,5 @@
 /**
- * @file multiset_column_lexer.hpp
+ * @file column_splitter.hpp
  * @brief Implementation of a lexer that parses the input data into columnar container structures
  * @details Provides interfaces for parsing input data containing columns of numbers.
  * Includes utilities for parsing individual lines and complete input files,

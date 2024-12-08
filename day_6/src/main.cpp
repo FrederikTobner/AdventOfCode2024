@@ -1,12 +1,13 @@
-#include "../../shared/src/exit_code.hpp"
-#include "../../shared/src/file_operations.hpp"
-#include "../../shared/src/grid_processor.hpp"
-#include "../../shared/src/print_compatibility_layer.hpp"
 #include <algorithm>
 #include <atomic>
 #include <execution>
 #include <numeric>
 #include <string>
+
+#include "../../shared/src/exit_code.hpp"
+#include "../../shared/src/file_operations.hpp"
+#include "../../shared/src/grid_processor.hpp"
+#include "../../shared/src/print_compatibility_layer.hpp"
 
 #include "../lib/grid_parser.hpp"
 #include "../lib/puzzle_map.hpp"
