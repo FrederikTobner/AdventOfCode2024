@@ -39,9 +39,9 @@ auto main(int argc, char const ** argv) -> int {
         };
     };
 
-    size_t part_1_sum = aoc::ranges::fold_left(
+    size_t part_1_sum = std::ranges::fold_left(
         *puzzles | std::views::transform(calculate_sum(aoc::day_7::BASIC_OPERATORS<>)), size_t{0}, std::plus{});
-    size_t part_2_sum = aoc::ranges::fold_left(
+    size_t part_2_sum = std::ranges::fold_left(
         *puzzles | std::views::transform(calculate_sum(aoc::day_7::ALL_OPERATORS<>)), size_t{0}, std::plus{});
 
     std::println("Sum of all results: {} using basic operators", part_1_sum);
