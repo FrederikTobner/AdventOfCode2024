@@ -9,7 +9,6 @@ Solutions for the [Advent of Code 2024](https://adventofcode.com/2024) written i
 
 Uses [CMake](https://cmake.org/) as the build system and the [C++ 23 standard.](https://en.cppreference.com/w/cpp/23)
 Requires at least CMake 3.24 and a C++23 compliant compiler (GCC 13.1 or MSVC 17.12.1).
-Some of the features used in the code are not implemented in the versions of GCC available under ubuntu and macOS, so some compatibility layers have been created to make the code compile with GCC 13.1.
 
 ## Tests
 

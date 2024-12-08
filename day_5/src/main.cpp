@@ -59,7 +59,7 @@ auto main(int argc, char const ** argv) -> int {
 
     auto validator = aoc::day_5::rules_validator(*std::move(page_ordering_rules));
 
-    auto [sum_valid, sum_invalid] = aoc::ranges::fold_left(
+    auto [sum_valid, sum_invalid] = std::ranges::fold_left(
         updates_transformed, aoc::day_5::result_summary{},
         [&validator](aoc::day_5::result_summary summary_accumulation, aoc::day_5::page_update & update) {
             bool is_valid = validator.validate_and_fix(update);
