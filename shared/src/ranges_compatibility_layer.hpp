@@ -100,20 +100,4 @@ template <std::ranges::range RANGE, typename CONTAINER> CONTAINER operator|(RANG
     return to_container<CONTAINER>(std::forward<RANGE>(range));
 }
 
-namespace detail {
-template <std::ranges::range RANGE, typename T, typename BINARY_OP>
-constexpr T fold_left_impl(RANGE && range, T init, BINARY_OP binary_operator) {
-    auto result = std::move(init);
-    for (auto && element : range) {
-        result = binary_operator(std::move(result), std::forward<decltype(element)>(element));
-    }
-    return result;
-}
-} // namespace detail
-
-template <std::ranges::range RANGE, typename T, typename BINARY_OP>
-constexpr T fold_left(RANGE && range, T init, BINARY_OP binary_operator) {
-    return detail::fold_left_impl(std::forward<RANGE>(range), std::move(init), binary_operator);
-}
-
 } // namespace aoc::ranges
