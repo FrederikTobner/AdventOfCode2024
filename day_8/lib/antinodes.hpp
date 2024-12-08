@@ -15,69 +15,47 @@
 
 namespace aoc::day_8 {
 
-/// @brief Checks for every antenna the antinodes
-/// @details These are points that are twice as far away from the second antenna as the distance to the first antenna
-/// and the antinode and have the same frequency as the antenna. They need to be not blocked by any other antenna
-/// @param lines The grid
-/// @param antenas The antennas
-/// @return The antinodes
-auto determineAntinodes(int64_t max_x, int64_t max_y, std::multimap<char, aoc::day_8::coordinate> antenas)
-    -> std::multimap<char, aoc::day_8::coordinate> {
-    std::multimap<char, aoc::day_8::coordinate> antinodes;
-    for (auto const & antenna : antenas) {
-        char frequency = antenna.first;
-        // Get all other antennas with the same frequency
-        auto [start, end] = antenas.equal_range(frequency);
-        std::vector<aoc::day_8::coordinate> same_frequency;
-        for (auto it = start; it != end; ++it) {
-            // Make sure we dont add the same antenna to the list
-            if (it->second != antenna.second) {
-                auto [second_x, second_y] = it->second;
-                auto [first_x, first_y] = antenna.second;
-                // mirror the distance between the antenna and the antinode
-                int64_t x_diff = second_x - first_x;
-                int64_t y_diff = second_y - first_y;
-                int64_t antinode_x = second_x + x_diff;
-                int64_t antinode_y = second_y + y_diff;
-                if (antinode_x >= 0 && antinode_x < max_x && antinode_y >= 0 && antinode_y < max_y) {
-                    antinodes.insert({frequency, {antinode_x, antinode_y}});
-                }
+namespace detail {
+static [[nodiscard]] auto getAntennasByFrequency(char frequency, coordinate const & exclude_pos,
+                                                 std::multimap<char, coordinate> const & antenas) {
+    auto [start, end] = antenas.equal_range(frequency);
+    std::vector<std::pair<char const, coordinate>> temp;
+    for (auto it = start; it != end; ++it) {
+        if (it->second != exclude_pos) {
+            temp.push_back({it->first, it->second});
+        }
+    }
+    return temp;
+}
+} // namespace detail
+
+[[nodiscard]] auto determineAntinodes(int64_t max_x_coordinate, int64_t max_y_coordinate,
+                                      std::multimap<char, coordinate> antenas) -> std::unordered_set<coordinate> {
+    std::unordered_set<coordinate> antinodes;
+    for (auto const & [frequency, pos] : antenas) {
+        for (auto const & other : detail::getAntennasByFrequency(frequency, pos, antenas)) {
+            aoc::day_8::coordinate diff = other.second - pos;
+            aoc::day_8::coordinate calculated_antinode = other.second + diff;
+            if (calculated_antinode.in_bounds(max_x_coordinate, max_y_coordinate)) {
+                antinodes.emplace(calculated_antinode);
             }
         }
     }
     return antinodes;
 }
 
-/// @brief Checks for every antenna the antinodes without the need to have them twice as far away from the second
-/// antenna as the distance between the first and the second antenna. t any grid position exactly in line with at least
-/// two antennas of the same frequency, regardless of distance a antinode occurs
-auto determineAntinodes2(int64_t max_x, int64_t max_y, std::multimap<char, aoc::day_8::coordinate> antenas)
-    -> std::multimap<char, aoc::day_8::coordinate> {
-    std::multimap<char, aoc::day_8::coordinate> antinodes;
-    for (auto const & antenna : antenas) {
-        char frequency = antenna.first;
-        // Get all other antennas with the same frequency
-        auto [start, end] = antenas.equal_range(frequency);
-        std::vector<aoc::day_8::coordinate> same_frequency;
-        for (auto it = start; it != end; ++it) {
-            // Make sure we dont add the same antenna to the list
-            if (it->second != antenna.second) {
-                auto [second_x, second_y] = it->second;
-                auto [first_x, first_y] = antenna.second;
-                // mirror the distance between the antenna and the antinode
-                int64_t x_diff = second_x - first_x;
-                int64_t y_diff = second_y - first_y;
-                int64_t antinode_x = second_x;
-                int64_t antinode_y = second_y;
-                while (!(antinode_x < 0 || antinode_x >= max_x || antinode_y < 0 || antinode_y >= max_y)) {
-                    antinodes.insert({frequency, {antinode_x, antinode_y}});
-                    antinode_x += x_diff;
-                    antinode_y += y_diff;
-                }
+[[nodiscard]] auto determineAntinodes2(int64_t max_x_coordinate, int64_t max_y_coordinate,
+                                       std::multimap<char, coordinate> antenas) -> std::unordered_set<coordinate> {
+    std::unordered_set<coordinate> antinodes;
+    for (auto const & [frequency, pos] : antenas) {
+        for (auto const & other : detail::getAntennasByFrequency(frequency, pos, antenas)) {
+            aoc::day_8::coordinate diff = other.second - pos;
+            for (aoc::day_8::coordinate upcoming_antinode = other.second;
+                 upcoming_antinode.in_bounds(max_x_coordinate, max_y_coordinate); upcoming_antinode += diff) {
+                antinodes.emplace(upcoming_antinode);
             }
         }
     }
-
     return antinodes;
 }
 

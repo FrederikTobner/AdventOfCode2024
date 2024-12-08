@@ -16,6 +16,24 @@ struct coordinate {
     auto operator==(coordinate const & other) const -> bool {
         return y == other.y && x == other.x;
     }
+
+    [[nodiscard]] auto operator-(coordinate const & other) const -> coordinate {
+        return {y - other.y, x - other.x};
+    }
+
+    [[nodiscard]] auto operator+(coordinate const & other) const -> coordinate {
+        return {y + other.y, x + other.x};
+    }
+
+    auto operator+=(coordinate const & other) -> coordinate & {
+        y += other.y;
+        x += other.x;
+        return *this;
+    }
+
+    [[nodiscard]] auto in_bounds(int64_t max_x, int64_t max_y) const -> bool {
+        return y >= 0 && y < max_y && x >= 0 && x < max_x;
+    }
 };
 
 } // namespace aoc::day_8

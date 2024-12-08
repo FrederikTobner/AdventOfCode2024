@@ -16,17 +16,12 @@
 #include "../lib/coordinate.hpp"
 
 namespace aoc::day_8 {
-void renderResult(std::vector<std::string_view> lines, std::multimap<char, aoc::day_8::coordinate> antinodes,
-                  int64_t max_x, int64_t max_y) {
+auto renderResult(std::vector<std::string_view> lines, std::unordered_set<aoc::day_8::coordinate> antinodes,
+                  int64_t max_x_coordinate, int64_t max_y_coordinate) -> void {
     std::string output = "";
-    std::unordered_set<aoc::day_8::coordinate> antinodes_set = {};
-    for (auto const & antinode : antinodes) {
-        antinodes_set.insert(antinode.second);
-    }
-
-    for (auto x : std::views::iota(int64_t{0}, max_x)) {
-        for (auto y : std::views::iota(int64_t{0}, max_y)) {
-            if (antinodes_set.contains({x, y})) {
+    for (auto x : std::views::iota(int64_t{0}, max_y_coordinate)) {
+        for (auto y : std::views::iota(int64_t{0}, max_x_coordinate)) {
+            if (antinodes.contains({x, y})) {
                 output += '#';
             } else {
                 output += lines[x][y];
@@ -34,6 +29,6 @@ void renderResult(std::vector<std::string_view> lines, std::multimap<char, aoc::
         }
         output += '\n';
     }
-    std::println("Result:\n{}Found {} antinodes", output, antinodes_set.size());
+    std::println("Result:\n{}Found {} antinodes", output, antinodes.size());
 }
 } // namespace aoc::day_8

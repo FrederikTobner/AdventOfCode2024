@@ -5,6 +5,7 @@
 #include <map>
 #include <ranges>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "../../shared/src/exit_code.hpp"
@@ -29,12 +30,12 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
-    int64_t max_x = lines.size();
-    int64_t max_y = lines[0].size();
+    int64_t max_y_coordinate = lines.size();
+    int64_t max_x_coordinate = lines[0].size();
 
     std::multimap<char, aoc::day_8::coordinate> antenas;
-    for (auto x : std::views::iota(int64_t{0}, max_x)) {
-        for (auto y : std::views::iota(int64_t{0}, max_y)) {
+    for (auto x : std::views::iota(int64_t{0}, max_y_coordinate)) {
+        for (auto y : std::views::iota(int64_t{0}, max_x_coordinate)) {
             if (std::isalnum(lines[x][y])) {
                 antenas.insert({lines[x][y], {x, y}});
             }
@@ -42,14 +43,16 @@ auto main(int argc, char const ** argv) -> int {
     }
 
     // Part 1
-    std::multimap<char, aoc::day_8::coordinate> antinodes = aoc::day_8::determineAntinodes(max_x, max_y, antenas);
+    std::unordered_set<aoc::day_8::coordinate> antinodes =
+        aoc::day_8::determineAntinodes(max_x_coordinate, max_y_coordinate, antenas);
 
-    aoc::day_8::renderResult(lines, antinodes, max_x, max_y);
+    aoc::day_8::renderResult(lines, antinodes, max_x_coordinate, max_y_coordinate);
 
     // Part 2
-    std::multimap<char, aoc::day_8::coordinate> antinodes2 = aoc::day_8::determineAntinodes2(max_x, max_y, antenas);
+    std::unordered_set<aoc::day_8::coordinate> antinodes2 =
+        aoc::day_8::determineAntinodes2(max_x_coordinate, max_y_coordinate, antenas);
 
-    aoc::day_8::renderResult(lines, antinodes2, max_x, max_y);
+    aoc::day_8::renderResult(lines, antinodes2, max_x_coordinate, max_y_coordinate);
 
     return 0;
 }
