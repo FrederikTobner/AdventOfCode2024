@@ -16,7 +16,7 @@
 namespace aoc::day_8 {
 
 namespace detail {
-static [[nodiscard]] auto getAntennasByFrequency(char frequency, coordinate const & exclude_pos,
+[[nodiscard]] static auto getAntennasByFrequency(char frequency, coordinate const & exclude_pos,
                                                  std::multimap<char, coordinate> const & antenas) {
     auto [start, end] = antenas.equal_range(frequency);
     std::vector<std::pair<char const, coordinate>> temp;
