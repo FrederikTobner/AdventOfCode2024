@@ -15,7 +15,7 @@
 
 #include "../lib/antinodes.hpp"
 #include "../lib/coordinate.hpp"
-#include "../lib/frequency_map_renderer.hpp"
+#include "../lib/map_renderer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
@@ -44,13 +44,13 @@ auto main(int argc, char const ** argv) -> int {
 
     // Part 1
     std::unordered_set<aoc::day_8::coordinate> antinodes =
-        aoc::day_8::determineAntinodes(max_x_coordinate, max_y_coordinate, antenas);
+        aoc::day_8::findDiscreteAntinodes(max_x_coordinate, max_y_coordinate, antenas);
 
     aoc::day_8::renderResult(lines, antinodes, max_x_coordinate, max_y_coordinate);
 
     // Part 2
     std::unordered_set<aoc::day_8::coordinate> antinodes2 =
-        aoc::day_8::determineAntinodes2(max_x_coordinate, max_y_coordinate, antenas);
+        aoc::day_8::findContinousAntinodes(max_x_coordinate, max_y_coordinate, antenas);
 
     aoc::day_8::renderResult(lines, antinodes2, max_x_coordinate, max_y_coordinate);
 
