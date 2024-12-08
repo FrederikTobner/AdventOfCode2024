@@ -31,7 +31,7 @@ struct coordinate {
         return *this;
     }
 
-    [[nodiscard]] auto in_bounds(int64_t max_x, int64_t max_y) const -> bool {
+    [[nodiscard]] auto inBounds(int64_t max_x, int64_t max_y) const -> bool {
         return y >= 0 && y < max_y && x >= 0 && x < max_x;
     }
 };

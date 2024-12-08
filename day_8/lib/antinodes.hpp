@@ -16,13 +16,13 @@
 namespace aoc::day_8 {
 
 namespace detail {
-[[nodiscard]] static auto getAntennasByFrequency(char frequency, coordinate const & exclude_pos,
-                                                 std::multimap<char, coordinate> const & antenas) {
+[[nodiscard]] static auto getOtherAntennaPositionsByFrequency(char frequency, coordinate const & exclude_pos,
+                                                              std::multimap<char, coordinate> const & antenas) {
     auto [start, end] = antenas.equal_range(frequency);
-    std::vector<std::pair<char const, coordinate>> temp;
+    std::vector<coordinate> temp;
     for (auto it = start; it != end; ++it) {
         if (it->second != exclude_pos) {
-            temp.push_back({it->first, it->second});
+            temp.push_back(it->second);
         }
     }
     return temp;
@@ -33,10 +33,10 @@ namespace detail {
                                       std::multimap<char, coordinate> antenas) -> std::unordered_set<coordinate> {
     std::unordered_set<coordinate> antinodes;
     for (auto const & [frequency, pos] : antenas) {
-        for (auto const & other : detail::getAntennasByFrequency(frequency, pos, antenas)) {
-            aoc::day_8::coordinate diff = other.second - pos;
-            aoc::day_8::coordinate calculated_antinode = other.second + diff;
-            if (calculated_antinode.in_bounds(max_x_coordinate, max_y_coordinate)) {
+        for (auto const & otherAntennaPosition : detail::getOtherAntennaPositionsByFrequency(frequency, pos, antenas)) {
+            aoc::day_8::coordinate diff = otherAntennaPosition - pos;
+            aoc::day_8::coordinate calculated_antinode = otherAntennaPosition + diff;
+            if (calculated_antinode.inBounds(max_x_coordinate, max_y_coordinate)) {
                 antinodes.emplace(calculated_antinode);
             }
         }
@@ -48,10 +48,10 @@ namespace detail {
                                        std::multimap<char, coordinate> antenas) -> std::unordered_set<coordinate> {
     std::unordered_set<coordinate> antinodes;
     for (auto const & [frequency, pos] : antenas) {
-        for (auto const & other : detail::getAntennasByFrequency(frequency, pos, antenas)) {
-            aoc::day_8::coordinate diff = other.second - pos;
-            for (aoc::day_8::coordinate upcoming_antinode = other.second;
-                 upcoming_antinode.in_bounds(max_x_coordinate, max_y_coordinate); upcoming_antinode += diff) {
+        for (auto const & otherAntennaPosition : detail::getOtherAntennaPositionsByFrequency(frequency, pos, antenas)) {
+            aoc::day_8::coordinate diff = otherAntennaPosition - pos;
+            for (aoc::day_8::coordinate upcoming_antinode = otherAntennaPosition;
+                 upcoming_antinode.inBounds(max_x_coordinate, max_y_coordinate); upcoming_antinode += diff) {
                 antinodes.emplace(upcoming_antinode);
             }
         }
