@@ -34,5 +34,5 @@ auto aoc::day_5::parse_rules(std::string_view rules_str)
 
     return *rules_result | std::views::transform([](auto const & rule) {
         return aoc::day_5::page_ordering_rule{rule[0], rule[1]};
-    }) | std::ranges::to<std::vector<aoc::day_5::page_ordering_rule>>();
+    }) | aoc::ranges::to<std::vector<aoc::day_5::page_ordering_rule>>;
 }

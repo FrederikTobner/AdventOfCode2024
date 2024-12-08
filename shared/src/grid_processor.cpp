@@ -5,7 +5,7 @@
                auto sv = std::string_view(chars.begin(), chars.end());
                return sv.ends_with('\r') ? sv.substr(0, sv.size() - 1) : sv;
            }) |
-           aoc::ranges::to<std::vector<std::string_view>>();
+           aoc::ranges::to<std::vector<std::string_view>>;
 }
 
 [[nodiscard]] auto aoc::grid_processor::validateGrid(std::span<std::string_view const> lines) -> bool {
