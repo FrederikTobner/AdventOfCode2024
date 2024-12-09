@@ -12,6 +12,11 @@
 struct disk_map_entry {
     uint8_t file_length;
     uint8_t free_space;
+};
+
+struct disk_map_internal_entry {
+    uint8_t file_length;
+    uint8_t free_space;
     uint8_t original_file_length;
 };
 
@@ -23,14 +28,14 @@ struct disk_map {
         size_t counter = 0;
         auto entries_copy = entries;
         for (size_t fileIndex = 0; fileIndex < entries_copy.size(); ++fileIndex) {
-            auto [file_length, free_space, original_file_length] = entries_copy[fileIndex];
+            auto [file_length, free_space] = entries_copy[fileIndex];
             for (size_t i = 0; i < file_length; ++i) {
                 checksum += counter * fileIndex;
                 counter++;
             }
             for (size_t i = 0; i < free_space; ++i) {
                 for (size_t indexFromEnd = entries.size() - 1; indexFromEnd > fileIndex; --indexFromEnd) {
-                    auto [file_length, free_space, original_file_length] = entries_copy[indexFromEnd];
+                    auto [file_length, free_space] = entries_copy[indexFromEnd];
                     if (file_length > 0) {
                         entries_copy[indexFromEnd].file_length--;
                         checksum += counter * (indexFromEnd);
@@ -48,7 +53,10 @@ struct disk_map {
     size_t calculateChecksumAfterCompactingLessAgressive() {
         size_t checksum = 0;
         size_t counter = 0;
-        auto entries_copy = entries;
+        auto entries_copy = entries | std::views::transform([](auto const & entry) {
+                                return disk_map_internal_entry{entry.file_length, entry.free_space, entry.file_length};
+                            }) |
+                            aoc::ranges::to<std::vector<disk_map_internal_entry>>;
         size_t max_end_index = entries.size() - 1;
         for (size_t fileIndex = 0; fileIndex < entries.size(); ++fileIndex) {
             auto [file_length, free_space, original_file_length] = entries_copy[fileIndex];
@@ -90,13 +98,13 @@ std::expected<disk_map, std::error_code> parseDiskMap(std::string_view input) {
         }
         auto free_space = 0;
         if (index + 1 == size) {
-            result.entries.push_back({*file_length, 0, *file_length});
+            result.entries.push_back({*file_length, 0});
         } else {
             auto free_space = aoc::parser::rules::parse_number<uint8_t>(input.substr(index + 1, 1));
             if (!free_space) {
                 return std::unexpected(free_space.error());
             }
-            result.entries.push_back({*file_length, *free_space, *file_length});
+            result.entries.push_back({*file_length, *free_space});
         }
     }
 
