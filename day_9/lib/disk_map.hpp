@@ -21,19 +21,20 @@ struct disk_map {
     size_t calculateChecksumAfterCompacting() {
         size_t checksum = 0;
         size_t counter = 0;
-        for (size_t fileIndex = 0; fileIndex < entries.size(); ++fileIndex) {
-            auto [file_length, free_space, original_file_length] = entries[fileIndex];
+        auto entries_copy = entries;
+        for (size_t fileIndex = 0; fileIndex < entries_copy.size(); ++fileIndex) {
+            auto [file_length, free_space, original_file_length] = entries_copy[fileIndex];
             for (size_t i = 0; i < file_length; ++i) {
                 checksum += counter * fileIndex;
                 counter++;
             }
             for (size_t i = 0; i < free_space; ++i) {
                 for (size_t indexFromEnd = entries.size() - 1; indexFromEnd > fileIndex; --indexFromEnd) {
-                    auto [file_length, free_space, original_file_length] = entries[indexFromEnd];
+                    auto [file_length, free_space, original_file_length] = entries_copy[indexFromEnd];
                     if (file_length > 0) {
-                        entries[indexFromEnd].file_length--;
+                        entries_copy[indexFromEnd].file_length--;
                         checksum += counter * (indexFromEnd);
-                        entries[fileIndex].free_space--;
+                        entries_copy[fileIndex].free_space--;
                         counter++;
                         break;
                     }
@@ -47,9 +48,10 @@ struct disk_map {
     size_t calculateChecksumAfterCompactingLessAgressive() {
         size_t checksum = 0;
         size_t counter = 0;
+        auto entries_copy = entries;
         size_t max_end_index = entries.size() - 1;
         for (size_t fileIndex = 0; fileIndex < entries.size(); ++fileIndex) {
-            auto [file_length, free_space, original_file_length] = entries[fileIndex];
+            auto [file_length, free_space, original_file_length] = entries_copy[fileIndex];
             for (size_t i = 0; i < file_length; ++i) {
                 checksum += counter * fileIndex;
                 counter++;
@@ -60,11 +62,12 @@ struct disk_map {
             for (size_t i = 0; i < free_space; ++i) {
                 // Get the last disk map entry that has still a file_length > 0. Start seartching from the back / end
                 for (size_t indexFromEnd = max_end_index; indexFromEnd > fileIndex; --indexFromEnd) {
-                    auto [file_length, free_space, original_file_length] = entries[indexFromEnd];
-                    if (file_length > 0 && (entries[indexFromEnd].file_length <= entries[fileIndex].free_space)) {
-                        entries[indexFromEnd].file_length--;
+                    auto [file_length, free_space, original_file_length] = entries_copy[indexFromEnd];
+                    if (file_length > 0 &&
+                        (entries_copy[indexFromEnd].file_length <= entries_copy[fileIndex].free_space)) {
+                        entries_copy[indexFromEnd].file_length--;
                         checksum += counter * (indexFromEnd);
-                        entries[fileIndex].free_space--;
+                        entries_copy[fileIndex].free_space--;
                         break;
                     }
                 }

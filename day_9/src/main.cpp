@@ -37,16 +37,15 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
-    auto part_1_map = *result;
-    auto part_2_map = part_1_map;
+    auto parsed_disk_map = *result;
 
     // Part 1
-    auto part_1_checksum = part_1_map.calculateChecksumAfterCompacting();
+    auto part_1_checksum = parsed_disk_map.calculateChecksumAfterCompacting();
 
     std::println("Checksum after compacting: {}", part_1_checksum);
 
     // Part 2
-    auto part_2_checksum = part_2_map.calculateChecksumAfterCompactingLessAgressive();
+    auto part_2_checksum = parsed_disk_map.calculateChecksumAfterCompactingLessAgressive();
 
     std::println("Checksum after less aggressive compacting: {}", part_2_checksum);
 
