@@ -28,18 +28,19 @@ struct disk_map {
         size_t counter = 0;
         auto entries_copy = entries;
         for (size_t fileIndex = 0; fileIndex < entries_copy.size(); ++fileIndex) {
-            auto [file_length, free_space] = entries_copy[fileIndex];
-            for (size_t i = 0; i < file_length; ++i) {
+            auto & entry_to_process = entries_copy[fileIndex];
+            for (size_t i = 0; i < entry_to_process.file_length; ++i) {
                 checksum += counter * fileIndex;
                 counter++;
             }
-            for (size_t i = 0; i < free_space; ++i) {
-                for (size_t indexFromEnd = entries.size() - 1; indexFromEnd > fileIndex; --indexFromEnd) {
-                    auto [file_length, free_space] = entries_copy[indexFromEnd];
-                    if (file_length > 0) {
-                        entries_copy[indexFromEnd].file_length--;
+            uint8_t original_free_space = entry_to_process.free_space;
+            for (size_t i = 0; i < original_free_space; ++i) {
+                for (size_t indexFromEnd = entries_copy.size() - 1; indexFromEnd > fileIndex; --indexFromEnd) {
+                    auto & entry_to_move = entries_copy[indexFromEnd];
+                    if (entry_to_move.file_length > 0) {
+                        entry_to_move.file_length--;
                         checksum += counter * (indexFromEnd);
-                        entries_copy[fileIndex].free_space--;
+                        entry_to_process.free_space--;
                         counter++;
                         break;
                     }
@@ -57,25 +58,24 @@ struct disk_map {
                                 return disk_map_internal_entry{entry.file_length, entry.free_space, entry.file_length};
                             }) |
                             aoc::ranges::to<std::vector<disk_map_internal_entry>>;
-        size_t max_end_index = entries.size() - 1;
-        for (size_t fileIndex = 0; fileIndex < entries.size(); ++fileIndex) {
-            auto [file_length, free_space, original_file_length] = entries_copy[fileIndex];
-            for (size_t i = 0; i < file_length; ++i) {
+        for (size_t fileIndex = 0; fileIndex < entries_copy.size(); ++fileIndex) {
+            auto & entry_to_process = entries_copy[fileIndex];
+            for (size_t i = 0; i < entry_to_process.file_length; ++i) {
                 checksum += counter * fileIndex;
                 counter++;
             }
-            if (file_length < original_file_length) {
-                counter += original_file_length - file_length;
+            if (entry_to_process.file_length < entry_to_process.original_file_length) {
+                counter += entry_to_process.original_file_length - entry_to_process.file_length;
             }
-            for (size_t i = 0; i < free_space; ++i) {
+            uint8_t original_free_space = entry_to_process.free_space;
+            for (size_t i = 0; i < original_free_space; ++i) {
                 // Get the last disk map entry that has still a file_length > 0. Start seartching from the back / end
-                for (size_t indexFromEnd = max_end_index; indexFromEnd > fileIndex; --indexFromEnd) {
-                    auto [file_length, free_space, original_file_length] = entries_copy[indexFromEnd];
-                    if (file_length > 0 &&
-                        (entries_copy[indexFromEnd].file_length <= entries_copy[fileIndex].free_space)) {
-                        entries_copy[indexFromEnd].file_length--;
+                for (size_t indexFromEnd = entries_copy.size() - 1; indexFromEnd > fileIndex; --indexFromEnd) {
+                    auto & entry_to_move = entries_copy[indexFromEnd];
+                    if (entry_to_move.file_length > 0 && (entry_to_move.file_length <= entry_to_process.free_space)) {
+                        entry_to_move.file_length--;
                         checksum += counter * (indexFromEnd);
-                        entries_copy[fileIndex].free_space--;
+                        entry_to_process.free_space--;
                         break;
                     }
                 }
