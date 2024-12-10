@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cmath>
 #include <concepts>
+
 
 namespace aoc::math {
 template <typename T = float>
