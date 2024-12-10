@@ -33,21 +33,21 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
-    auto result = aoc::day_9::parseDiskMap(lines[0]);
+    std::expected<aoc::day_9::disk_map, std::error_code> result = aoc::day_9::parseDiskMap(lines[0]);
     if (!result) {
         std::println(stderr, "Error parsing disk map: {}", result.error().message());
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
-    auto parsed_disk_map = *result;
+    aoc::day_9::disk_map parsed_disk_map = *result;
 
     // Part 1
-    auto part_1_checksum = aoc::day_9::calculateChecksumAfterCompacting(parsed_disk_map);
+    size_t part_1_checksum = aoc::day_9::calculateChecksumAfterCompacting(parsed_disk_map);
 
     std::println("Checksum after compacting: {}", part_1_checksum);
 
     // Part 2
-    auto part_2_checksum = aoc::day_9::calculateChecksumAfterCompactingLessAgressive(parsed_disk_map);
+    size_t part_2_checksum = aoc::day_9::calculateChecksumAfterCompactingLessAgressive(parsed_disk_map);
 
     std::println("Checksum after less aggressive compacting: {}", part_2_checksum);
 
