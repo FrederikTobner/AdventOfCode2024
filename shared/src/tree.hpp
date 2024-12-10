@@ -12,6 +12,9 @@ template <typename T> class Node {
     Node(T value) : value(value) {
     }
 
+    Node(T value, std::vector<Node> children) : value(value), children(children) {
+    }
+
     auto addChild(Node child) -> void {
         children.push_back(child);
     }
@@ -24,7 +27,7 @@ template <typename T> class Node {
         return count;
     }
 
-    void executeOnFullFillingCondition(auto condition, auto action) {
+    void executeOnFullFillingCondition(auto condition, auto action) const {
         if (condition(value)) {
             action(value);
         }

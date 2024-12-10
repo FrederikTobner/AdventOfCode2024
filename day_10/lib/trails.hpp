@@ -4,8 +4,10 @@
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <unordered_set>
 #include <vector>
 
+#include "../../shared/src/tree.hpp"
 #include "../../shared/src/vector2d.hpp"
 
 namespace aoc::day_10 {
@@ -21,57 +23,46 @@ constexpr bool isTrailStart(uint8_t value) {
     return value == TRAIL_START;
 }
 
-struct tree_node {
+struct NodeData {
     uint8_t value;
-    std::vector<tree_node> children;
     aoc::math::Vector2D<uint8_t> position;
+
+    bool operator==(NodeData const & other) const {
+        return value == other.value && position == other.position;
+    }
 };
 
-auto addEndpointIfReachable(std::unordered_set<aoc::math::Vector2D<uint8_t>> & uniqueEndPositions,
-                            tree_node const & node) -> void;
-
-void calculateNodeRating(size_t & rating, tree_node const & node);
-
 struct trails {
-    std::vector<tree_node> nodes;
+    std::vector<aoc::tree::Node<NodeData>> nodes;
+
     size_t calculateUniquePaths() const {
-        auto counter = 0;
-        for (auto root_node : nodes) {
+        size_t uniquePathsCounter = 0;
+        for (auto const & root_node : nodes) {
             std::unordered_set<aoc::math::Vector2D<uint8_t>> uniqueEndPositions;
-            addEndpointIfReachable(uniqueEndPositions, root_node);
-            counter += uniqueEndPositions.size();
+            root_node.executeOnFullFillingCondition(
+                [](NodeData const & data) { return isTrailEnd(data.value); },
+                [&uniqueEndPositions](NodeData const & data) { uniqueEndPositions.insert(data.position); });
+            uniquePathsCounter += uniqueEndPositions.size();
         }
-        return counter;
+        return uniquePathsCounter;
     }
 
     size_t calculateRating() const {
         size_t ratingCounter = 0;
-        for (auto root_node : nodes) {
-            size_t currentRating = 0;
-            calculateNodeRating(currentRating, root_node);
-            ratingCounter += currentRating;
+        for (auto const & root_node : nodes) {
+            ratingCounter +=
+                root_node.countFullFillingCondition([](NodeData const & data) { return isTrailEnd(data.value); });
         }
         return ratingCounter;
     }
 };
 
-void calculateNodeRating(size_t & rating, tree_node const & node) {
-    if (isTrailEnd(node.value)) {
-        rating++;
-    }
-    for (auto child : node.children) {
-        calculateNodeRating(rating, child);
-    }
-}
-
-auto addEndpointIfReachable(std::unordered_set<aoc::math::Vector2D<uint8_t>> & uniqueEndPositions,
-                            tree_node const & node) -> void {
-    if (isTrailEnd(node.value)) {
-        uniqueEndPositions.insert({node.position.x, node.position.y});
-    }
-    for (auto child : node.children) {
-        addEndpointIfReachable(uniqueEndPositions, child);
-    }
-}
-
 } // namespace aoc::day_10
+
+namespace std {
+template <> struct hash<aoc::day_10::NodeData> {
+    auto operator()(aoc::day_10::NodeData const & data) const -> size_t {
+        return hash<uint8_t>{}(data.value) ^ hash<aoc::math::Vector2D<uint8_t>>{}(data.position);
+    }
+};
+} // namespace std
