@@ -15,9 +15,7 @@ struct disk_map_entry {
 };
 
 /// @brief Represents a disk map entry with additional information for internal processing
-struct disk_map_internal_entry {
-    uint8_t file_length;
-    uint8_t free_space;
+struct disk_map_internal_entry : public disk_map_entry {
     uint8_t original_file_length;
 };
 
