@@ -10,59 +10,50 @@
 #include "../../shared/src/tree.hpp"
 #include "../../shared/src/vector2d.hpp"
 
+#include "topography.hpp"
+
+class TrailParserTest;
+
 namespace aoc::day_10 {
 
-#define TRAIL_END   9
-#define TRAIL_START 0
+/// Represents a collection of hiking trails and provides methods to analyze them
+class trails {
+    friend class ::TrailParserTest;
 
-constexpr bool isTrailEnd(uint8_t value) {
-    return value == TRAIL_END;
-}
-
-constexpr bool isTrailStart(uint8_t value) {
-    return value == TRAIL_START;
-}
-
-struct NodeData {
-    uint8_t value;
-    aoc::math::Vector2D<uint8_t> position;
-
-    bool operator==(NodeData const & other) const {
-        return value == other.value && position == other.position;
+  public:
+    /// Constructs a trails object from a collection of tree nodes
+    /// @param nodes Vector of tree nodes representing the trail system
+    trails(std::vector<aoc::tree::tree_node<topography>> nodes) : nodes(std::move(nodes)) {
     }
+
+    /// Calculates the number of unique paths through the trail system
+    /// @return The count of unique paths from start to end points
+    size_t calculateUniquePaths() const;
+
+    /// Calculates the total rating of all possible paths through the trail system
+    /// @return The sum of all valid path ratings
+    size_t calculateRating() const;
+
+  private:
+    std::vector<aoc::tree::tree_node<topography>> nodes;
 };
 
-struct trails {
-    std::vector<aoc::tree::Node<NodeData>> nodes;
+/// Checks if a given trail value represents an end point
+/// @param value The trail value to check
+/// @return true if the value represents a trail end point
+bool isTrailEnd(uint8_t value);
 
-    size_t calculateUniquePaths() const {
-        size_t uniquePathsCounter = 0;
-        for (auto const & root_node : nodes) {
-            std::unordered_set<aoc::math::Vector2D<uint8_t>> uniqueEndPositions;
-            root_node.executeOnFullFillingCondition(
-                [](NodeData const & data) { return isTrailEnd(data.value); },
-                [&uniqueEndPositions](NodeData const & data) { uniqueEndPositions.insert(data.position); });
-            uniquePathsCounter += uniqueEndPositions.size();
-        }
-        return uniquePathsCounter;
-    }
-
-    size_t calculateRating() const {
-        size_t ratingCounter = 0;
-        for (auto const & root_node : nodes) {
-            ratingCounter +=
-                root_node.countFullFillingCondition([](NodeData const & data) { return isTrailEnd(data.value); });
-        }
-        return ratingCounter;
-    }
-};
+/// Checks if a given trail value represents a starting point
+/// @param value The trail value to check
+/// @return true if the value represents a trail starting point
+bool isTrailStart(uint8_t value);
 
 } // namespace aoc::day_10
 
 namespace std {
-template <> struct hash<aoc::day_10::NodeData> {
-    auto operator()(aoc::day_10::NodeData const & data) const -> size_t {
-        return hash<uint8_t>{}(data.value) ^ hash<aoc::math::Vector2D<uint8_t>>{}(data.position);
+template <> struct hash<aoc::day_10::topography> {
+    auto operator()(aoc::day_10::topography const & data) const -> size_t {
+        return hash<uint8_t>{}(data.value) ^ hash<aoc::math::vector_2d<uint8_t>>{}(data.position);
     }
 };
 } // namespace std

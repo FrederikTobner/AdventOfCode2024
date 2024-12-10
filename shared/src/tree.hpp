@@ -4,18 +4,18 @@
 
 namespace aoc::tree {
 
-template <typename T> class Node {
+template <typename T> class tree_node {
   public:
     T value;
-    std::vector<Node> children;
+    std::vector<tree_node> children;
 
-    Node(T value) : value(value) {
+    tree_node(T value) : value(value) {
     }
 
-    Node(T value, std::vector<Node> children) : value(value), children(children) {
+    tree_node(T value, std::vector<tree_node> children) : value(value), children(children) {
     }
 
-    auto addChild(Node child) -> void {
+    auto addChild(tree_node child) -> void {
         children.push_back(child);
     }
 
