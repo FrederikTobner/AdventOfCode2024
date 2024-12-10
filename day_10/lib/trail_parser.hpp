@@ -6,10 +6,11 @@
 #include <stdexcept>
 #include <vector>
 
-#include "topography.hpp"
 #include "trails.hpp"
 
+#include "../../shared/src/vector2d.hpp"
 #include "../../shared/src/vector3d.hpp"
+
 
 namespace aoc::day_10 {
 
