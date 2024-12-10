@@ -14,7 +14,7 @@
 #include "../../shared/src/print_compatibility_layer.hpp"
 #include "../../shared/src/ranges_compatibility_layer.hpp"
 
-#include "../lib/coordinate.hpp"
+#include "../../shared/src/vector2d.hpp"
 
 namespace aoc::day_8 {
 /// @brief Renders the map with antinodes marked as '#'
@@ -22,9 +22,11 @@ namespace aoc::day_8 {
 /// @param antinodes Set of antinode positions to render
 /// @param max_x_coordinate Maximum x coordinate (exclusive)
 /// @param max_y_coordinate Maximum y coordinate (exclusive)
-auto renderResult(std::vector<std::string_view> lines, std::unordered_set<aoc::day_8::coordinate> antinodes,
+auto renderResult(std::vector<std::string_view> lines, std::unordered_set<aoc::math::vector_2d<int64_t>> antinodes,
                   int64_t max_x_coordinate, int64_t max_y_coordinate) -> void {
-    auto to_char = [&](coordinate pos) { return antinodes.contains(pos) ? '#' : lines[pos.y][pos.x]; };
+    auto to_char = [&](aoc::math::vector_2d<int64_t> pos) {
+        return antinodes.contains(pos) ? '#' : lines[pos.x][pos.y];
+    };
 
     auto grid = std::views::cartesian_product(std::views::iota(int64_t{0}, max_y_coordinate),
                                               std::views::iota(int64_t{0}, max_x_coordinate)) |
