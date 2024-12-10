@@ -10,6 +10,7 @@
 #include "../../shared/src/grid_processor.hpp"
 #include "../../shared/src/print_compatibility_layer.hpp"
 
+#include "../lib/trail_parser.hpp"
 #include "../lib/trails.hpp"
 
 auto main(int argc, char const ** argv) -> int {
@@ -25,34 +26,21 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
-    auto map = topographic_map{};
+    std::vector<std::vector<uint8_t>> map;
     for (auto line : lines) {
         std::vector<uint8_t> row;
         for (auto c : line) {
             row.push_back(c - '0');
         }
-        map.topographies.push_back(row);
+        map.push_back(row);
     }
-    auto trails = convertToTrails(map);
-    auto counter = 0;
+    auto trails = aoc::day_10::convertToTrails(map);
 
     // Part 1
-    for (auto root_node : trails.nodes) {
-        std::unordered_set<aoc::math::Vector2D<uint8_t>> uniqueEndPositions;
-        addEndpointIfReachable(uniqueEndPositions, root_node);
-        counter += uniqueEndPositions.size();
-    }
-    std::println("The number of unique paths is: {}", counter);
+    std::println("The number of unique paths is: {:#}", trails.calculateUniquePaths());
 
     // Part 2
-    size_t ratingCounter = 0;
-    for (auto root_node : trails.nodes) {
-        size_t currentRating = 0;
-        calculateRating(currentRating, root_node);
-        ratingCounter += currentRating;
-    }
-
-    std::println("The total rating of all trails is: {}", ratingCounter);
+    std::println("The total rating of all trails is: {:#}", trails.calculateRating());
 
     return 0;
 }
