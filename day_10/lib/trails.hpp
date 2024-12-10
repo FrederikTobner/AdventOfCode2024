@@ -8,9 +8,7 @@
 #include <vector>
 
 #include "../../shared/src/tree.hpp"
-#include "../../shared/src/vector2d.hpp"
-
-#include "topography.hpp"
+#include "../../shared/src/vector3d.hpp"
 
 class TrailParserTest;
 
@@ -23,7 +21,7 @@ class trails {
   public:
     /// Constructs a trails object from a collection of tree nodes
     /// @param nodes Vector of tree nodes representing the trail system
-    trails(std::vector<aoc::tree::tree_node<topography>> nodes) : nodes(std::move(nodes)) {
+    trails(std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> nodes) : nodes(std::move(nodes)) {
     }
 
     /// Calculates the number of unique paths through the trail system
@@ -35,25 +33,21 @@ class trails {
     size_t calculateRating() const;
 
   private:
-    std::vector<aoc::tree::tree_node<topography>> nodes;
+    std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> nodes;
 };
 
 /// Checks if a given trail value represents an end point
-/// @param value The trail value to check
-/// @return true if the value represents a trail end point
 bool isTrailEnd(uint8_t value);
 
 /// Checks if a given trail value represents a starting point
-/// @param value The trail value to check
-/// @return true if the value represents a trail starting point
 bool isTrailStart(uint8_t value);
 
 } // namespace aoc::day_10
 
 namespace std {
-template <> struct hash<aoc::day_10::topography> {
-    auto operator()(aoc::day_10::topography const & data) const -> size_t {
-        return hash<uint8_t>{}(data.value) ^ hash<aoc::math::vector_2d<uint8_t>>{}(data.position);
+template <> struct hash<aoc::math::vector_3d<uint8_t>> {
+    auto operator()(aoc::math::vector_3d<uint8_t> const & v) const -> size_t {
+        return hash<uint8_t>{}(v.x) ^ hash<uint8_t>{}(v.y) ^ hash<uint8_t>{}(v.z);
     }
 };
 } // namespace std

@@ -9,6 +9,8 @@
 #include "topography.hpp"
 #include "trails.hpp"
 
+#include "../../shared/src/vector3d.hpp"
+
 namespace aoc::day_10 {
 
 /// Represents the four possible directions of movement on the trail
@@ -24,7 +26,7 @@ enum class Direction {
 /// @param dir The direction to move in
 /// @return The new position after moving in the specified direction
 /// @throws std::invalid_argument if an invalid direction is provided
-static inline auto calculateNewPosition(aoc::math::vector_2d<uint8_t> const & current, Direction dir)
+static inline auto calculateNewPosition(aoc::math::vector_3d<uint8_t> const & current, Direction dir)
     -> aoc::math::vector_2d<uint8_t> {
     switch (dir) {
     case Direction::UP:
@@ -53,18 +55,18 @@ static inline auto isValidPosition(aoc::math::vector_2d<uint8_t> const & pos,
 /// @param value The value at this position
 /// @param children The child nodes connected to this position
 /// @return A new tree node representing this position in the trail
-static inline auto createNode(aoc::math::vector_2d<uint8_t> const & pos, uint8_t value,
-                              std::vector<aoc::tree::tree_node<topography>> children)
-    -> aoc::tree::tree_node<topography> {
-    return {topography{value, pos}, std::move(children)};
+static inline auto createNode(aoc::math::vector_3d<uint8_t> const & pos,
+                              std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> children)
+    -> aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>> {
+    return {pos, std::move(children)};
 }
 
 /// Determines the valid child nodes for a given position in the map
 /// @param map The 2D map representing the trail system
 /// @param pos The current position to find children for
 /// @return A vector of tree nodes representing valid next positions
-static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc::math::vector_2d<uint8_t> const & pos)
-    -> std::vector<aoc::tree::tree_node<topography>>;
+static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc::math::vector_3d<uint8_t> const & pos)
+    -> std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>>;
 
 /// Converts a 2D map into a trail system representation
 /// @param map The 2D map containing trail values (0-9)

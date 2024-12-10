@@ -2,8 +2,8 @@
 
 namespace aoc::day_10 {
 
-static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc::math::vector_2d<uint8_t> const & pos)
-    -> std::vector<aoc::tree::tree_node<topography>> {
+static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc::math::vector_3d<uint8_t> const & pos)
+    -> std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> {
     if (isTrailEnd(map[pos.x][pos.y])) {
         return {};
     }
@@ -11,7 +11,7 @@ static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc
     static constexpr std::array<Direction, 4> directions = {Direction::UP, Direction::RIGHT, Direction::DOWN,
                                                             Direction::LEFT};
 
-    std::vector<aoc::tree::tree_node<topography>> children;
+    std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> children;
     uint8_t current_value = map[pos.x][pos.y];
     uint8_t expected_next_value = current_value + 1;
 
@@ -22,7 +22,8 @@ static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc
         }
 
         if (map[new_pos.x][new_pos.y] == expected_next_value) {
-            children.push_back(createNode(new_pos, map[new_pos.x][new_pos.y], determineChildren(map, new_pos)));
+            auto child_position = aoc::math::vector_3d<uint8_t>{new_pos.x, new_pos.y, map[new_pos.x][new_pos.y]};
+            children.push_back(createNode(child_position, determineChildren(map, child_position)));
         }
     }
 
@@ -30,13 +31,13 @@ static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc
 }
 
 auto convertToTrails(std::vector<std::vector<uint8_t>> const & map) -> trails {
-    std::vector<aoc::tree::tree_node<topography>> nodes;
+    std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> nodes;
 
     for (auto x : std::views::iota(uint8_t{0}, static_cast<uint8_t>(map.size()))) {
         for (auto y : std::views::iota(uint8_t{0}, static_cast<uint8_t>(map[x].size()))) {
             if (isTrailStart(map[x][y])) {
-                auto start_pos = aoc::math::vector_2d<uint8_t>{x, y};
-                nodes.push_back(createNode(start_pos, map[x][y], determineChildren(map, start_pos)));
+                auto position = aoc::math::vector_3d<uint8_t>{x, y, map[x][y]};
+                nodes.push_back(createNode(position, determineChildren(map, position)));
             }
         }
     }

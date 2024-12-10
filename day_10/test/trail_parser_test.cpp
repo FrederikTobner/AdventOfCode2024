@@ -11,18 +11,18 @@ class TrailParserTest : public ::testing::Test {
     std::vector<std::vector<uint8_t>> createSimpleMap() {
         return {{0, 1, 2, 3}, {1, 2, 3, 4}, {2, 3, 4, 5}};
     }
-    auto getResults(trails const & result) -> std::vector<aoc::tree::tree_node<topography>> {
+    auto getResults(trails const & result) -> std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> {
         return result.nodes;
     }
 
-    void assertTreeStructures(std::vector<aoc::tree::tree_node<topography>> const & actualStructure,
+    void assertTreeStructures(std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> const & actualStructure,
                               std::vector<std::pair<uint8_t, uint8_t>> const & expectedConnections) {
         for (size_t i = 0; i < actualStructure.size(); i++) {
             auto node = actualStructure[i];
-            EXPECT_EQ(node.value.value, expectedConnections[i].first);
+            EXPECT_EQ(node.value.z, expectedConnections[i].first);
             for (size_t j = 0; j < node.children.size(); j++) {
                 auto child = node.children[j];
-                EXPECT_EQ(child.value.value, expectedConnections[i].second);
+                EXPECT_EQ(child.value.z, expectedConnections[i].second);
             }
         }
     }
@@ -32,7 +32,7 @@ class DirectionTest : public testing::TestWithParam<std::tuple<Direction, vector
 
 TEST_P(DirectionTest, CalculateNewPositionParameterized) {
     // Arrange
-    vector_2d<uint8_t> start_pos{1, 1};
+    vector_3d<uint8_t> start_pos{1, 1, 9};
     auto [direction, expected] = GetParam();
 
     // Act
@@ -95,7 +95,7 @@ TEST_F(TrailParserTest, ConvertToTrailsComplexTest) {
 
 TEST_F(TrailParserTest, InvalidDirectionTest) {
     // Arrange
-    vector_2d<uint8_t> pos{1, 1};
+    vector_3d<uint8_t> pos{1, 1, 0};
 
     // Act & Assert
     EXPECT_THROW(calculateNewPosition(pos, static_cast<Direction>(99)), std::invalid_argument);

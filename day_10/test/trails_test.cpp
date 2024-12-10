@@ -10,15 +10,15 @@ using namespace aoc::math;
 class TrailsTest : public ::testing::Test {
   protected:
     // Helper method to create a simple linear path
-    tree_node<topography> createLinearPath() {
-        return tree_node<topography>{{0, {0, 0}}, {{{1, {0, 1}}, {{{2, {0, 2}}, {{{9, {0, 3}}, {}}}}}}}};
+    tree_node<aoc::math::vector_3d<uint8_t>> createLinearPath() {
+        return tree_node<aoc::math::vector_3d<uint8_t>>{{0, 0, 0}, {{{0, 1, 1}, {{{0, 2, 2}, {{{0, 3, 9}, {}}}}}}}};
     }
 
     // Helper method to create a path with two branches
-    tree_node<topography> createBranchingPath() {
-        return tree_node<topography>{{0, {0, 0}},
-                                     {{{1, {1, 0}}, {{{2, {2, 0}}, {{{9, {3, 0}}, {}}}}, {{9, {2, 1}}, {}}}},
-                                      {{1, {0, 1}}, {{{2, {0, 2}}, {{{9, {0, 3}}, {}}}}}}}};
+    tree_node<aoc::math::vector_3d<uint8_t>> createBranchingPath() {
+        return tree_node<aoc::math::vector_3d<uint8_t>>{{0, 0, 0},
+                                                        {{{1, 0, 1}, {{{2, 0, 2}, {{{3, 0, 9}, {}}}}, {{2, 1, 9}, {}}}},
+                                                         {{0, 1, 1}, {{{0, 2, 2}, {{{0, 3, 9}, {}}}}}}}};
     }
 };
 
@@ -58,7 +58,7 @@ INSTANTIATE_TEST_SUITE_P(TrailStarts, TrailStartValueTest,
 
 TEST_F(TrailsTest, CalculateUniquePathsLinear) {
     // Arrange
-    std::vector<tree_node<topography>> nodes{createLinearPath()};
+    std::vector<tree_node<aoc::math::vector_3d<uint8_t>>> nodes{createLinearPath()};
     trails test_trails(nodes);
 
     // Act
@@ -70,7 +70,7 @@ TEST_F(TrailsTest, CalculateUniquePathsLinear) {
 
 TEST_F(TrailsTest, CalculateUniquePathsBranching) {
     // Arrange
-    std::vector<tree_node<topography>> nodes{createBranchingPath()};
+    std::vector<tree_node<aoc::math::vector_3d<uint8_t>>> nodes{createBranchingPath()};
     trails test_trails(nodes);
 
     // Act
@@ -82,7 +82,7 @@ TEST_F(TrailsTest, CalculateUniquePathsBranching) {
 
 TEST_F(TrailsTest, CalculateRatingLinear) {
     // Arrange
-    std::vector<tree_node<topography>> nodes{createLinearPath()};
+    std::vector<tree_node<aoc::math::vector_3d<uint8_t>>> nodes{createLinearPath()};
     trails test_trails(nodes);
 
     // Act
@@ -94,7 +94,7 @@ TEST_F(TrailsTest, CalculateRatingLinear) {
 
 TEST_F(TrailsTest, CalculateRatingBranching) {
     // Arrange
-    std::vector<tree_node<topography>> nodes{createBranchingPath()};
+    std::vector<tree_node<aoc::math::vector_3d<uint8_t>>> nodes{createBranchingPath()};
     trails test_trails(nodes);
 
     // Act
