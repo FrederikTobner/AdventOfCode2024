@@ -82,3 +82,11 @@ class vector_3d {
     }
 };
 } // namespace aoc::math
+
+namespace std {
+template <typename T> struct hash<aoc::math::vector_3d<T>> {
+    auto operator()(aoc::math::vector_3d<T> const & v) const -> size_t {
+        return hash<T>{}(v.x) ^ hash<T>{}(v.y) ^ hash<T>{}(v.z);
+    }
+};
+} // namespace std

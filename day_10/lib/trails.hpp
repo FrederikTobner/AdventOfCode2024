@@ -43,11 +43,3 @@ bool isTrailEnd(uint8_t value);
 bool isTrailStart(uint8_t value);
 
 } // namespace aoc::day_10
-
-namespace std {
-template <> struct hash<aoc::math::vector_3d<uint8_t>> {
-    auto operator()(aoc::math::vector_3d<uint8_t> const & v) const -> size_t {
-        return hash<uint8_t>{}(v.x) ^ hash<uint8_t>{}(v.y) ^ hash<uint8_t>{}(v.z);
-    }
-};
-} // namespace std
