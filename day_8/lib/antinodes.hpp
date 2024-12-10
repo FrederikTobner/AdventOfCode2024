@@ -10,9 +10,8 @@
 #include <unordered_set>
 #include <vector>
 
-#include "../lib/coordinate.hpp"
-
 #include "../../shared/src/ranges_compatibility_layer.hpp"
+#include "../../shared/src/vector2d.hpp"
 
 namespace aoc::day_8 {
 
@@ -22,13 +21,22 @@ namespace detail {
 /// @param exclude_pos The position to exclude from results
 /// @param antenas Map of frequencies to antenna positions
 /// @return Range of matching antenna positions
-[[nodiscard]] static auto getOtherAntennaPositionsByFrequency(char frequency, coordinate const & exclude_pos,
-                                                              std::multimap<char, coordinate> const & antenas) {
+[[nodiscard]] static auto
+getOtherAntennaPositionsByFrequency(char frequency, aoc::math::Vector2D<int64_t> const & exclude_pos,
+                                    std::multimap<char, aoc::math::Vector2D<int64_t>> const & antenas) {
     auto range = antenas.equal_range(frequency);
     return std::ranges::subrange(range.first, range.second) |
            std::views::transform([](auto const & pair) { return pair.second; }) |
-           std::views::filter([&exclude_pos](coordinate const & pos) { return pos != exclude_pos; }) |
+           std::views::filter([&exclude_pos](aoc::math::Vector2D<int64_t> const & pos) { return pos != exclude_pos; }) |
            std::views::common;
+}
+
+/// @brief Checks if the coordinate is within bounds
+/// @param max_x Maximum x coordinate (exclusive)
+/// @param max_y Maximum y coordinate (exclusive)
+/// @return True if the coordinate is within bounds
+[[nodiscard]] static auto inBounds(aoc::math::Vector2D<int64_t> vec, int64_t max_x, int64_t max_y) -> bool {
+    return vec.y >= 0 && vec.y < max_y && vec.x >= 0 && vec.x < max_x;
 }
 
 /// @brief Generates a sequence of antinode positions along a line
@@ -37,9 +45,11 @@ namespace detail {
 /// @param max_x Maximum x coordinate (exclusive)
 /// @param max_y Maximum y coordinate (exclusive)
 /// @return Range of antinode positions
-[[nodiscard]] static auto generateAntinodeSequence(coordinate start, coordinate diff, int64_t max_x, int64_t max_y) {
+[[nodiscard]] static auto generateAntinodeSequence(aoc::math::Vector2D<int64_t> start,
+                                                   aoc::math::Vector2D<int64_t> diff, int64_t max_x, int64_t max_y) {
     return std::views::iota(0) | std::views::transform([=](int64_t i) { return start + diff * i; }) |
-           std::views::take_while([=](coordinate pos) { return pos.inBounds(max_x, max_y); });
+           std::views::take_while(
+               [=](aoc::math::Vector2D<int64_t> pos) { return detail::inBounds(pos, max_x, max_y); });
 }
 } // namespace detail
 
@@ -49,20 +59,21 @@ namespace detail {
 /// @param antenas Map of frequencies to antenna positions
 /// @return Set of antinode positions
 [[nodiscard]] auto findDiscreteAntinodes(int64_t max_x_coordinate, int64_t max_y_coordinate,
-                                         std::multimap<char, coordinate> const & antenas)
-    -> std::unordered_set<coordinate> {
+                                         std::multimap<char, aoc::math::Vector2D<int64_t>> const & antenas)
+    -> std::unordered_set<aoc::math::Vector2D<int64_t>> {
     return std::views::transform(
                antenas,
                [&](auto const & antena) {
                    return detail::getOtherAntennaPositionsByFrequency(antena.first, antena.second, antenas) |
-                          std::views::transform([&antena](coordinate const & other_coordinate) {
+                          std::views::transform([&antena](aoc::math::Vector2D<int64_t> const & other_coordinate) {
                               return other_coordinate + other_coordinate - antena.second;
                           }) |
-                          std::views::filter([max_x_coordinate, max_y_coordinate](coordinate const & pos) {
-                              return pos.inBounds(max_x_coordinate, max_y_coordinate);
-                          });
+                          std::views::filter(
+                              [max_x_coordinate, max_y_coordinate](aoc::math::Vector2D<int64_t> const & pos) {
+                                  return detail::inBounds(pos, max_x_coordinate, max_y_coordinate);
+                              });
                }) |
-           std::views::join | aoc::ranges::to<std::unordered_set<coordinate>>;
+           std::views::join | aoc::ranges::to<std::unordered_set<aoc::math::Vector2D<int64_t>>>;
 }
 
 /// @brief Finds continuous antinode positions along lines between antenna pairs
@@ -71,20 +82,20 @@ namespace detail {
 /// @param antenas Map of frequencies to antenna positions
 /// @return Set of antinode positions
 [[nodiscard]] auto findContinousAntinodes(int64_t max_x_coordinate, int64_t max_y_coordinate,
-                                          std::multimap<char, coordinate> const & antenas)
-    -> std::unordered_set<coordinate> {
+                                          std::multimap<char, aoc::math::Vector2D<int64_t>> const & antenas)
+    -> std::unordered_set<aoc::math::Vector2D<int64_t>> {
     return std::views::transform(
                antenas,
                [&](auto const & antena) {
                    return detail::getOtherAntennaPositionsByFrequency(antena.first, antena.second, antenas) |
-                          std::views::transform([&](coordinate const & other_coordinate) {
+                          std::views::transform([&](aoc::math::Vector2D<int64_t> const & other_coordinate) {
                               return detail::generateAntinodeSequence(other_coordinate,
                                                                       other_coordinate - antena.second,
                                                                       max_x_coordinate, max_y_coordinate);
                           }) |
                           std::views::join;
                }) |
-           std::views::join | aoc::ranges::to<std::unordered_set<coordinate>>;
+           std::views::join | aoc::ranges::to<std::unordered_set<aoc::math::Vector2D<int64_t>>>;
 }
 
 } // namespace aoc::day_8

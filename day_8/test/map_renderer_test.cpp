@@ -15,7 +15,7 @@ class MapRendererTest : public ::testing::Test {
 TEST_F(MapRendererTest, EmptyGridRendersEmpty) {
     // Arrange
     std::vector<std::string_view> lines;
-    std::unordered_set<aoc::day_8::coordinate> antinodes;
+    std::unordered_set<aoc::math::Vector2D<int64_t>> antinodes;
 
     // Act
     aoc::day_8::renderResult(lines, antinodes, 0, 0);
@@ -28,7 +28,7 @@ TEST_F(MapRendererTest, EmptyGridRendersEmpty) {
 TEST_F(MapRendererTest, SimpleGridWithoutAntinodes) {
     // Arrange
     std::vector<std::string_view> lines = {"123", "456", "789"};
-    std::unordered_set<aoc::day_8::coordinate> antinodes;
+    std::unordered_set<aoc::math::Vector2D<int64_t>> antinodes;
 
     // Act
     aoc::day_8::renderResult(lines, antinodes, 3, 3);
@@ -41,7 +41,7 @@ TEST_F(MapRendererTest, SimpleGridWithoutAntinodes) {
 TEST_F(MapRendererTest, GridWithSingleAntinode) {
     // Arrange
     std::vector<std::string_view> lines = {"123", "456", "789"};
-    std::unordered_set<aoc::day_8::coordinate> antinodes{{1, 1}};
+    std::unordered_set<aoc::math::Vector2D<int64_t>> antinodes{{1, 1}};
 
     // Act
     aoc::day_8::renderResult(lines, antinodes, 3, 3);
@@ -54,7 +54,7 @@ TEST_F(MapRendererTest, GridWithSingleAntinode) {
 TEST_F(MapRendererTest, GridWithMultipleAntinodes) {
     // Arrange
     std::vector<std::string_view> lines = {"123", "456", "789"};
-    std::unordered_set<aoc::day_8::coordinate> antinodes{{0, 0}, {2, 2}};
+    std::unordered_set<aoc::math::Vector2D<int64_t>> antinodes{{0, 0}, {2, 2}};
 
     // Act
     aoc::day_8::renderResult(lines, antinodes, 3, 3);
@@ -67,7 +67,7 @@ TEST_F(MapRendererTest, GridWithMultipleAntinodes) {
 TEST_F(MapRendererTest, LargeGridWithBoundaryAntinodes) {
     // Arrange
     std::vector<std::string_view> lines = {".....", ".....", ".....", "....."};
-    std::unordered_set<aoc::day_8::coordinate> antinodes{{0, 0}, {0, 4}, {3, 0}, {3, 4}};
+    std::unordered_set<aoc::math::Vector2D<int64_t>> antinodes{{0, 0}, {0, 4}, {3, 0}, {3, 4}};
 
     // Act
     aoc::day_8::renderResult(lines, antinodes, 5, 4);

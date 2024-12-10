@@ -33,12 +33,12 @@ auto main(int argc, char const ** argv) -> int {
         }
         map.topographies.push_back(row);
     }
-    auto trails = convert_to_trails(map);
+    auto trails = convertToTrails(map);
     auto counter = 0;
 
     // Part 1
     for (auto root_node : trails.nodes) {
-        std::unordered_set<position> uniqueEndPositions;
+        std::unordered_set<aoc::math::Vector2D<uint8_t>> uniqueEndPositions;
         addEndpointIfReachable(uniqueEndPositions, root_node);
         counter += uniqueEndPositions.size();
     }

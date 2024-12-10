@@ -14,7 +14,6 @@
 #include "../../shared/src/print_compatibility_layer.hpp"
 
 #include "../lib/antinodes.hpp"
-#include "../lib/coordinate.hpp"
 #include "../lib/map_renderer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
@@ -33,7 +32,7 @@ auto main(int argc, char const ** argv) -> int {
     int64_t max_y_coordinate = lines.size();
     int64_t max_x_coordinate = lines[0].size();
 
-    std::multimap<char, aoc::day_8::coordinate> antenas;
+    std::multimap<char, aoc::math::Vector2D<int64_t>> antenas;
     for (auto x : std::views::iota(int64_t{0}, max_y_coordinate)) {
         for (auto y : std::views::iota(int64_t{0}, max_x_coordinate)) {
             if (std::isalnum(lines[x][y])) {
@@ -43,13 +42,13 @@ auto main(int argc, char const ** argv) -> int {
     }
 
     // Part 1
-    std::unordered_set<aoc::day_8::coordinate> antinodes =
+    std::unordered_set<aoc::math::Vector2D<int64_t>> antinodes =
         aoc::day_8::findDiscreteAntinodes(max_x_coordinate, max_y_coordinate, antenas);
 
     aoc::day_8::renderResult(lines, antinodes, max_x_coordinate, max_y_coordinate);
 
     // Part 2
-    std::unordered_set<aoc::day_8::coordinate> antinodes2 =
+    std::unordered_set<aoc::math::Vector2D<int64_t>> antinodes2 =
         aoc::day_8::findContinousAntinodes(max_x_coordinate, max_y_coordinate, antenas);
 
     aoc::day_8::renderResult(lines, antinodes2, max_x_coordinate, max_y_coordinate);
