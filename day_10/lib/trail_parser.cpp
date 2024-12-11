@@ -1,10 +1,12 @@
 #include "trail_parser.hpp"
 
+#include "../../shared/src/ranges_compatibility_layer.hpp"
+
 namespace aoc::day_10 {
 
 static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc::math::vector_3d<uint8_t> const & pos)
     -> std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> {
-    if (isTrailEnd(map[pos.x][pos.y])) {
+    if (isTrailEnd(pos.z)) {
         return {};
     }
 
@@ -12,8 +14,7 @@ static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc
                                                             Direction::LEFT};
 
     std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> children;
-    uint8_t current_value = map[pos.x][pos.y];
-    uint8_t expected_next_value = current_value + 1;
+    uint8_t expected_next_value = pos.z + 1;
 
     for (auto dir : directions) {
         auto new_pos = calculateNewPosition(pos, dir);
@@ -30,11 +31,16 @@ static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc
     return children;
 }
 
-auto convertToTrails(std::vector<std::vector<uint8_t>> const & map) -> trails {
-    std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> nodes;
+auto convertToTrails(std::vector<std::string_view> const & lines) -> trails {
+    std::vector<std::vector<uint8_t>> map =
+        lines | std::views::transform([](auto const & line) {
+            return line | std::views::transform([](auto c) { return c - '0'; }) | aoc::ranges::to<std::vector<uint8_t>>;
+        }) |
+        aoc::ranges::to<std::vector<std::vector<uint8_t>>>;
 
-    for (auto x : std::views::iota(uint8_t{0}, static_cast<uint8_t>(map.size()))) {
-        for (auto y : std::views::iota(uint8_t{0}, static_cast<uint8_t>(map[x].size()))) {
+    std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> nodes;
+    for (auto x : std::views::iota(uint8_t{0}, static_cast<uint8_t>(lines.size()))) {
+        for (auto y : std::views::iota(uint8_t{0}, static_cast<uint8_t>(lines[x].size()))) {
             if (isTrailStart(map[x][y])) {
                 auto position = aoc::math::vector_3d<uint8_t>{x, y, map[x][y]};
                 nodes.push_back(createNode(position, determineChildren(map, position)));

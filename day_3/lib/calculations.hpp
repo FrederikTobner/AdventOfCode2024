@@ -28,7 +28,7 @@ concept Numeric = std::integral<T> || std::floating_point<T>;
  * @param matches Range of pairs to process
  * @return Sum of all products of the pairs
  */
-template <Numeric T = uint64_t> [[nodiscard]] auto accumulateProducts(std::ranges::range auto const & matches) {
+template <Numeric T = uint64_t> [[nodiscard]] auto accumulateProducts(std::ranges::range auto const & matches) -> T {
     return std::transform_reduce(
         std::execution::par_unseq, std::ranges::begin(matches), std::ranges::end(matches), T{0}, std::plus<T>{},
         [](auto const & pair) -> T { return static_cast<T>(pair.first) * static_cast<T>(pair.second); });

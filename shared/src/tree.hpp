@@ -19,20 +19,12 @@ template <typename T> class tree_node {
         children.push_back(child);
     }
 
-    size_t countFullFillingCondition(auto condition) const {
-        size_t count = condition(value) ? 1 : 0;
-        for (auto const & child : children) {
-            count += child.countFullFillingCondition(condition);
-        }
-        return count;
-    }
-
-    void executeOnFullFillingCondition(auto condition, auto action) const {
+    void executeIf(auto condition, auto action) const {
         if (condition(value)) {
             action(value);
         }
         for (auto & child : children) {
-            child.executeOnFullFillingCondition(condition, action);
+            child.executeIf(condition, action);
         }
     }
 };
