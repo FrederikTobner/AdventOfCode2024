@@ -2,11 +2,11 @@
 
 namespace aoc::day_11 {
 
-char const * ParsingErrorCategory::name() const noexcept {
+auto ParsingErrorCategory::name() const noexcept -> char const * {
     return "parsing_error";
 }
 
-std::string ParsingErrorCategory::message(int ev) const {
+auto ParsingErrorCategory::message(int ev) const -> std::string {
     switch (static_cast<ParsingError>(ev)) {
     case ParsingError::GenericError:
         return "An error occurred while parsing the input";
@@ -21,6 +21,6 @@ std::string ParsingErrorCategory::message(int ev) const {
 
 } // namespace aoc::day_11
 
-std::error_code std::make_error_code(aoc::day_11::ParsingError e) {
+auto std::make_error_code(aoc::day_11::ParsingError e) -> std::error_code {
     return {static_cast<int>(e), aoc::day_11::ParsingErrorCategory::get()};
 }

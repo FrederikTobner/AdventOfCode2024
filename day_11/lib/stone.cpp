@@ -15,7 +15,7 @@ namespace aoc::day_11 {
 /// @brief Calculate the number of digits in a number
 /// @param num The number to count digits for
 /// @return The number of digits in the number
-auto getDigitCount(size_t num) noexcept -> size_t {
+[[nodiscard]] auto getDigitCount(size_t num) noexcept -> size_t {
     return num == 0 ? 1 : static_cast<size_t>(std::log10(num)) + 1;
 }
 
@@ -23,7 +23,7 @@ auto getDigitCount(size_t num) noexcept -> size_t {
 /// @param stone The stone to process
 /// @param count The number of stones to process
 /// @param next The map to store the next iteration's stone counts
-static auto processStone(size_t stone, size_t count, std::unordered_map<size_t, size_t> & next) -> void {
+[[nodiscard]] static auto processStone(size_t stone, size_t count, std::unordered_map<size_t, size_t> & next) -> void {
     if (stone == 0) {
         next[1] += count;
         return;
@@ -42,7 +42,7 @@ static auto processStone(size_t stone, size_t count, std::unordered_map<size_t, 
 /// @brief Update the stone counts for the next iteration
 /// @param current The current stone counts
 /// @return The updated stone counts for the next iteration
-static auto updateStoneCounts(std::unordered_map<size_t, size_t> const & current)
+[[nodiscard]] static auto updateStoneCounts(std::unordered_map<size_t, size_t> const & current)
     -> std::unordered_map<size_t, size_t> {
     std::unordered_map<size_t, size_t> next;
     for (auto const & [stone, count] : current) {
