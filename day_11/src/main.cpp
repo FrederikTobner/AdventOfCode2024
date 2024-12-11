@@ -35,10 +35,10 @@ auto main(int argc, char const ** argv) -> int {
     auto numbers = (*parsed_numbers)[0];
 
     // Part 1
-    std::println("Result after 25 iterations: {}", aoc::day_11::calculateStones(numbers, 25, std::execution::seq));
+    std::println("Result after 25 iterations: {}", aoc::day_11::calculateStones(numbers, 25));
 
     // Part 2
-    std::println("Result after 75 iterations: {}", aoc::day_11::calculateStones(numbers, 75, std::execution::seq));
+    std::println("Result after 75 iterations: {}", aoc::day_11::calculateStones(numbers, 75));
 
     return 0;
 }

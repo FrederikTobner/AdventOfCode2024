@@ -7,66 +7,70 @@
 #include <ranges>
 #include <unordered_map>
 
+#include "../../shared/src/print_compatibility_layer.hpp"
+
 namespace aoc::day_11 {
 
-size_t getDigitCount(size_t num) {
-    if (num == 0) {
-        return 1;
-    }
-    return static_cast<size_t>(std::log10(num)) + 1;
+/// @brief Calculate the number of digits in a number
+constexpr auto getDigitCount(size_t num) noexcept -> size_t {
+    return num == 0 ? 1 : static_cast<size_t>(std::log10(num)) + 1;
 }
 
-template <typename EXECUTION_POLICY>
-    requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
-size_t calculateStones(std::vector<size_t> const & stones, size_t cycles, EXECUTION_POLICY && policy) {
+/// @brief Process a single stone according to the rules
+auto processStone(size_t stone, size_t count, std::unordered_map<size_t, size_t> & next) -> void {
+    if (stone == 0) {
+        // Zeros become ones
+        next[1] += count;
+        return;
+    }
 
-    auto start = std::chrono::high_resolution_clock::now();
+    size_t const digits = getDigitCount(stone);
+    if (digits % 2 == 0) {
+        // Split number into two parts
+        size_t const half = digits / 2;
+        size_t const divisor = static_cast<size_t>(std::pow(10, half));
+        next[stone / divisor] += count;
+        next[stone % divisor] += count;
+    } else {
+        // Multiply by 2024
+        next[stone * 2024] += count;
+    }
+}
 
-    // Map to store count of stones with same properties
+/// @brief Update the stone counts for the next iteration
+auto updateStoneCounts(std::unordered_map<size_t, size_t> const & current) -> std::unordered_map<size_t, size_t> {
+    std::unordered_map<size_t, size_t> next;
+    for (auto const & [stone, count] : current) {
+        processStone(stone, count, next);
+    }
+    return next;
+}
+
+/// @brief Calculate total stones after given number of cycles
+auto calculateStones(std::vector<size_t> const & stones, size_t const cycles) -> size_t {
+#ifdef _DEBUG
+    auto const start = std::chrono::high_resolution_clock::now();
+#endif
+
     std::unordered_map<size_t, size_t> stoneCount;
-
-    // Initialize counts
-    for (auto stone : stones) {
-        stoneCount[stone]++;
+    for (auto const stone : stones) {
+        ++stoneCount[stone];
     }
 
-    for (size_t i = 0; i < cycles; i++) {
-
-        std::unordered_map<size_t, size_t> nextCount;
-
-        for (auto const & [stone, count] : stoneCount) {
-            if (stone == 0) {
-                // Zeros become ones
-                nextCount[1] += count;
-            } else {
-                size_t digits = getDigitCount(stone);
-                if (digits % 2 == 0) {
-                    // Split number into two parts
-                    size_t half = digits / 2;
-                    size_t divisor = static_cast<size_t>(std::pow(10, half));
-                    size_t left = stone / divisor;
-                    size_t right = stone % divisor;
-                    // Each stone splits into two
-                    nextCount[left] += count;
-                    nextCount[right] += count;
-                } else {
-                    // Multiply by 2024
-                    nextCount[stone * 2024] += count;
-                }
-            }
-        }
-
-        stoneCount = std::move(nextCount);
+    for (size_t i = 0; i < cycles; ++i) {
+        stoneCount = updateStoneCounts(stoneCount);
     }
 
-    // Sum up all stone counts
     size_t totalStones = 0;
     for (auto const & [stone, count] : stoneCount) {
         totalStones += count;
     }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+#ifdef _DEBUG
+    auto const end = std::chrono::high_resolution_clock::now();
+    auto const duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::println("Execution time: {} ms", duration.count());
+#endif
 
     return totalStones;
 }
