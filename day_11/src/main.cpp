@@ -1,3 +1,4 @@
+#include <execution>
 #include <expected>
 #include <ranges>
 #include <string>
@@ -18,7 +19,6 @@ auto main(int argc, char const ** argv) -> int {
         std::println(stderr, "Could not open file: {}", input.error().message());
         return aoc::EXIT_CODE_IO_ERROR;
     }
-    std::println("{}", *input);
 
     auto parsed_numbers =
         aoc::splitter::linebased::split<size_t, std::vector>(*input, aoc::parser::rules::parse_number<size_t>, ' ');
@@ -35,9 +35,10 @@ auto main(int argc, char const ** argv) -> int {
     auto numbers = (*parsed_numbers)[0];
 
     // Part 1
-    std::println("Result: {}", aoc::day_11::calculateStones(numbers, 75));
+    std::println("Result after 25 iterations: {}", aoc::day_11::calculateStones(numbers, 25, std::execution::seq));
 
     // Part 2
+    std::println("Result after 75 iterations: {}", aoc::day_11::calculateStones(numbers, 75, std::execution::seq));
 
     return 0;
 }

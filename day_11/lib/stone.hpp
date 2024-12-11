@@ -1,72 +1,74 @@
 #pragma once
 
 #include <chrono>
+#include <cmath>
 #include <concepts>
 #include <cstddef>
 #include <ranges>
-
-#include "../../shared/src/print_compatibility_layer.hpp"
+#include <unordered_map>
 
 namespace aoc::day_11 {
 
-/*ording to the first applicable rule in this list:
-If the stone is engraved with the number 0, it is replaced by a stone engraved with the number 1.
-If the stone is engraved with a number that has an even number of digits, it is replaced by two stones. The left
-half of the digits are engraved on the new left stone, and the right half of the digits are engraved on the new
-right stone. (The new numbers don't keep extra leading zeroes: 1000 would become stones 10 and 0.) If none of the
-other rules apply, the stone is replaced by a new stone; the old stone's number multiplied by 2024 is engraved on
-the new stone.*/
-void onBlink(size_t index, std::vector<std::vector<size_t>> & stonesFragmented) {
-    auto & stone = stonesFragmented[index];
-    if (stone[0] == 0) {
-        stone[0] = 1;
-    } else {
-        auto digits = 0;
-        auto temp = stone[0];
-        while (temp) {
-            temp /= 10;
-            digits++;
-        }
-        if (digits % 2 == 0) {
-            auto half = digits / 2;
-            auto left = stone[0] / static_cast<int>(std::pow(10, half));
-            auto right = stone[0] % static_cast<int>(std::pow(10, half));
-            stone[0] = left;
-            // Insert the right stone after the current stone
-            auto newFragment = std::vector<size_t>{right};
-            stonesFragmented.emplace_back(newFragment);
-        } else {
-            stone[0] *= 2024;
-        }
+size_t getDigitCount(size_t num) {
+    if (num == 0) {
+        return 1;
     }
+    return static_cast<size_t>(std::log10(num)) + 1;
 }
 
-size_t calculateStones(std::vector<size_t> & stones, size_t cycles) {
-    std::vector<std::vector<size_t>> stonesFragmented;
+template <typename EXECUTION_POLICY>
+    requires std::is_execution_policy_v<std::remove_cvref_t<EXECUTION_POLICY>>
+size_t calculateStones(std::vector<size_t> const & stones, size_t cycles, EXECUTION_POLICY && policy) {
 
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Map to store count of stones with same properties
+    std::unordered_map<size_t, size_t> stoneCount;
+
+    // Initialize counts
     for (auto stone : stones) {
-        std::vector<size_t> stoneFragment;
-        stoneFragment.push_back(stone);
-        stonesFragmented.push_back(stoneFragment);
+        stoneCount[stone]++;
     }
 
     for (size_t i = 0; i < cycles; i++) {
-        // Measure the time taken to process each cycle
-        auto start = std::chrono::high_resolution_clock::now();
-        size_t current_size = stonesFragmented.size();
-        for (size_t j = 0; j < current_size; j++) {
-            onBlink(j, stonesFragmented);
+
+        std::unordered_map<size_t, size_t> nextCount;
+
+        for (auto const & [stone, count] : stoneCount) {
+            if (stone == 0) {
+                // Zeros become ones
+                nextCount[1] += count;
+            } else {
+                size_t digits = getDigitCount(stone);
+                if (digits % 2 == 0) {
+                    // Split number into two parts
+                    size_t half = digits / 2;
+                    size_t divisor = static_cast<size_t>(std::pow(10, half));
+                    size_t left = stone / divisor;
+                    size_t right = stone % divisor;
+                    // Each stone splits into two
+                    nextCount[left] += count;
+                    nextCount[right] += count;
+                } else {
+                    // Multiply by 2024
+                    nextCount[stone * 2024] += count;
+                }
+            }
         }
-        auto end = std::chrono::high_resolution_clock::now();
-        std::println("Cycle {} took {} ms to execute", i,
-                     std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+
+        stoneCount = std::move(nextCount);
     }
 
-    size_t result_size = 0;
-    for (auto & stoneFragment : stonesFragmented) {
-        result_size += stoneFragment.size();
+    // Sum up all stone counts
+    size_t totalStones = 0;
+    for (auto const & [stone, count] : stoneCount) {
+        totalStones += count;
     }
-    return result_size;
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::println("Execution time: {} ms", duration.count());
+
+    return totalStones;
 }
 
 } // namespace aoc::day_11
