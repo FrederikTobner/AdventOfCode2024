@@ -13,16 +13,13 @@ auto parseNumbers(std::string_view input) -> std::expected<std::vector<size_t>, 
         aoc::splitter::linebased::split<size_t, std::vector>(input, aoc::parser::rules::parse_number<size_t>, ' ');
 
     if (!parsed_numbers) {
-        std::println(stderr, "Error parsing input: {}", parsed_numbers.error().message());
-        return std::unexpected(parsed_numbers.error());
+        return std::unexpected(std::make_error_code(ParsingError::GenericError));
     }
     if (parsed_numbers->empty()) {
-        std::println(stderr, "No numbers found in input");
-        return std::unexpected(std::make_error_code(std::errc::invalid_argument));
+        return std::unexpected(std::make_error_code(ParsingError::NoInput));
     }
     if (parsed_numbers->size() > 1) {
-        std::println(stderr, "Too many lines in input");
-        return std::unexpected(std::make_error_code(std::errc::invalid_argument));
+        return std::unexpected(std::make_error_code(ParsingError::TooMuchInput));
     }
 
     auto numbers = (*parsed_numbers)[0];
