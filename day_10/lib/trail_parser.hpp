@@ -11,7 +11,6 @@
 #include "../../shared/src/vector2d.hpp"
 #include "../../shared/src/vector3d.hpp"
 
-
 namespace aoc::day_10 {
 
 /// Represents the four possible directions of movement on the trail
@@ -72,6 +71,6 @@ static auto determineChildren(std::vector<std::vector<uint8_t>> const & map, aoc
 /// Converts a 2D map into a trail system representation
 /// @param map The 2D map containing trail values (0-9)
 /// @return A trails object containing the complete trail system
-auto convertToTrails(std::vector<std::vector<uint8_t>> const & map) -> trails;
+[[nodiscard]] auto convertToTrails(std::vector<std::string_view> const & lines) -> trails;
 
 } // namespace aoc::day_10

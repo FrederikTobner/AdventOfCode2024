@@ -26,15 +26,7 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
-    std::vector<std::vector<uint8_t>> map;
-    for (auto line : lines) {
-        std::vector<uint8_t> row;
-        for (auto c : line) {
-            row.push_back(c - '0');
-        }
-        map.push_back(row);
-    }
-    auto trails = aoc::day_10::convertToTrails(map);
+    auto trails = aoc::day_10::convertToTrails(lines);
 
     // Part 1
     std::println("The number of unique paths is: {:#}", trails.calculateUniquePaths());

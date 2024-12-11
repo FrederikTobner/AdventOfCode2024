@@ -26,20 +26,20 @@ class trails {
 
     /// Calculates the number of unique paths through the trail system
     /// @return The count of unique paths from start to end points
-    size_t calculateUniquePaths() const;
+    [[nodiscard]] auto calculateUniquePaths() const -> size_t;
 
     /// Calculates the total rating of all possible paths through the trail system
     /// @return The sum of all valid path ratings
-    size_t calculateRating() const;
+    [[nodiscard]] auto calculateRating() const -> size_t;
 
   private:
     std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> nodes;
 };
 
 /// Checks if a given trail value represents an end point
-bool isTrailEnd(uint8_t value);
+[[nodiscard]] auto isTrailEnd(uint8_t const & value) -> bool;
 
 /// Checks if a given trail value represents a starting point
-bool isTrailStart(uint8_t value);
+[[nodiscard]] auto isTrailStart(uint8_t const & value) -> bool;
 
 } // namespace aoc::day_10

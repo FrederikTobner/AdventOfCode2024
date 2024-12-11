@@ -8,8 +8,8 @@ using namespace aoc::math;
 
 class TrailParserTest : public ::testing::Test {
   protected:
-    std::vector<std::vector<uint8_t>> createSimpleMap() {
-        return {{0, 1, 2, 3}, {1, 2, 3, 4}, {2, 3, 4, 5}};
+    std::vector<std::string_view> createSimpleMap() {
+        return {"0123", "1234", "2345"};
     }
     auto getResults(trails const & result) -> std::vector<aoc::tree::tree_node<aoc::math::vector_3d<uint8_t>>> {
         return result.nodes;
@@ -70,7 +70,7 @@ INSTANTIATE_TEST_SUITE_P(Positions, PositionValidationTest,
 
 TEST_F(TrailParserTest, ConvertToTrailsBasicTest) {
     // Arrange
-    std::vector<std::vector<uint8_t>> simpleMap = {{0, 1, 2, 3}, {1, 2, 3, 9}};
+    std::vector<std::string_view> simpleMap = {"0123", "1239"};
     auto expectedConnections =
         std::vector<std::pair<uint8_t, uint8_t>>{{0, 1}, {1, 2}, {2, 3}, {3, 9}, {1, 2}, {2, 3}, {3, 9}};
 
@@ -103,7 +103,7 @@ TEST_F(TrailParserTest, InvalidDirectionTest) {
 
 TEST_F(TrailParserTest, MultipleStartPointsTest) {
     // Arrange
-    std::vector<std::vector<uint8_t>> multiStartMap = {{0, 1}, {0, 1}};
+    std::vector<std::string_view> multiStartMap = {"01", "01"};
     auto expectedConnections = std::vector<std::pair<uint8_t, uint8_t>>{{0, 1}, {0, 1}};
 
     // Act

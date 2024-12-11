@@ -8,6 +8,7 @@
 
 #pragma once
 #include <algorithm>
+#include <cstdint>
 #include <execution>
 #include <ranges>
 #include <string>
@@ -21,6 +22,15 @@
  * @namespace aoc::ranges
  */
 namespace aoc::ranges {
+
+template <typename CONTAINER>
+concept has_reverve = requires(CONTAINER & container, size_t size) {
+    aoc::container::container_traits<CONTAINER>::reserve(container, size);
+};
+
+template <typename RANGE>
+concept has_size = requires(RANGE range) { std::ranges::size(range); };
+
 /**
  * @brief Converts a range to a specified container type
  * @tparam Container The target container type
@@ -30,10 +40,13 @@ namespace aoc::ranges {
  */
 template <typename CONTAINER, typename RANGE> [[nodiscard]] auto to_container(RANGE && range) -> CONTAINER {
     CONTAINER result;
-    if constexpr (requires {
-                      aoc::container::container_traits<CONTAINER>::reserve(result, std::ranges::size(range));
-                  }) {
-        aoc::container::container_traits<CONTAINER>::reserve(result, std::ranges::size(range));
+    if constexpr (has_reverve<CONTAINER> && has_size<RANGE>) {
+        auto range_size = std::ranges::size(range);
+        if (range_size <= SIZE_MAX) {
+            aoc::container::container_traits<CONTAINER>::reserve(result, (size_t)range_size);
+        } else {
+            aoc::container::container_traits<CONTAINER>::reserve(result, SIZE_MAX);
+        }
     }
     for (auto && element : range) {
         if constexpr (std::is_same_v<CONTAINER, std::string>) {
@@ -55,8 +68,8 @@ template <typename CONTAINER> struct Converter {
 };
 
 /**
- * @brief Converts a range to a specified container type - only needed under GCC 13 because ranges::to is implemented
- * yet
+ * @brief Converts a range to a specified container type - only needed under GCC 13 because ranges::to is not
+ * implemented yet
  */
 template <typename CONTAINER> inline constexpr Converter<CONTAINER> to{};
 
@@ -72,13 +85,8 @@ template <typename RANGE> [[nodiscard]] auto to_vector(RANGE && range) {
 
 template <typename Range> [[nodiscard]] auto to_string(Range && range) -> std::string {
     std::string result;
-    if constexpr (requires { result.resize(std::ranges::size(range)); }) {
-        result.resize(std::ranges::size(range));
-        std::ranges::copy(range, result.begin());
-    } else {
-        result.reserve(std::ranges::distance(range));
-        std::ranges::copy(range, std::back_inserter(result));
-    }
+    result.resize(std::ranges::size(range));
+    std::ranges::copy(range, result.begin());
     return result;
 }
 
