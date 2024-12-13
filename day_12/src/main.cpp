@@ -9,7 +9,9 @@
 #include "../../shared/src/grid_processor.hpp"
 #include "../../shared/src/print_compatibility_layer.hpp"
 
+#include "../lib/parser.hpp"
 #include "../lib/plant_location.hpp"
+
 
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
