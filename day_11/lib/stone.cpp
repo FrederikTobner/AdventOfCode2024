@@ -23,7 +23,7 @@ namespace aoc::day_11 {
 /// @param stone The stone to process
 /// @param count The number of stones to process
 /// @param next The map to store the next iteration's stone counts
-[[nodiscard]] static auto processStone(size_t stone, size_t count, std::unordered_map<size_t, size_t> & next) -> void {
+static auto processStone(size_t stone, size_t count, std::unordered_map<size_t, size_t> & next) -> void {
     if (stone == 0) {
         next[1] += count;
         return;

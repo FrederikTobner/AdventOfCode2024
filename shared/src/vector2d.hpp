@@ -11,9 +11,9 @@ class vector_2d {
     T x;
     T y;
 
-    vector_2d() : x(0), y(0) {
+    constexpr vector_2d() : x(0), y(0) {
     }
-    vector_2d(T x, T y) : x(x), y(y) {
+    constexpr vector_2d(T x, T y) : x(x), y(y) {
     }
 
     auto operator+(vector_2d const & other) const -> vector_2d {

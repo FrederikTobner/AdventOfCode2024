@@ -1,5 +1,3 @@
-#pragma once
-
 #include "parser.hpp"
 
 #include "../../shared/src/line_splitter.hpp"
