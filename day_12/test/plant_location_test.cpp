@@ -1,6 +1,20 @@
 #include "../lib/plant_location.hpp"
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <algorithm>
+#include <ranges>
+
+MATCHER_P(UnorderedSetEquals, expected, "") {
+    if (arg.size() != expected.size()) {
+        return false;
+    }
+    return std::all_of(expected.begin(), expected.end(), [&arg](auto const & exp) {
+        return std::find_if(arg.begin(), arg.end(),
+                            [&exp](const auto & act) { return std::ranges::equal(exp, act); }) != arg.end();
+    });
+}
 
 TEST(PlantLocationTest, SplitIntoConnectedLocations) {
     std::unordered_set<aoc::math::vector_2d<int16_t>> locations = {
@@ -12,18 +26,11 @@ TEST(PlantLocationTest, SplitIntoConnectedLocations) {
     };
 
     auto groups = aoc::day_12::splitIntoConnectedLocations(locations);
-    EXPECT_EQ(groups.size(), 3);
 
-    // Check third group
-    EXPECT_TRUE(groups[0].contains({4, 4}));
+    std::vector<std::unordered_set<aoc::math::vector_2d<int16_t>>> expected_groups = {
+        {{0, 0}, {0, 1}}, {{2, 2}, {2, 3}}, {{4, 4}}};
 
-    // Check second group
-    EXPECT_TRUE(groups[1].contains({2, 2}));
-    EXPECT_TRUE(groups[1].contains({2, 3}));
-
-    // Check first group
-    EXPECT_TRUE(groups[2].contains({0, 0}));
-    EXPECT_TRUE(groups[2].contains({0, 1}));
+    EXPECT_THAT(groups, UnorderedSetEquals(expected_groups));
 }
 
 TEST(PlantLocationTest, CalculateFencePrice) {
@@ -48,6 +55,7 @@ TEST(PlantLocationTest, EmptyLocationSet) {
     std::unordered_set<aoc::math::vector_2d<int16_t>> locations;
 
     auto groups = aoc::day_12::splitIntoConnectedLocations(locations);
+    EXPECT_TRUE(groups.empty());
     EXPECT_TRUE(groups.empty());
 
     auto price = aoc::day_12::calculateFencePrice(locations);
