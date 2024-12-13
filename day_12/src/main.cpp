@@ -17,7 +17,6 @@ auto main(int argc, char const ** argv) -> int {
         std::println(stderr, "Could not open file: {}", input.error().message());
         return aoc::EXIT_CODE_IO_ERROR;
     }
-    std::println("Input: {}", *input);
 
     auto parsedInput = aoc::day_12::parseInput(*input);
     if (!parsedInput) {
