@@ -7,7 +7,6 @@
 
 #include "disk_map.hpp"
 
-#include "../../shared/src/ranges_compatibility_layer.hpp"
 
 namespace aoc::day_9 {
 

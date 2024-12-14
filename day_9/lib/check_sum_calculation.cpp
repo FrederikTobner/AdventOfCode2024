@@ -1,5 +1,7 @@
 #include "check_sum_calculation.hpp"
 
+#include "../../shared/src/ranges_compatibility_layer.hpp"
+
 namespace aoc::day_9 {
 
 auto calculateChecksumAfterCompacting(disk_map const & disk_map) -> size_t {

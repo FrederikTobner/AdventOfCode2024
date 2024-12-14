@@ -10,6 +10,6 @@
 #include "../../shared/src/vector2d.hpp"
 
 namespace aoc::day_12 {
-auto parseInput(std::string_view input)
+[[nodiscard]] auto parseInput(std::string_view input)
     -> std::expected<std::unordered_map<char, std::unordered_set<aoc::math::vector_2d<int16_t>>>, std::error_code>;
 } // namespace aoc::day_12

@@ -9,18 +9,13 @@
 
 namespace aoc::day_13 {
 
-struct Coordinate {
-    size_t x;
-    size_t y;
-};
-
-struct GameState {
+struct claw_machine_state {
     aoc::math::vector_2d<size_t> button_a{0, 0};
     aoc::math::vector_2d<size_t> button_b{0, 0};
     aoc::math::vector_2d<size_t> price{0, 0};
 };
 
-static auto parseCoordinates(std::string_view line) -> Coordinate {
+static auto parseCoordinates(std::string_view line) -> aoc::math::vector_2d<size_t> {
     std::optional<size_t> x;
     std::optional<size_t> y;
     size_t currentIndex = 0;
@@ -44,7 +39,7 @@ static auto parseCoordinates(std::string_view line) -> Coordinate {
     return {x.value(), y.value()};
 }
 
-static auto processTriplet(GameState & state, size_t increment) -> size_t {
+static auto processTriplet(claw_machine_state & state, size_t const & increment) -> size_t {
     state.price.x += increment;
     state.price.y += increment;
 
@@ -55,8 +50,8 @@ static auto processTriplet(GameState & state, size_t increment) -> size_t {
     return 0;
 }
 
-auto calculateTotalPrice(std::vector<std::string_view> lines, size_t increment) -> size_t {
-    GameState state;
+auto calculateTotalPrice(std::vector<std::string_view> lines, size_t const & increment) -> size_t {
+    claw_machine_state state;
     size_t tokens_spent = 0;
 
     for (size_t i = 0; i < lines.size(); ++i) {
