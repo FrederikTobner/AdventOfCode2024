@@ -19,8 +19,6 @@ struct world {
     }
 
     auto safetyScore() const -> size_t {
-        // To determine the safest area, count the number of robots in each quadrant after 100 seconds. Robots that are
-        // exactly in the middle (horizontally or vertically) don't count as being in any quadrant.
         size_t top_left = 0;
         size_t top_right = 0;
         size_t bottom_left = 0;
@@ -38,6 +36,23 @@ struct world {
             }
         }
         return top_left * top_right * bottom_left * bottom_right;
+    }
+
+    [[nodiscard]] auto formsChristmasTree() const -> bool {
+        std::vector<std::vector<size_t>> density(y_size, std::vector<size_t>(x_size, 0));
+
+        for (auto const & r : robots) {
+            density[r.position.y][r.position.x]++;
+        }
+
+        for (size_t y = 0; y < y_size; ++y) {
+            for (size_t x = 0; x < x_size; ++x) {
+                if (density[y][x] > 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 };
 

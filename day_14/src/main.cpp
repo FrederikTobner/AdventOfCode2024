@@ -41,13 +41,16 @@ auto main(int argc, char const ** argv) -> int {
 
     auto world = aoc::day_14::world{.robots = robots, .x_size = 101, .y_size = 103};
 
-    for (size_t i = 0; i < 100; ++i) {
+    for (size_t i = 1; i <= 100 * 103; ++i) {
         world.update();
+        if (i == 100) {
+            std::println("After 100 seconds the world has a safety score of: {}", world.safetyScore());
+        }
+        if (world.formsChristmasTree()) {
+            std::println("Christmas tree formed after {} seconds", i);
+            break;
+        }
     }
-
-    auto score = world.safetyScore();
-
-    std::println("The safety score is: {:#}", score);
 
     return 0;
 }
