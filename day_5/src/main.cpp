@@ -71,5 +71,5 @@ auto main(int argc, char const ** argv) -> int {
     std::println("The sum of valid middle elements is: {:#}", sum_valid);
     std::println("The sum of invalid middle elements is: {:#}", sum_invalid);
 
-    return 0;
+    return aoc::EXIT_CODE_SUCCESS;
 }

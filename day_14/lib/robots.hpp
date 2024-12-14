@@ -11,68 +11,22 @@
 
 namespace aoc::day_14 {
 
+/// @brief Represents a robot with position and velocity in a 2D space
 struct robot {
+    /// @brief Current position of the robot
     aoc::math::vector_2d<int16_t> position;
+    /// @brief Current velocity of the robot
     aoc::math::vector_2d<int16_t> velocity;
 
-    auto update(size_t x_size, size_t y_size) -> void {
-        position += velocity;
-        if (position.x < 0) {
-            position.x += x_size;
-        }
-        if (position.y < 0) {
-            position.y += y_size;
-        }
-        if (position.x >= x_size) {
-            position.x -= x_size;
-        }
-        if (position.y >= y_size) {
-            position.y -= y_size;
-        }
-    }
+    /// @brief Updates the robot's position based on its velocity and world boundaries
+    /// @param x_size The width of the world
+    /// @param y_size The height of the world
+    auto update(size_t x_size, size_t y_size) -> void;
 };
 
-auto parseCoordinate(std::string_view line) -> std::expected<aoc::math::vector_2d<int16_t>, std::error_code> {
-    auto delimiter = line.find(',');
-    auto x = aoc::parser::rules::parse_number<int16_t>(line.substr(0, delimiter));
-    auto y = aoc::parser::rules::parse_number<int16_t>(line.substr(delimiter + 1));
-    if (!x || !y) {
-        return std::unexpected(x.error() ? x.error() : y.error());
-    }
-    return aoc::math::vector_2d<int16_t>{*x, *y};
-}
-
-// Format p=74,51 v=36,-94
-auto parseRobot(std::string_view line) -> std::expected<robot, std::error_code> {
-    robot r;
-    auto [x, y] = aoc::math::vector_2d<int16_t>{};
-    auto [vx, vy] = aoc::math::vector_2d<int16_t>{};
-
-    auto pos_start = line.find("p=") + 2;
-    auto pos_end = line.find(" v=");
-
-    auto vel_start = pos_end + 3;
-    auto vel_end = line.size();
-
-    auto pos = line.substr(pos_start, pos_end - pos_start);
-    auto vel = line.substr(vel_start, vel_end - vel_start);
-
-    auto parsed_pos = parseCoordinate(pos);
-
-    if (!parsed_pos) {
-        return std::unexpected(parsed_pos.error());
-    }
-
-    auto parsed_vel = parseCoordinate(vel);
-
-    if (!parsed_vel) {
-        return std::unexpected(parsed_vel.error());
-    }
-
-    r.position = *parsed_pos;
-    r.velocity = *parsed_vel;
-
-    return r;
-}
+/// @brief Parses a robot configuration from a text line
+/// @param line String view containing the robot configuration in format "p=x,y v=dx,dy"
+/// @return Expected containing either a robot or an error code
+[[nodiscard]] auto parseRobot(std::string_view line) -> std::expected<robot, std::error_code>;
 
 } // namespace aoc::day_14

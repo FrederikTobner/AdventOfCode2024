@@ -34,5 +34,5 @@ auto main(int argc, char const ** argv) -> int {
     // Part 2
     std::println("The total rating of all trails is: {:#}", trails.calculateRating());
 
-    return 0;
+    return aoc::EXIT_CODE_SUCCESS;
 }

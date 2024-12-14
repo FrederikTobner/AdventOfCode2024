@@ -12,7 +12,6 @@
 #include "../lib/parser.hpp"
 #include "../lib/plant_location.hpp"
 
-
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
     if (!input) [[unlikely]] {
@@ -45,5 +44,5 @@ auto main(int argc, char const ** argv) -> int {
     std::println("Total cost part 1: {}", totalCost);
     std::println("Total cost part 2: {}", totalCost_part2);
 
-    return 0;
+    return aoc::EXIT_CODE_SUCCESS;
 }

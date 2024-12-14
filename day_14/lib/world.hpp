@@ -1,59 +1,49 @@
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
+#include <ranges>
 #include <vector>
 
 #include "robots.hpp"
 
 namespace aoc::day_14 {
 
+/// @brief Represents a world containing multiple robots and their interactions
 struct world {
+    /// @brief Constructs a new world with given robots and dimensions
+    /// @param robots Vector of robots to populate the world
+    /// @param x_size Width of the world
+    /// @param y_size Height of the world
+    world(std::vector<robot> robots, size_t x_size, size_t y_size);
+
+    /// @brief Updates the position of all robots in the world
+    auto update() -> void;
+
+    /// @brief Calculates the safety score based on robot distribution in quadrants
+    /// @return Product of the number of robots in each quadrant
+    [[nodiscard]] auto safetyScore() const -> size_t;
+
+    /// @brief Checks if robots form a valid Christmas tree pattern
+    /// @return True if no robots overlap, false otherwise
+    [[nodiscard]] auto formsChristmasTree() const -> bool;
+
+  private:
     std::vector<robot> robots;
     size_t x_size;
     size_t y_size;
 
-    auto update() -> void {
-        for (auto & r : robots) {
-            r.update(x_size, y_size);
-        }
-    }
+    /// @brief Checks if a robot is in the top-left quadrant
+    [[nodiscard]] auto isInTopLeft(robot const & r) const -> bool;
 
-    auto safetyScore() const -> size_t {
-        size_t top_left = 0;
-        size_t top_right = 0;
-        size_t bottom_left = 0;
-        size_t bottom_right = 0;
+    /// @brief Checks if a robot is in the top-right quadrant
+    [[nodiscard]] auto isInTopRight(robot const & r) const -> bool;
 
-        for (auto const & r : robots) {
-            if (r.position.x < x_size / 2 && r.position.y < y_size / 2) {
-                ++top_left;
-            } else if (r.position.x >= x_size / 2 + 1 && r.position.y < y_size / 2) {
-                ++top_right;
-            } else if (r.position.x < x_size / 2 && r.position.y >= y_size / 2 + 1) {
-                ++bottom_left;
-            } else if (r.position.x >= x_size / 2 + 1 && r.position.y >= y_size / 2 + 1) {
-                ++bottom_right;
-            }
-        }
-        return top_left * top_right * bottom_left * bottom_right;
-    }
+    /// @brief Checks if a robot is in the bottom-left quadrant
+    [[nodiscard]] auto isInBottomLeft(robot const & r) const -> bool;
 
-    [[nodiscard]] auto formsChristmasTree() const -> bool {
-        std::vector<std::vector<size_t>> density(y_size, std::vector<size_t>(x_size, 0));
-
-        for (auto const & r : robots) {
-            density[r.position.y][r.position.x]++;
-        }
-
-        for (size_t y = 0; y < y_size; ++y) {
-            for (size_t x = 0; x < x_size; ++x) {
-                if (density[y][x] > 1) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+    /// @brief Checks if a robot is in the bottom-right quadrant
+    [[nodiscard]] auto isInBottomRight(robot const & r) const -> bool;
 };
 
 } // namespace aoc::day_14

@@ -35,5 +35,5 @@ auto main(int argc, char const ** argv) -> int {
 
     std::println("Tokens spent part1={} part2={}", tokens_spent_part_1, tokens_spent_part_2);
 
-    return 0;
+    return aoc::EXIT_CODE_SUCCESS;
 }

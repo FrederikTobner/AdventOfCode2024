@@ -29,5 +29,5 @@ auto main(int argc, char const ** argv) -> int {
     ptrdiff_t sum = aoc::day_4::countOverlappingDiagonal(mas_matches);
     std::println("Found {:#} X-MAS matches", sum);
 
-    return 0;
+    return aoc::EXIT_CODE_SUCCESS;
 }

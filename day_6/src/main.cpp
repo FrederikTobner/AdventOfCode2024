@@ -64,5 +64,6 @@ auto main(int argc, char const ** argv) -> int {
                               });
 
     std::println("Part 2: Amount of possible loops: {:#}", result);
-    return 0;
+
+    return aoc::EXIT_CODE_SUCCESS;
 }

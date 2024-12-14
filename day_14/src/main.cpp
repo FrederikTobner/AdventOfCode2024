@@ -39,18 +39,20 @@ auto main(int argc, char const ** argv) -> int {
         robots.push_back(*robot);
     }
 
-    auto world = aoc::day_14::world{.robots = robots, .x_size = 101, .y_size = 103};
+    auto world = aoc::day_14::world(robots, 101, 103);
 
     for (size_t i = 1; i <= 100 * 103; ++i) {
         world.update();
+        // Part 1
         if (i == 100) {
             std::println("After 100 seconds the world has a safety score of: {}", world.safetyScore());
         }
+        // Part 2
         if (world.formsChristmasTree()) {
             std::println("Christmas tree formed after {} seconds", i);
             break;
         }
     }
 
-    return 0;
+    return aoc::EXIT_CODE_SUCCESS;
 }
