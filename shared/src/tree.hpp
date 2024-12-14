@@ -19,11 +19,11 @@ template <typename T> class tree_node {
         children.push_back(child);
     }
 
-    void executeIf(auto condition, auto action) const {
+    auto executeIf(auto condition, auto action) const -> void {
         if (condition(value)) {
             action(value);
         }
-        for (auto & child : children) {
+        for (auto const & child : children) {
             child.executeIf(condition, action);
         }
     }

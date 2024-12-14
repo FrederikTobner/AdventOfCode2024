@@ -32,5 +32,5 @@ auto main(int argc, char const ** argv) -> int {
     // Part 2
     std::println("Result after 75 iterations: {}", aoc::day_11::calculateStones(*numbers, 75));
 
-    return 0;
+    return aoc::EXIT_CODE_SUCCESS;
 }

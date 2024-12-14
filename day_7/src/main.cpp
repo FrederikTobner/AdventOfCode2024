@@ -46,5 +46,6 @@ auto main(int argc, char const ** argv) -> int {
 
     std::println("Sum of all results: {} using basic operators", part_1_sum);
     std::println("Sum of all results: {} using all operators", part_2_sum);
-    return 0;
+
+    return aoc::EXIT_CODE_SUCCESS;
 }

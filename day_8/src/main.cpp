@@ -53,5 +53,5 @@ auto main(int argc, char const ** argv) -> int {
 
     aoc::day_8::renderResult(lines, antinodes2, max_x_coordinate, max_y_coordinate);
 
-    return 0;
+    return aoc::EXIT_CODE_SUCCESS;
 }

@@ -16,6 +16,8 @@
 
 namespace aoc::day_12 {
 
+static auto countBorderLines(std::unordered_set<aoc::math::vector_2d<int16_t>> const & locations) -> size_t;
+
 auto splitIntoConnectedLocations(std::unordered_set<aoc::math::vector_2d<int16_t>> const & locations)
     -> std::vector<std::unordered_set<aoc::math::vector_2d<int16_t>>> {
     std::vector<std::unordered_set<aoc::math::vector_2d<int16_t>>> result;
@@ -71,6 +73,11 @@ auto calculateFencePrice(std::unordered_set<aoc::math::vector_2d<int16_t>> const
         }
     }
     return fenceElementCount * locations.size();
+}
+
+auto calculateFencePrice2(std::unordered_set<aoc::math::vector_2d<int16_t>> const & locations) -> size_t {
+    auto borderLines = countBorderLines(locations);
+    return borderLines * locations.size();
 }
 
 static auto countBorderLines(std::unordered_set<aoc::math::vector_2d<int16_t>> const & locations) -> size_t {
@@ -166,11 +173,6 @@ static auto countBorderLines(std::unordered_set<aoc::math::vector_2d<int16_t>> c
     }
 
     return sides;
-}
-
-auto calculateFencePrice2(std::unordered_set<aoc::math::vector_2d<int16_t>> const & locations) -> size_t {
-    auto borderLines = countBorderLines(locations);
-    return borderLines * locations.size();
 }
 
 } // namespace aoc::day_12

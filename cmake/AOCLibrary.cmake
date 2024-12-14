@@ -1,6 +1,5 @@
 macro(aoc_add_library)
     file(GLOB_RECURSE SOURCES "*.cpp")
-    # if there are no source files create a header only library 
     if(SOURCES)
         add_library(${PROJECT_NAME}_day_${DAY}_lib STATIC ${SOURCES})
         target_link_libraries(${PROJECT_NAME}_day_${DAY}_lib PUBLIC ${PROJECT_NAME}_shared_lib)
@@ -9,9 +8,8 @@ macro(aoc_add_library)
         elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             target_compile_options(${PROJECT_NAME}_day_${DAY}_lib PUBLIC -std=c++23)
         endif()
-    else()
-        add_library(${PROJECT_NAME}_day_${DAY}_lib INTERFACE)
-        target_include_directories(${PROJECT_NAME}_day_${DAY}_lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+    else()  # if there are no source files create a header only library instead
+        add_library(${PROJECT_NAME}_day_${DAY}_lib INTERFACE ${HEADERS})
         target_link_libraries(${PROJECT_NAME}_day_${DAY}_lib INTERFACE ${PROJECT_NAME}_shared_lib)
         if(MSVC)
             target_compile_options(${PROJECT_NAME}_day_${DAY}_lib INTERFACE /std:c++latest)

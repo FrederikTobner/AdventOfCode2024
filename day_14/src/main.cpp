@@ -1,4 +1,3 @@
-
 #include <expected>
 #include <ranges>
 #include <string>
@@ -11,7 +10,8 @@
 #include "../../shared/src/ranges_compatibility_layer.hpp"
 #include "../../shared/src/vector2d.hpp"
 
-#include "../lib/calculations.hpp"
+#include "../lib/robots.hpp"
+#include "../lib/world.hpp"
 
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
@@ -29,11 +29,30 @@ auto main(int argc, char const ** argv) -> int {
     }) | std::views::filter([](std::string_view sv) { return !sv.empty(); }) |
                  ::aoc::ranges::to<std::vector<std::string_view>>;
 
-    size_t tokens_spent_part_1 = aoc::day_13::calculateTotalPrice(lines, 0);
+    auto robots = std::vector<aoc::day_14::robot>{};
+    for (auto const & line : lines) {
+        auto robot = aoc::day_14::parseRobot(line);
+        if (!robot) {
+            std::println(stderr, "Failed to parse robot: {}", robot.error().message());
+            return aoc::EXIT_CODE_DATA_ERROR;
+        }
+        robots.push_back(*robot);
+    }
 
-    size_t tokens_spent_part_2 = aoc::day_13::calculateTotalPrice(lines, 10000000000000);
+    auto world = aoc::day_14::world(robots, 101, 103);
 
-    std::println("Tokens spent part1={} part2={}", tokens_spent_part_1, tokens_spent_part_2);
+    for (size_t i = 1; i <= 100 * 103; ++i) {
+        world.update();
+        // Part 1
+        if (i == 100) {
+            std::println("After 100 seconds the world has a safety score of: {}", world.safetyScore());
+        }
+        // Part 2
+        if (world.formsChristmasTree()) {
+            std::println("Christmas tree formed after {} seconds", i);
+            break;
+        }
+    }
 
     return aoc::EXIT_CODE_SUCCESS;
 }

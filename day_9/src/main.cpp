@@ -51,5 +51,5 @@ auto main(int argc, char const ** argv) -> int {
 
     std::println("Checksum after less aggressive compacting: {}", part_2_checksum);
 
-    return 0;
+    return aoc::EXIT_CODE_SUCCESS;
 }
