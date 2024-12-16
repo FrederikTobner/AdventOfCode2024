@@ -11,6 +11,7 @@
 #include "../lib/calculations.hpp"
 #include "../lib/parser.hpp"
 #include "../lib/warehouse.hpp"
+#include "../lib/warehouse_transformer.hpp"
 
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
@@ -29,10 +30,21 @@ auto main(int argc, char const ** argv) -> int {
     auto warehouse = aoc::day_15::parse_warehouse(split_input->first);
     auto moves = aoc::day_15::parse_movements(split_input->second);
 
-    aoc::day_15::executeMoves(warehouse, moves);
-    auto sum = aoc::day_15::calculate_gps_sum(warehouse);
+    // Part 1
+    auto wareHouseCopy = warehouse;
+    aoc::day_15::executeMoves(wareHouseCopy, moves);
+    auto sum = aoc::day_15::calculate_gps_sum(wareHouseCopy);
 
     std::println("The sum of the gps coordinates is: {}", sum);
+
+    // Part 2
+    auto transformedWareHouse = aoc::day_15::transformWarehouse(warehouse);
+
+    aoc::day_15::executeMoves(transformedWareHouse, moves);
+
+    auto sumTransformed = aoc::day_15::calculate_gps_sum(transformedWareHouse);
+
+    std::println("The sum of the gps coordinates after transformation is: {}", sumTransformed);
 
     return 0;
 }

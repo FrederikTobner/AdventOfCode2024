@@ -17,10 +17,11 @@ auto calculate_gps_coordinate(aoc::math::vector_2d<size_t> const & box) -> size_
 // distance from the left edge of the map.
 auto calculate_gps_sum(std::vector<std::vector<cell_type>> & warehouse) -> size_t {
     size_t sum = 0;
-
     for (size_t y = 0; y < warehouse.size(); ++y) {
         for (size_t x = 0; x < warehouse[y].size(); ++x) {
             if (warehouse[y][x] == cell_type::box) {
+                sum += calculate_gps_coordinate({x, y});
+            } else if (warehouse[y][x] == cell_type::box_part_left) {
                 sum += calculate_gps_coordinate({x, y});
             }
         }
