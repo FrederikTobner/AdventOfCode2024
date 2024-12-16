@@ -3,10 +3,10 @@
 namespace aoc::day_16 {
 
 enum class maze_cell {
-    wall,
-    empty,
-    start,
-    end
+    WALL,
+    EMPTY,
+    START,
+    END
 };
 
 } // namespace aoc::day_16

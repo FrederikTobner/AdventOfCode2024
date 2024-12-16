@@ -29,6 +29,8 @@ auto main(int argc, char const ** argv) -> int {
 
     auto maze = aoc::day_16::parseMaze(grid);
 
+    // Part 1
+
     auto shortest_route = aoc::day_16::MazeSolver(maze).findPath();
 
     if (shortest_route.cost == -1) {
@@ -36,6 +38,8 @@ auto main(int argc, char const ** argv) -> int {
     } else {
         std::println("Shortest path cost: {}", shortest_route.cost);
     }
+
+    // Part 2
 
     auto shortest_routes = aoc::day_16::MazeSolver(maze).findPaths();
 

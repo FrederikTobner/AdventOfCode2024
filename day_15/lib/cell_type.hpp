@@ -3,12 +3,12 @@
 namespace aoc::day_15 {
 
 enum class cell_type {
-    empty,         // .
-    wall,          // #
-    box,           // O
-    robot,         // @
-    box_part_left, // [
-    box_part_right // ]
+    EMPTY,         // .
+    WALL,          // #
+    BOX,           // O
+    ROBOT,         // @
+    BOX_PART_LEFT, // [
+    BOX_PART_RIGHT // ]
 };
 
 } // namespace aoc::day_15

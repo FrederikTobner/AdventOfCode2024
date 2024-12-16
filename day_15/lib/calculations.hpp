@@ -19,9 +19,9 @@ auto calculate_gps_sum(std::vector<std::vector<cell_type>> & warehouse) -> size_
     size_t sum = 0;
     for (size_t y = 0; y < warehouse.size(); ++y) {
         for (size_t x = 0; x < warehouse[y].size(); ++x) {
-            if (warehouse[y][x] == cell_type::box) {
+            if (warehouse[y][x] == cell_type::BOX) {
                 sum += calculate_gps_coordinate({x, y});
-            } else if (warehouse[y][x] == cell_type::box_part_left) {
+            } else if (warehouse[y][x] == cell_type::BOX_PART_LEFT) {
                 sum += calculate_gps_coordinate({x, y});
             }
         }

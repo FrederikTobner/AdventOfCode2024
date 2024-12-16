@@ -15,22 +15,22 @@ auto printWareHouse(std::vector<std::vector<cell_type>> & warehouse) -> void {
     for (auto const & row : warehouse) {
         for (auto const & cell : row) {
             switch (cell) {
-            case cell_type::empty:
+            case cell_type::EMPTY:
                 std::print(".");
                 break;
-            case cell_type::wall:
+            case cell_type::WALL:
                 std::print("#");
                 break;
-            case cell_type::box:
+            case cell_type::BOX:
                 std::print("O");
                 break;
-            case cell_type::robot:
+            case cell_type::ROBOT:
                 std::print("@");
                 break;
-            case cell_type::box_part_left:
+            case cell_type::BOX_PART_LEFT:
                 std::print("[");
                 break;
-            case cell_type::box_part_right:
+            case cell_type::BOX_PART_RIGHT:
                 std::print("]");
                 break;
             }
@@ -42,16 +42,16 @@ auto printWareHouse(std::vector<std::vector<cell_type>> & warehouse) -> void {
 auto pushBox(std::vector<std::vector<cell_type>> & warehouse, aoc::math::vector_2d<int16_t> const & box,
              aoc::math::vector_2d<int16_t> const & direction) -> bool {
     auto new_position = box + direction;
-    if (warehouse[new_position.y][new_position.x] == cell_type::wall) {
+    if (warehouse[new_position.y][new_position.x] == cell_type::WALL) {
         return false;
-    } else if (warehouse[new_position.y][new_position.x] == cell_type::box) {
+    } else if (warehouse[new_position.y][new_position.x] == cell_type::BOX) {
         // Check if we can push the next box as well using recursion
         if (!pushBox(warehouse, new_position, direction)) {
             return false;
         }
     }
-    warehouse[new_position.y][new_position.x] = cell_type::box;
-    warehouse[box.y][box.x] = cell_type::empty;
+    warehouse[new_position.y][new_position.x] = cell_type::BOX;
+    warehouse[box.y][box.x] = cell_type::EMPTY;
     return true;
 }
 
@@ -82,8 +82,8 @@ auto pushBoxPair(std::vector<std::vector<cell_type>> & warehouse, aoc::math::vec
         auto new_left = left + direction;
         auto new_right = right + direction;
 
-        if (warehouse[new_left.y][new_left.x] == cell_type::wall ||
-            warehouse[new_right.y][new_right.x] == cell_type::wall) {
+        if (warehouse[new_left.y][new_left.x] == cell_type::WALL ||
+            warehouse[new_right.y][new_right.x] == cell_type::WALL) {
             return false;
         }
 
@@ -91,16 +91,16 @@ auto pushBoxPair(std::vector<std::vector<cell_type>> & warehouse, aoc::math::vec
         visited.insert(right);
         moves.push_back({left, right, new_left, new_right});
 
-        if (warehouse[new_left.y][new_left.x] == cell_type::box_part_left) {
+        if (warehouse[new_left.y][new_left.x] == cell_type::BOX_PART_LEFT) {
             to_check.push_back({new_left, new_left + aoc::math::vector_2d<int16_t>{1, 0}});
         }
-        if (warehouse[new_right.y][new_right.x] == cell_type::box_part_left) {
+        if (warehouse[new_right.y][new_right.x] == cell_type::BOX_PART_LEFT) {
             to_check.push_back({new_right, new_right + aoc::math::vector_2d<int16_t>{1, 0}});
         }
-        if (warehouse[new_left.y][new_left.x] == cell_type::box_part_right) {
+        if (warehouse[new_left.y][new_left.x] == cell_type::BOX_PART_RIGHT) {
             to_check.push_back({new_left - aoc::math::vector_2d<int16_t>{1, 0}, new_left});
         }
-        if (warehouse[new_right.y][new_right.x] == cell_type::box_part_right) {
+        if (warehouse[new_right.y][new_right.x] == cell_type::BOX_PART_RIGHT) {
             to_check.push_back({new_right - aoc::math::vector_2d<int16_t>{1, 0}, new_right});
         }
     }
@@ -116,13 +116,13 @@ auto pushBoxPair(std::vector<std::vector<cell_type>> & warehouse, aoc::math::vec
     }
 
     for (auto const & move : moves) {
-        warehouse[move.left.y][move.left.x] = cell_type::empty;
-        warehouse[move.right.y][move.right.x] = cell_type::empty;
+        warehouse[move.left.y][move.left.x] = cell_type::EMPTY;
+        warehouse[move.right.y][move.right.x] = cell_type::EMPTY;
     }
 
     for (auto const & move : moves) {
-        warehouse[move.new_left.y][move.new_left.x] = cell_type::box_part_left;
-        warehouse[move.new_right.y][move.new_right.x] = cell_type::box_part_right;
+        warehouse[move.new_left.y][move.new_left.x] = cell_type::BOX_PART_LEFT;
+        warehouse[move.new_right.y][move.new_right.x] = cell_type::BOX_PART_RIGHT;
     }
 
     return true;
@@ -135,21 +135,21 @@ static auto executeMove(std::vector<std::vector<cell_type>> & warehouse, aoc::ma
                         aoc::math::vector_2d<int16_t> & robot) -> void {
     auto direction = aoc::math::getDirectionVector(move);
     aoc::math::vector_2d<int16_t> new_position = robot + direction;
-    if (warehouse[new_position.y][new_position.x] == cell_type::wall) {
+    if (warehouse[new_position.y][new_position.x] == cell_type::WALL) {
         return;
     }
-    if (warehouse[new_position.y][new_position.x] == cell_type::box) {
+    if (warehouse[new_position.y][new_position.x] == cell_type::BOX) {
         aoc::math::vector_2d<int16_t> new_box_position = new_position + direction;
         if (!aoc::day_15::pushBox(warehouse, new_position, direction)) {
             return;
         }
     }
-    if (warehouse[new_position.y][new_position.x] == cell_type::box_part_left ||
-        warehouse[new_position.y][new_position.x] == cell_type::box_part_right) {
-        auto other_box_part = warehouse[new_position.y][new_position.x] == cell_type::box_part_left
-                                  ? cell_type::box_part_right
-                                  : cell_type::box_part_left;
-        auto other_box_position = other_box_part == cell_type::box_part_right
+    if (warehouse[new_position.y][new_position.x] == cell_type::BOX_PART_LEFT ||
+        warehouse[new_position.y][new_position.x] == cell_type::BOX_PART_RIGHT) {
+        auto other_box_part = warehouse[new_position.y][new_position.x] == cell_type::BOX_PART_LEFT
+                                  ? cell_type::BOX_PART_RIGHT
+                                  : cell_type::BOX_PART_LEFT;
+        auto other_box_position = other_box_part == cell_type::BOX_PART_RIGHT
                                       ? new_position + aoc::math::vector_2d<int16_t>{1, 0}
                                       : new_position + aoc::math::vector_2d<int16_t>{-1, 0};
         aoc::math::vector_2d<int16_t> new_box_position = new_position + direction;
@@ -164,8 +164,8 @@ static auto executeMove(std::vector<std::vector<cell_type>> & warehouse, aoc::ma
             }
         }
     }
-    warehouse[new_position.y][new_position.x] = cell_type::robot;
-    warehouse[robot.y][robot.x] = cell_type::empty;
+    warehouse[new_position.y][new_position.x] = cell_type::ROBOT;
+    warehouse[robot.y][robot.x] = cell_type::EMPTY;
     robot = new_position;
 }
 
@@ -177,7 +177,7 @@ auto executeMoves(std::vector<std::vector<cell_type>> & warehouse, std::vector<a
     // Look for the robot in the warehouse
     for (size_t y = 0; y < warehouse.size(); ++y) {
         for (size_t x = 0; x < warehouse[y].size(); ++x) {
-            if (warehouse[y][x] == cell_type::robot) {
+            if (warehouse[y][x] == cell_type::ROBOT) {
                 if (robot_x != SIZE_MAX || robot_y != SIZE_MAX) {
                     throw std::invalid_argument("Multiple robots found in warehouse");
                 }

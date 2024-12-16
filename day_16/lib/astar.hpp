@@ -55,10 +55,10 @@ class MazeSolver {
     MazeSolver(std::vector<std::vector<maze_cell>> const & maze) : m_maze(maze) {
         for (size_t y = 0; y < maze.size(); ++y) {
             for (size_t x = 0; x < maze[y].size(); ++x) {
-                if (maze[y][x] == maze_cell::start) {
+                if (maze[y][x] == maze_cell::START) {
                     m_start = {aoc::math::vector_2d<int16_t>{static_cast<int16_t>(x), static_cast<int16_t>(y)},
                                aoc::math::Direction::RIGHT};
-                } else if (maze[y][x] == maze_cell::end) {
+                } else if (maze[y][x] == maze_cell::END) {
                     m_end = {aoc::math::vector_2d<int16_t>{static_cast<int16_t>(x), static_cast<int16_t>(y)},
                              aoc::math::Direction::UP};
                 }
@@ -88,14 +88,7 @@ class MazeSolver {
         return result;
     }
 
-    // Finds the paths with the lowest cost from the start to the end
     auto findPaths() -> std::vector<PathResult> {
-
-        // First find the shortest path - then block it one step at a time and find the next shortest path
-        // Compare the cost of the next shortest path with the previous shortest path
-        // If the cost is the same, add the path to the list of shortest paths
-        // If the cost is different, stop and return the list of shortest paths
-
         std::vector<PathResult> allPaths;
         auto heuristic = [](Node const & a, Node const & b) {
             return std::abs(a.pos.x - b.pos.x) + std::abs(a.pos.y - b.pos.y);
@@ -120,13 +113,13 @@ class MazeSolver {
         }
 
         for (auto const & node : shortest_found.path) {
-            m_maze[node.pos.y][node.pos.x] = maze_cell::wall;
+            m_maze[node.pos.y][node.pos.x] = maze_cell::WALL;
             // Look for shortest path again
             auto result = astar(m_start, m_end, heuristic, getNeighbors);
             if (result.cost == shortest_found.cost) {
                 allPaths.push_back(result);
             }
-            m_maze[node.pos.y][node.pos.x] = maze_cell::empty;
+            m_maze[node.pos.y][node.pos.x] = maze_cell::EMPTY;
         }
         return allPaths;
     }
@@ -138,7 +131,7 @@ class MazeSolver {
 
     auto isValid(aoc::math::vector_2d<int16_t> const & pos) const -> bool {
         return pos.y >= 0 && pos.y < m_maze.size() && pos.x >= 0 && pos.x < m_maze[0].size() &&
-               m_maze[pos.y][pos.x] != maze_cell::wall;
+               m_maze[pos.y][pos.x] != maze_cell::WALL;
     }
 
     auto astar(Node start, Node end, std::function<int(Node const &, Node const &)> const & heuristic,

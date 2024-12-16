@@ -17,21 +17,21 @@ auto transformWarehouse(std::vector<std::vector<cell_type>> & warehouse) -> std:
         auto transformed_row = std::vector<cell_type>{};
         for (auto const & cell : row) {
             switch (cell) {
-            case cell_type::empty:
-                transformed_row.push_back(cell_type::empty);
-                transformed_row.push_back(cell_type::empty);
+            case cell_type::EMPTY:
+                transformed_row.push_back(cell_type::EMPTY);
+                transformed_row.push_back(cell_type::EMPTY);
                 break;
-            case cell_type::wall:
-                transformed_row.push_back(cell_type::wall);
-                transformed_row.push_back(cell_type::wall);
+            case cell_type::WALL:
+                transformed_row.push_back(cell_type::WALL);
+                transformed_row.push_back(cell_type::WALL);
                 break;
-            case cell_type::box:
-                transformed_row.push_back(cell_type::box_part_left);
-                transformed_row.push_back(cell_type::box_part_right);
+            case cell_type::BOX:
+                transformed_row.push_back(cell_type::BOX_PART_LEFT);
+                transformed_row.push_back(cell_type::BOX_PART_RIGHT);
                 break;
-            case cell_type::robot:
-                transformed_row.push_back(cell_type::robot);
-                transformed_row.push_back(cell_type::empty);
+            case cell_type::ROBOT:
+                transformed_row.push_back(cell_type::ROBOT);
+                transformed_row.push_back(cell_type::EMPTY);
                 break;
             default:
                 break;

@@ -37,16 +37,16 @@ auto parse_warehouse(std::string_view input) -> std::vector<std::vector<cell_typ
         for (auto const & cell : line) {
             switch (cell) {
             case '.':
-                row.push_back(cell_type::empty);
+                row.push_back(cell_type::EMPTY);
                 break;
             case '#':
-                row.push_back(cell_type::wall);
+                row.push_back(cell_type::WALL);
                 break;
             case 'O':
-                row.push_back(cell_type::box);
+                row.push_back(cell_type::BOX);
                 break;
             case '@':
-                row.push_back(cell_type::robot);
+                row.push_back(cell_type::ROBOT);
                 break;
             default:
                 break;

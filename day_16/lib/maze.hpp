@@ -5,7 +5,6 @@
 #include <string_view>
 #include <vector>
 
-
 #include "maze_cell.hpp"
 
 namespace aoc::day_16 {
@@ -16,16 +15,16 @@ auto parseMaze(std::vector<std::string_view> lines) -> std::vector<std::vector<m
         for (auto const & cell : line) {
             switch (cell) {
             case '#':
-                row.push_back(maze_cell::wall);
+                row.push_back(maze_cell::WALL);
                 break;
             case '.':
-                row.push_back(maze_cell::empty);
+                row.push_back(maze_cell::EMPTY);
                 break;
             case 'S':
-                row.push_back(maze_cell::start);
+                row.push_back(maze_cell::START);
                 break;
             case 'E':
-                row.push_back(maze_cell::end);
+                row.push_back(maze_cell::END);
                 break;
             default:
                 throw std::invalid_argument("Invalid cell type in maze");
