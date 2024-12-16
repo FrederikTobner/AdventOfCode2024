@@ -105,7 +105,6 @@ auto pushBoxPair(std::vector<std::vector<cell_type>> & warehouse, aoc::math::vec
         }
     }
 
-    // Sort moves based on direction for proper ordering
     if (direction.y < 0) { // Moving up
         std::ranges::sort(moves, [](auto const & a, auto const & b) { return a.left.y < b.left.y; });
     } else if (direction.y > 0) { // Moving down
@@ -120,7 +119,7 @@ auto pushBoxPair(std::vector<std::vector<cell_type>> & warehouse, aoc::math::vec
         warehouse[move.left.y][move.left.x] = cell_type::empty;
         warehouse[move.right.y][move.right.x] = cell_type::empty;
     }
-    // Execute moves preserving pairs
+
     for (auto const & move : moves) {
         warehouse[move.new_left.y][move.new_left.x] = cell_type::box_part_left;
         warehouse[move.new_right.y][move.new_right.x] = cell_type::box_part_right;
