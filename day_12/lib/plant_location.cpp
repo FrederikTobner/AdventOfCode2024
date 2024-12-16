@@ -10,9 +10,8 @@
 #include <system_error>
 #include <unordered_map>
 
+#include "../../shared/src/direction.hpp"
 #include "../../shared/src/ranges_compatibility_layer.hpp"
-
-#include "direction.hpp"
 
 namespace aoc::day_12 {
 
@@ -64,7 +63,7 @@ auto splitIntoConnectedLocations(std::unordered_set<aoc::math::vector_2d<int16_t
 
 auto calculateFencePrice(std::unordered_set<aoc::math::vector_2d<int16_t>> const & locations) -> size_t {
     size_t fenceElementCount = 0;
-    auto directions = getDirections();
+    auto directions = aoc::math::getDirections();
     for (auto const & location : locations) {
         for (auto const & direction : directions) {
             if (!locations.contains(location + getDirectionVector(direction))) {
@@ -104,7 +103,7 @@ static auto countBorderLines(std::unordered_set<aoc::math::vector_2d<int16_t>> c
         grid[pos.x - min_x->x + 1][pos.y - min_y->y + 1] = true;
     }
 
-    auto directions = aoc::day_12::getDirections();
+    auto directions = aoc::math::getDirections();
 
     for (int x = 1; x < grid.size() - 1; ++x) {
         for (int y = 1; y < grid[0].size() - 1; ++y) {
@@ -116,16 +115,16 @@ static auto countBorderLines(std::unordered_set<aoc::math::vector_2d<int16_t>> c
 
                 if (!grid[x + vec.x][y + vec.y]) {
                     switch (dir) {
-                    case aoc::day_12::Direction::UP:
+                    case aoc::math::Direction::UP:
                         bordersTop[x][y] = true;
                         break;
-                    case aoc::day_12::Direction::DOWN:
+                    case aoc::math::Direction::DOWN:
                         bordersBottom[x][y] = true;
                         break;
-                    case aoc::day_12::Direction::LEFT:
+                    case aoc::math::Direction::LEFT:
                         bordersLeft[x][y] = true;
                         break;
-                    case aoc::day_12::Direction::RIGHT:
+                    case aoc::math::Direction::RIGHT:
                         bordersRight[x][y] = true;
                         break;
                     }
