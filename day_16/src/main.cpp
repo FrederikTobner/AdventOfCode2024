@@ -2,6 +2,7 @@
 #include <ranges>
 #include <string>
 #include <system_error>
+#include <unordered_set>
 #include <vector>
 
 #include "../../shared/src/exit_code.hpp"
@@ -35,6 +36,20 @@ auto main(int argc, char const ** argv) -> int {
     } else {
         std::println("Shortest path cost: {}", shortest_route.cost);
     }
+
+    auto shortest_routes = aoc::day_16::MazeSolver(maze).findPaths();
+
+    std::println("Found {} paths", shortest_routes.size());
+
+    std::unordered_set<aoc::math::vector_2d<int16_t>> visited;
+
+    for (auto const & path : shortest_routes) {
+        for (auto const & node : path.path) {
+            visited.insert(node.pos);
+        }
+    }
+
+    std::println("Visited {} nodes", visited.size());
 
     return aoc::EXIT_CODE_SUCCESS;
 }
