@@ -3,9 +3,9 @@
 #include <array>
 #include <cstdint>
 
-#include "../../shared/src/vector2d.hpp"
+#include "vector2d.hpp"
 
-namespace aoc::day_12 {
+namespace aoc::math {
 
 enum class Direction {
     UP,
@@ -48,4 +48,4 @@ enum class Direction {
 [[nodiscard]] constexpr auto getDiagonalDirections() -> std::array<Direction, 4> {
     return {Direction::UP_RIGHT, Direction::DOWN_RIGHT, Direction::DOWN_LEFT, Direction::UP_LEFT};
 }
-} // namespace aoc::day_12
+} // namespace aoc::math

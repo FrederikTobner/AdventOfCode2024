@@ -2,6 +2,7 @@
 
 [![Build](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/Build.yaml/badge.svg)](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/Build.yaml)
 [![Test](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/Test.yaml/badge.svg)](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/Test.yaml)
+[![Benchmarks](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/Benchmarks.yaml/badge.svg)](https://github.com/FrederikTobner/AdventOfCode2024/actions/workflows/Benchmarks.yaml)
 
 Solutions for the [Advent of Code 2024](https://adventofcode.com/2024) written in C++.
 
