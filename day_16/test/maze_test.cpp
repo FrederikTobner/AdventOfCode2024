@@ -2,7 +2,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-
 using namespace aoc::day_16;
 using ::testing::ElementsAre;
 
