@@ -7,9 +7,6 @@
 
 #include <cstdint>
 #include <functional>
-#include <queue>
-#include <ranges>
-#include <unordered_map>
 #include <vector>
 
 #include "maze_cell.hpp"

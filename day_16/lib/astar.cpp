@@ -1,5 +1,10 @@
 #include "astar.hpp"
 
+#include <algorithm>
+#include <queue>
+#include <ranges>
+#include <unordered_map>
+
 namespace aoc::day_16 {
 
 bool Node::operator==(Node const & other) const {
