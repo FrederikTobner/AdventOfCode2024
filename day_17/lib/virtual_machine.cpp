@@ -1,5 +1,7 @@
 #include "virtual_machine.hpp"
 
+#include <cmath>
+
 namespace aoc::day_17 {
 
 int64_t virtual_machine::convertToComboOperand(int64_t & operand) {

@@ -19,7 +19,7 @@ int64_t findDesiredRegisterValue(int64_t desired_register_value, std::vector<int
     for (int i = 0; i < 8; i++) {
         if (calculateByte(desired_register_value + i) == goals[currentIndex]) {
             if (currentIndex + 1 == goals.size()) {
-                return desired_register_value;
+                return desired_register_value + 3;
             }
             int64_t result = findDesiredRegisterValue((desired_register_value + i) << 3, goals, currentIndex + 1);
             if (result != -1) {
