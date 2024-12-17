@@ -6,11 +6,9 @@
 
 namespace aoc::day_15 {
 
-// Transforms the given warehouse using the following rules:
-//    If the tile is #, the new map contains ## instead.
-//   If the tile is O, the new map contains [] instead.
-//   If the tile is ., the new map contains .. instead.
-//   If the tile is @, the new map contains @. instead.
+/// @brief Transforms the warehouse to the format needed in part 2
+/// @param warehouse The warehouse to transform
+/// @return The transformed warehouse
 auto transformWarehouse(std::vector<std::vector<cell_type>> & warehouse) -> std::vector<std::vector<cell_type>> {
     auto transformed_warehouse = std::vector<std::vector<cell_type>>{};
     for (auto const & row : warehouse) {
