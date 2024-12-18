@@ -3,7 +3,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using namespace aoc::day_16;
+using namespace aoc::path_finding;
 using ::testing::ElementsAre;
 
 int scoreFunction(Node const & a, Node const & b) {
