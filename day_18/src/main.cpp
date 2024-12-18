@@ -33,7 +33,7 @@ auto main(int argc, char const ** argv) -> int {
         if (counter == 1024) {
             break;
         }
-        maze.m_maze[(line[0] + 1)][(DIMENSIONS + 1) - (line[1] + 1)] = aoc::path_finding::maze_cell::WALL;
+        maze.m_maze[(line[0])][(line[1])] = aoc::path_finding::maze_cell::WALL;
         counter++;
     }
 
@@ -52,7 +52,7 @@ auto main(int argc, char const ** argv) -> int {
     std::println("Shortest path cost: {}", unique_nodes.size() - 1);
 
     // Part 2
-    for (size_t i = 1024; i < (*parsed_numbers).size(); i++) {
+    for (size_t i = (*parsed_numbers).size() - 1; i > 1024; i--) {
         if (i % 100 == 0) {
             std::println("Processing wall at index {}", i);
         }
@@ -62,13 +62,13 @@ auto main(int argc, char const ** argv) -> int {
             if (counter == i) {
                 break;
             }
-            local_maze.m_maze[(line[0] + 1)][(DIMENSIONS + 1) - (line[1] + 1)] = aoc::path_finding::maze_cell::WALL;
+            local_maze.m_maze[(line[0])][line[1]] = aoc::path_finding::maze_cell::WALL;
             counter++;
         }
         auto shortest_route = aoc::path_finding::MazeSolver(local_maze.m_maze, scoringFun).findPath();
-        if (shortest_route.cost == -1) {
-            std::println("No path found for maze after adding wall at {}, {}", (*parsed_numbers)[i - 1][0],
-                         (*parsed_numbers)[i - 1][1]);
+        if (shortest_route.cost != -1) {
+            std::println("No path found for maze after adding wall at {},{}", (*parsed_numbers)[i][0],
+                         (*parsed_numbers)[i][1]);
             break;
         }
     }
