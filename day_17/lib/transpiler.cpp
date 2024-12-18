@@ -1,6 +1,7 @@
 #include "transpiler.hpp"
 
 #include <cmath>
+#include <cstdint>
 
 namespace aoc::day_17 {
 
