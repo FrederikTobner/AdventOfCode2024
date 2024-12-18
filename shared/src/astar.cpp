@@ -21,28 +21,6 @@ bool Node::operator<(Node const & other) const {
     return static_cast<int>(direction) < static_cast<int>(other.direction);
 }
 
-bool Node::operator>(Node const & other) const {
-    if (pos.y != other.pos.y) {
-        return pos.y > other.pos.y;
-    }
-    if (pos.x != other.pos.x) {
-        return pos.x < other.pos.x;
-    }
-    auto dir = static_cast<int>(direction);
-    if (dir == 0) {
-        dir = 2;
-    } else if (dir == 2) {
-        dir = 0;
-    }
-    auto other_dir = static_cast<int>(other.direction);
-    if (other_dir == 0) {
-        other_dir = 2;
-    } else if (other_dir == 2) {
-        other_dir = 0;
-    }
-    return dir < other_dir;
-}
-
 MazeSolver::MazeSolver(std::vector<std::vector<maze_cell>> const & maze,
                        std::function<int(Node const &, Node const &)> fun)
     : m_maze(maze), m_costFunction(fun) {
@@ -178,7 +156,7 @@ auto MazeSolver::astar(Node start, Node end, std::function<int(Node const &, Nod
     path.push_back(start);
     std::ranges::reverse(path);
 
-    return PathResult{path, costSoFar[end]};
+    return PathResult{path, costSoFar[Node{end.pos, lastDirection}]};
 }
 
 } // namespace aoc::path_finding
