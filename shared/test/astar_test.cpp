@@ -1,16 +1,21 @@
-#include "../lib/astar.hpp"
+#include "../src/astar.hpp"
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 using namespace aoc::day_16;
 using ::testing::ElementsAre;
 
+int scoreFunction(Node const & a, Node const & b) {
+    return a.direction == b.direction ? 1 : 1001;
+}
+
 TEST(AStarTest, FindsSimplePath) {
     // Arrange
     std::vector<std::vector<maze_cell>> maze = {{maze_cell::START, maze_cell::EMPTY, maze_cell::END},
                                                 {maze_cell::EMPTY, maze_cell::EMPTY, maze_cell::EMPTY},
                                                 {maze_cell::EMPTY, maze_cell::EMPTY, maze_cell::EMPTY}};
-    MazeSolver solver(maze);
+    MazeSolver solver(maze, scoreFunction);
 
     // Act
     auto result = solver.findPath();
@@ -26,7 +31,7 @@ TEST(AStarTest, HandlesBlockedPath) {
     std::vector<std::vector<maze_cell>> maze = {{maze_cell::START, maze_cell::WALL, maze_cell::END},
                                                 {maze_cell::WALL, maze_cell::WALL, maze_cell::WALL},
                                                 {maze_cell::EMPTY, maze_cell::EMPTY, maze_cell::EMPTY}};
-    MazeSolver solver(maze);
+    MazeSolver solver(maze, scoreFunction);
 
     // Act
     auto result = solver.findPath();
@@ -41,7 +46,7 @@ TEST(AStarTest, FindsPathAroundObstacles) {
     std::vector<std::vector<maze_cell>> maze = {{maze_cell::START, maze_cell::WALL, maze_cell::END},
                                                 {maze_cell::EMPTY, maze_cell::WALL, maze_cell::EMPTY},
                                                 {maze_cell::EMPTY, maze_cell::EMPTY, maze_cell::EMPTY}};
-    MazeSolver solver(maze);
+    MazeSolver solver(maze, scoreFunction);
 
     // Act
     auto result = solver.findPath();
@@ -57,7 +62,7 @@ TEST(AStarTest, FindsMultiplePaths) {
     std::vector<std::vector<maze_cell>> maze = {{maze_cell::START, maze_cell::EMPTY, maze_cell::END},
                                                 {maze_cell::EMPTY, maze_cell::EMPTY, maze_cell::EMPTY},
                                                 {maze_cell::EMPTY, maze_cell::EMPTY, maze_cell::EMPTY}};
-    MazeSolver solver(maze);
+    MazeSolver solver(maze, scoreFunction);
 
     // Act
     auto results = solver.findPaths();
@@ -77,7 +82,7 @@ TEST_P(DirectionCostTest, DirectionChangeCosts) {
     // Arrange
     std::vector<std::vector<maze_cell>> maze = {{maze_cell::START, maze_cell::EMPTY, maze_cell::END},
                                                 {maze_cell::EMPTY, maze_cell::EMPTY, maze_cell::EMPTY}};
-    MazeSolver solver(maze);
+    MazeSolver solver(maze, scoreFunction);
     auto [start_dir, end_dir] = GetParam();
 
     // Act
