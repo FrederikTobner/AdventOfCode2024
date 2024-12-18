@@ -5,12 +5,12 @@
 #include <unordered_set>
 #include <vector>
 
+#include "../../shared/src/astar.hpp"
 #include "../../shared/src/exit_code.hpp"
 #include "../../shared/src/file_operations.hpp"
 #include "../../shared/src/grid_processor.hpp"
 #include "../../shared/src/print_compatibility_layer.hpp"
 
-#include "../lib/astar.hpp"
 #include "../lib/maze.hpp"
 
 auto main(int argc, char const ** argv) -> int {
@@ -29,9 +29,12 @@ auto main(int argc, char const ** argv) -> int {
 
     auto maze = aoc::day_16::parseMaze(grid);
 
-    // Part 1
+    auto scoringFun = [](aoc::path_finding::Node const & a, aoc::path_finding::Node const & b) {
+        return a.direction == b.direction ? 1 : 1001;
+    };
 
-    auto shortest_route = aoc::day_16::MazeSolver(maze).findPath();
+    // Part 1
+    auto shortest_route = aoc::path_finding::MazeSolver(maze, scoringFun).findPath();
 
     if (shortest_route.cost == -1) {
         std::println("No path found");
@@ -41,7 +44,7 @@ auto main(int argc, char const ** argv) -> int {
 
     // Part 2
 
-    auto shortest_routes = aoc::day_16::MazeSolver(maze).findPaths();
+    auto shortest_routes = aoc::path_finding::MazeSolver(maze, scoringFun).findPaths();
 
     std::println("Found {} paths", shortest_routes.size());
 

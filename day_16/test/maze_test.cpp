@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 using namespace aoc::day_16;
+using namespace aoc::path_finding;
 using ::testing::ElementsAre;
 
 TEST(MazeTest, ParsesEmptyMaze) {

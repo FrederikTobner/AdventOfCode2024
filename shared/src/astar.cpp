@@ -5,7 +5,7 @@
 #include <ranges>
 #include <unordered_map>
 
-namespace aoc::day_16 {
+namespace aoc::path_finding {
 
 bool Node::operator==(Node const & other) const {
     return pos == other.pos && direction == other.direction;
@@ -21,7 +21,9 @@ bool Node::operator<(Node const & other) const {
     return static_cast<int>(direction) < static_cast<int>(other.direction);
 }
 
-MazeSolver::MazeSolver(std::vector<std::vector<maze_cell>> const & maze) : m_maze(maze) {
+MazeSolver::MazeSolver(std::vector<std::vector<maze_cell>> const & maze,
+                       std::function<int(Node const &, Node const &)> fun)
+    : m_maze(maze), m_costFunction(fun) {
     for (size_t y = 0; y < maze.size(); ++y) {
         for (size_t x = 0; x < maze[y].size(); ++x) {
             if (maze[y][x] == maze_cell::START) {
@@ -120,18 +122,20 @@ auto MazeSolver::astar(Node start, Node end, std::function<int(Node const &, Nod
     cameFrom[start] = start;
     costSoFar[start] = 0;
     bool found = false;
+    aoc::math::Direction lastDirection = start.direction;
 
     while (!frontier.empty()) {
         auto current = frontier.top();
         frontier.pop();
 
-        if (current == end) {
+        if (current.pos == end.pos) {
             found = true;
+            lastDirection = current.direction;
             break;
         }
 
         for (auto const & next : getNeighbors(current)) {
-            auto newCost = costSoFar[current] + (current.direction == next.direction ? 1 : 1001);
+            auto newCost = costSoFar[current] + m_costFunction(current, next);
             if (!costSoFar.contains(next) || newCost < costSoFar[next]) {
                 costSoFar[next] = newCost;
                 int priority = newCost + heuristic(next, end);
@@ -144,15 +148,15 @@ auto MazeSolver::astar(Node start, Node end, std::function<int(Node const &, Nod
     if (!found) {
         return PathResult{std::vector<Node>{}, -1};
     }
-    Node current = end;
-    while (current != start) {
-        path.push_back(current);
-        current = cameFrom[current];
+    Node current_node = Node{end.pos, lastDirection};
+    while (current_node.pos != start.pos) {
+        path.push_back(current_node);
+        current_node = cameFrom[current_node];
     }
     path.push_back(start);
     std::ranges::reverse(path);
 
-    return PathResult{path, costSoFar[end]};
+    return PathResult{path, costSoFar[Node{end.pos, lastDirection}]};
 }
 
-} // namespace aoc::day_16
+} // namespace aoc::path_finding

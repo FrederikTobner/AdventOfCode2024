@@ -2,16 +2,15 @@
 
 #pragma once
 
-#include "../../shared/src/direction.hpp"
-#include "../../shared/src/vector2d.hpp"
+#include "direction.hpp"
+#include "maze_cell.hpp"
+#include "vector2d.hpp"
 
 #include <cstdint>
 #include <functional>
 #include <vector>
 
-#include "maze_cell.hpp"
-
-namespace aoc::day_16 {
+namespace aoc::path_finding {
 
 /// @brief A node in the maze
 struct Node {
@@ -43,7 +42,7 @@ class MazeSolver {
   public:
     /// @brief Construct a new Maze Solver object
     /// @param maze The maze to solve
-    MazeSolver(std::vector<std::vector<maze_cell>> const & maze);
+    MazeSolver(std::vector<std::vector<maze_cell>> const & maze, std::function<int(Node const &, Node const &)> fun);
 
     /// @brief Find the shortest path in the maze
     /// @return The shortest path in the maze
@@ -63,6 +62,9 @@ class MazeSolver {
     /// @brief The end node
     Node m_end;
 
+    /// @brief Function pointer to calculate the cost for moving between two nodes
+    std::function<int(Node const &, Node const &)> m_costFunction;
+
     /// @brief Check if a position is valid
     /// @param pos The position to check
     /// @return True if the position is valid, false otherwise
@@ -78,13 +80,13 @@ class MazeSolver {
                std::function<std::vector<Node>(Node const &)> const & getNeighbors) -> PathResult;
 };
 
-} // namespace aoc::day_16
+} // namespace aoc::path_finding
 
 namespace std {
 
 /// @brief Hash specialization for the Node struct
-template <> struct hash<aoc::day_16::Node> {
-    auto operator()(aoc::day_16::Node const & n) const -> size_t {
+template <> struct hash<aoc::path_finding::Node> {
+    auto operator()(aoc::path_finding::Node const & n) const -> size_t {
         return hash<int16_t>{}(n.pos.x) ^ hash<int16_t>{}(n.pos.y) ^ hash<int>{}(static_cast<int>(n.direction));
     }
 };
