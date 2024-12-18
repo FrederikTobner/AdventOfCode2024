@@ -1,26 +1,31 @@
 #pragma once
 
-#include <algorithm>
 #include <cstdint>
-#include <ranges>
+#include <utility>
 #include <vector>
 
-#include "../../shared/src/astar.hpp"
 #include "maze.hpp"
 
-namespace aoc::day_18 {
-static auto validatePath(maze const & maze, auto const & scoringFun) -> bool {
-    auto shortest_route = aoc::path_finding::MazeSolver(maze.m_maze, scoringFun).findPath();
-    return shortest_route.cost == -1;
-}
+#include "../../shared/src/astar.hpp"
 
-auto findCriticalWall(std::vector<std::vector<int16_t>> const & coordinates) -> std::pair<int16_t, int16_t> {
-    for (auto i : std::views::iota(1025ull, coordinates.size()) | std::views::reverse) {
-        auto test_maze = buildMaze(coordinates, i);
-        if (!validatePath(test_maze, scoringFun)) {
-            return {coordinates[i][0], coordinates[i][1]};
-        }
-    }
-    return {-1, -1};
-}
+namespace aoc::day_18 {
+
+/// @brief Scoring function for A* pathfinding
+/// @param a First node
+/// @param b Second node
+/// @return Cost between nodes
+auto scoringFun(aoc::path_finding::Node const & a, aoc::path_finding::Node const & b) -> int;
+
+/// @brief Validates if a path exists through the maze
+/// @param maze The maze to validate
+/// @param scoringFun Function used to score path segments
+/// @return True if no path exists, false otherwise
+auto validatePath(maze const & maze, auto const & scoringFun) -> bool;
+
+/// @brief Finds the critical wall that blocks all paths
+/// @param coordinates Vector of coordinate pairs
+/// @param min Minimum index to start searching from
+/// @return Pair of coordinates for the critical wall, or {-1,-1} if none found
+auto findCriticalWall(std::vector<std::vector<int16_t>> const & coordinates, size_t min = 1025ull)
+    -> std::pair<int16_t, int16_t>;
 } // namespace aoc::day_18

@@ -10,51 +10,23 @@ namespace aoc::day_18 {
 
 #define DIMENSIONS 71
 
+/// @brief Represents a 2D maze with start and end points
 struct maze {
-    maze() {
-        m_maze = std::vector<std::vector<aoc::path_finding::maze_cell>>(
-            DIMENSIONS, std::vector<aoc::path_finding::maze_cell>(DIMENSIONS, aoc::path_finding::maze_cell::EMPTY));
-        m_maze[0][0] = aoc::path_finding::maze_cell::START;
-        m_maze[DIMENSIONS - 1][DIMENSIONS - 1] = aoc::path_finding::maze_cell::END;
-    }
+    /// @brief Constructs an empty maze with start and end points
+    maze();
 
-    std ::string to_string() {
-        std::string result;
-        for (size_t y = 0; y < DIMENSIONS; ++y) {
-            for (size_t x = 0; x < DIMENSIONS; ++x) {
-                switch (m_maze[x][y]) {
-                case aoc::path_finding::maze_cell::EMPTY:
-                    result += ".";
-                    break;
-                case aoc::path_finding::maze_cell::WALL:
-                    result += "#";
-                    break;
-                case aoc::path_finding::maze_cell::START:
-                    result += "S";
-                    break;
-                case aoc::path_finding::maze_cell::END:
-                    result += "E";
-                    break;
-                }
-            }
-            result += "\n";
-        }
-        return result;
-    }
+    /// @brief Converts the maze to a string representation
+    /// @return String representation of the maze
+    std ::string to_string();
 
+    /// @brief The actual maze data
     std::vector<std::vector<aoc::path_finding::maze_cell>> m_maze;
 };
 
-auto scoringFun = [](aoc::path_finding::Node const & a, aoc::path_finding::Node const & b) { return 1; };
-
-auto buildMaze(std::vector<std::vector<int16_t>> const & coordinates, size_t limit) -> maze {
-    auto result = maze{};
-    for (auto const & [x, y] : coordinates | std::views::take(limit) | std::views::transform([](auto const & line) {
-                                   return std::pair{line[0], line[1]};
-                               })) {
-        result.m_maze[x][y] = aoc::path_finding::maze_cell::WALL;
-    }
-    return result;
-}
+/// @brief Builds a maze from coordinate pairs
+/// @param coordinates Vector of coordinate pairs
+/// @param limit Maximum number of coordinates to use
+/// @return Constructed maze
+auto buildMaze(std::vector<std::vector<int16_t>> const & coordinates, size_t limit) -> maze;
 
 } // namespace aoc::day_18
