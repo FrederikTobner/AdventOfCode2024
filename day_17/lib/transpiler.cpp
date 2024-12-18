@@ -1,5 +1,7 @@
 #include "transpiler.hpp"
 
+#include <cmath>
+
 namespace aoc::day_17 {
 
 [[nodiscard]] auto transpile(program const & program_to_transpile) -> std::string {
