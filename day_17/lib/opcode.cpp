@@ -2,7 +2,7 @@
 
 namespace aoc::day_17 {
 
-std::string to_string(opcode const & op) {
+auto to_string(opcode const & op) -> std::string {
     switch (op) {
     case opcode::ADV:
         return "ADV";

@@ -15,5 +15,5 @@ enum class opcode {
     CDV = 7,
 };
 
-std::string to_string(opcode const & op);
+auto to_string(opcode const & op) -> std::string;
 } // namespace aoc::day_17

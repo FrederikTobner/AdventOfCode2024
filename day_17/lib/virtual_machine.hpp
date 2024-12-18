@@ -11,11 +11,10 @@ namespace aoc::day_17 {
 
 class virtual_machine {
   public:
-    virtual_machine(std::function<void(std::string_view)> output) : m_output{output} {
-    }
+    virtual_machine(std::function<void(std::string_view)> output);
     ~virtual_machine() = default;
 
-    void execute(program const & prog);
+    auto execute(program const & prog) -> void;
 
   private:
     size_t m_instruction_pointer;
@@ -24,7 +23,7 @@ class virtual_machine {
     int64_t m_register_c;
     std::function<void(std::string_view)> m_output;
 
-    int64_t convertToComboOperand(int64_t & operand);
+    [[nodiscard]] auto to_combo_operand(int64_t & operand) -> int64_t;
 };
 
 } // namespace aoc::day_17
