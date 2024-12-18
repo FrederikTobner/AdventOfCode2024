@@ -29,8 +29,6 @@ struct Node {
     /// @param other The other node to compare to
     /// @return True if this node is less than the other node, false otherwise
     bool operator<(Node const & other) const;
-
-    bool operator>(Node const & other) const;
 };
 
 /// @brief The result of the pathfinding

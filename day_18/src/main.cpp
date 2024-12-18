@@ -1,76 +1,33 @@
-#include <cmath>
-#include <cstdint>
-#include <execution>
 #include <expected>
 #include <string>
 #include <system_error>
-#include <unordered_set>
 
 #include "../../shared/src/astar.hpp"
 #include "../../shared/src/exit_code.hpp"
-#include "../../shared/src/file_operations.hpp"
-#include "../../shared/src/line_splitter.hpp"
-#include "../../shared/src/parsing_rules.hpp"
 #include "../../shared/src/print_compatibility_layer.hpp"
 #include "../../shared/src/vector2d.hpp"
 
+#include "../lib/blocker.hpp"
 #include "../lib/maze.hpp"
+#include "../lib/parser.hpp"
 
 auto main(int argc, char const ** argv) -> int {
-
-    std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
-    if (!input) [[unlikely]] {
-        std::println(stderr, "Could not open file: {}", input.error().message());
+    auto parsed_numbers = aoc::day_18::parseInput("input.txt");
+    if (!parsed_numbers) {
+        std::println(stderr, "Could not open file: {}", parsed_numbers.error().message());
         return aoc::EXIT_CODE_IO_ERROR;
     }
 
-    auto parsed_numbers = aoc::splitter::linebased::split<int16_t, std::vector>(
-        *input, aoc::parser::rules::parse_number<int16_t>, std::execution::seq, ',');
+    auto base_maze = aoc::day_18::buildMaze(*parsed_numbers, 1024);
 
-    auto maze = aoc::day_18::maze{};
-    size_t counter = 0;
-    for (auto const & line : *parsed_numbers) {
-        if (counter == 1024) {
-            break;
-        }
-        maze.m_maze[(line[0])][(line[1])] = aoc::path_finding::maze_cell::WALL;
-        counter++;
-    }
-
-    std::println("Maze:\n{}", maze.to_string());
-
-    auto scoringFun = [](aoc::path_finding::Node const & a, aoc::path_finding::Node const & b) { return 1; };
-
-    auto shortest_route = aoc::path_finding::MazeSolver(maze.m_maze, scoringFun).findPath();
-
-    auto unique_nodes = std::unordered_set<aoc::math::vector_2d<int16_t>>{};
-
-    for (auto const & node : shortest_route.path) {
-        unique_nodes.insert(node.pos);
-    }
-
-    std::println("Shortest path cost: {}", unique_nodes.size() - 1);
+    // Part 1
+    auto shortest_route = aoc::path_finding::MazeSolver(base_maze.m_maze, aoc::day_18::scoringFun).findPath();
+    std::println("Shortest path cost for initial maze: {}", shortest_route.cost);
 
     // Part 2
-    for (size_t i = (*parsed_numbers).size() - 1; i > 1024; i--) {
-        if (i % 100 == 0) {
-            std::println("Processing wall at index {}", i);
-        }
-        auto local_maze = aoc::day_18::maze{};
-        size_t counter = 0;
-        for (auto const & line : *parsed_numbers) {
-            if (counter == i) {
-                break;
-            }
-            local_maze.m_maze[(line[0])][line[1]] = aoc::path_finding::maze_cell::WALL;
-            counter++;
-        }
-        auto shortest_route = aoc::path_finding::MazeSolver(local_maze.m_maze, scoringFun).findPath();
-        if (shortest_route.cost != -1) {
-            std::println("No path found for maze after adding wall at {},{}", (*parsed_numbers)[i][0],
-                         (*parsed_numbers)[i][1]);
-            break;
-        }
+    auto [critical_x, critical_y] = aoc::day_18::findCriticalWall(*parsed_numbers);
+    if (critical_x != -1) {
+        std::println("Critical wall found at {},{}", critical_x, critical_y);
     }
 
     return 0;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -43,5 +44,17 @@ struct maze {
 
     std::vector<std::vector<aoc::path_finding::maze_cell>> m_maze;
 };
+
+auto scoringFun = [](aoc::path_finding::Node const & a, aoc::path_finding::Node const & b) { return 1; };
+
+auto buildMaze(std::vector<std::vector<int16_t>> const & coordinates, size_t limit) -> maze {
+    auto result = maze{};
+    for (auto const & [x, y] : coordinates | std::views::take(limit) | std::views::transform([](auto const & line) {
+                                   return std::pair{line[0], line[1]};
+                               })) {
+        result.m_maze[x][y] = aoc::path_finding::maze_cell::WALL;
+    }
+    return result;
+}
 
 } // namespace aoc::day_18
