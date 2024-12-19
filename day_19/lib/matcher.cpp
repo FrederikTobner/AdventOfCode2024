@@ -7,8 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "count_callback.hpp"
-#include "match_callback.hpp"
+#include "count_processing_strategy.hpp"
+#include "match_processing_strategy.hpp"
 
 namespace aoc::day_19 {
 
@@ -31,11 +31,11 @@ pattern_matcher::pattern_matcher(std::vector<std::string> patterns) {
 }
 
 [[nodiscard]] bool pattern_matcher::match_recursive(std::string_view remaining_design, size_t depth) {
-    return process_patterns(remaining_design, depth, match_callback{this});
+    return process_patterns(remaining_design, depth, match_processing_strategy{this});
 }
 
 [[nodiscard]] size_t pattern_matcher::count_recursive(std::string_view remaining_design, size_t depth) {
-    return process_patterns(remaining_design, depth, count_callback{this});
+    return process_patterns(remaining_design, depth, count_processing_strategy{this});
 }
 
 } // namespace aoc::day_19

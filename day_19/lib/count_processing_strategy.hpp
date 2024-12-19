@@ -8,7 +8,7 @@
 
 namespace aoc::day_19 {
 
-struct count_callback {
+struct count_processing_strategy {
     pattern_matcher * matcher;
     [[nodiscard]] auto handle_max_depth() const -> size_t;
     [[nodiscard]] auto handle_empty() const -> size_t;

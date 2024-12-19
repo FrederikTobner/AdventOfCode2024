@@ -7,7 +7,7 @@
 #include "matcher.hpp"
 
 namespace aoc::day_19 {
-struct match_callback {
+struct match_processing_strategy {
     pattern_matcher * matcher;
     [[nodiscard]] auto handle_max_depth() const -> bool;
     [[nodiscard]] auto handle_empty() const -> bool;

@@ -9,12 +9,12 @@
 
 namespace aoc::day_19 {
 
-class count_callback;
-class match_callback;
+class count_processing_strategy;
+class match_processing_strategy;
 
 class pattern_matcher {
-    friend class count_callback;
-    friend class match_callback;
+    friend class count_processing_strategy;
+    friend class match_processing_strategy;
 
   public:
     explicit pattern_matcher(std::vector<std::string> patterns);
@@ -30,31 +30,31 @@ class pattern_matcher {
     std::unordered_map<std::string_view, size_t> m_count_cache;
 
     template <typename Func>
-    [[nodiscard]] auto process_patterns(std::string_view remaining_design, size_t depth, Func && callback) {
+    [[nodiscard]] auto process_patterns(std::string_view remaining_design, size_t depth, Func && processing_strategy) {
         if (depth >= MAX_RECURSION_DEPTH) {
-            return callback.handle_max_depth();
+            return processing_strategy.handle_max_depth();
         }
         if (remaining_design.empty()) {
-            return callback.handle_empty();
+            return processing_strategy.handle_empty();
         }
 
-        if (auto cached = callback.check_cache(remaining_design)) {
+        if (auto cached = processing_strategy.check_cache(remaining_design)) {
             return *cached;
         }
 
-        auto result = callback.initial_value();
+        auto result = processing_strategy.initial_value();
         for (auto const & pattern : m_patterns) {
             std::match_results<std::string_view::const_iterator> match;
             if (std::regex_search(remaining_design.begin(), remaining_design.end(), match, pattern,
                                   std::regex_constants::match_continuous)) {
-                result = callback.process_match(remaining_design.substr(match.length()), depth + 1, result);
-                if (callback.should_break(result)) {
+                result = processing_strategy.process_match(remaining_design.substr(match.length()), depth + 1, result);
+                if (processing_strategy.should_break(result)) {
                     break;
                 }
             }
         }
 
-        callback.update_cache(remaining_design, result);
+        processing_strategy.update_cache(remaining_design, result);
         return result;
     }
 
