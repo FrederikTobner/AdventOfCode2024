@@ -1,5 +1,6 @@
 var namespaceaoc_1_1day__17 =
 [
+    [ "opcode_translation", "namespaceaoc_1_1day__17_1_1opcode__translation.html", null ],
     [ "chunk", "structaoc_1_1day__17_1_1chunk.html", "structaoc_1_1day__17_1_1chunk" ],
     [ "program", "structaoc_1_1day__17_1_1program.html", "structaoc_1_1day__17_1_1program" ],
     [ "virtual_machine", "classaoc_1_1day__17_1_1virtual__machine.html", "classaoc_1_1day__17_1_1virtual__machine" ],
