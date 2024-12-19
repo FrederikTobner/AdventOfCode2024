@@ -25,6 +25,7 @@ var namespaceaoc =
     ] ],
     [ "day_17", "namespaceaoc_1_1day__17.html", "namespaceaoc_1_1day__17" ],
     [ "day_18", "namespaceaoc_1_1day__18.html", "namespaceaoc_1_1day__18" ],
+    [ "day_19", "namespaceaoc_1_1day__19.html", "namespaceaoc_1_1day__19" ],
     [ "day_2", "namespaceaoc_1_1day__2.html", [
       [ "canBeMadeSafe", "namespaceaoc_1_1day__2.html#a36295642670e71f946dea2e6daecd65e", null ],
       [ "isSafe", "namespaceaoc_1_1day__2.html#a48ece40630f9f5cb29a264a8a83ceb50", null ]

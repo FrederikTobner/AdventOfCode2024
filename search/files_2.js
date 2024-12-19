@@ -13,5 +13,7 @@ var searchData=
   ['column_5fsplitter_2ehpp_10',['column_splitter.hpp',['../column__splitter_8hpp.html',1,'']]],
   ['column_5fsplitter_5ftest_2ecpp_11',['column_splitter_test.cpp',['../column__splitter__test_8cpp.html',1,'']]],
   ['concurrent_5fcontext_2ehpp_12',['concurrent_context.hpp',['../concurrent__context_8hpp.html',1,'']]],
-  ['container_5ftraits_2ehpp_13',['container_traits.hpp',['../container__traits_8hpp.html',1,'']]]
+  ['container_5ftraits_2ehpp_13',['container_traits.hpp',['../container__traits_8hpp.html',1,'']]],
+  ['count_5fprocessing_5fstrategy_2ecpp_14',['count_processing_strategy.cpp',['../count__processing__strategy_8cpp.html',1,'']]],
+  ['count_5fprocessing_5fstrategy_2ehpp_15',['count_processing_strategy.hpp',['../count__processing__strategy_8hpp.html',1,'']]]
 ];

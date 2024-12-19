@@ -37,6 +37,13 @@ var annotated_dup =
       [ "day_18", "namespaceaoc_1_1day__18.html", [
         [ "maze", "structaoc_1_1day__18_1_1maze.html", "structaoc_1_1day__18_1_1maze" ]
       ] ],
+      [ "day_19", "namespaceaoc_1_1day__19.html", [
+        [ "count_processing_strategy", "structaoc_1_1day__19_1_1count__processing__strategy.html", "structaoc_1_1day__19_1_1count__processing__strategy" ],
+        [ "match_processing_strategy", "structaoc_1_1day__19_1_1match__processing__strategy.html", "structaoc_1_1day__19_1_1match__processing__strategy" ],
+        [ "pattern_matcher", "classaoc_1_1day__19_1_1pattern__matcher.html", "classaoc_1_1day__19_1_1pattern__matcher" ],
+        [ "pattern_matcher_state", "structaoc_1_1day__19_1_1pattern__matcher__state.html", "structaoc_1_1day__19_1_1pattern__matcher__state" ],
+        [ "puzzle_input", "structaoc_1_1day__19_1_1puzzle__input.html", "structaoc_1_1day__19_1_1puzzle__input" ]
+      ] ],
       [ "day_3", "namespaceaoc_1_1day__3.html", [
         [ "parsed_match", "structaoc_1_1day__3_1_1parsed__match.html", "structaoc_1_1day__3_1_1parsed__match" ]
       ] ],
@@ -111,6 +118,8 @@ var annotated_dup =
     [ "ChunkToStringTest", "classChunkToStringTest.html", null ],
     [ "ColumnSplitterTest", "classColumnSplitterTest.html", "classColumnSplitterTest" ],
     [ "ComplexRulesValidatorTest", "classComplexRulesValidatorTest.html", "classComplexRulesValidatorTest" ],
+    [ "CountingParameterizedTest", "classCountingParameterizedTest.html", null ],
+    [ "CountingTest", "classCountingTest.html", null ],
     [ "DirectionCostTest", "classDirectionCostTest.html", null ],
     [ "DirectionTest", "classDirectionTest.html", null ],
     [ "EquationPuzzleSolverTest", "classEquationPuzzleSolverTest.html", null ],
@@ -120,6 +129,7 @@ var annotated_dup =
     [ "GuardDirectionTestParams", "structGuardDirectionTestParams.html", "structGuardDirectionTestParams" ],
     [ "LineSplitterTest", "classLineSplitterTest.html", "classLineSplitterTest" ],
     [ "MapRendererTest", "classMapRendererTest.html", "classMapRendererTest" ],
+    [ "MatcherTest", "classMatcherTest.html", "classMatcherTest" ],
     [ "MatchFilterTest", "classMatchFilterTest.html", "classMatchFilterTest" ],
     [ "MazeParameterizedTest", "classMazeParameterizedTest.html", null ],
     [ "MovementParserTest", "classMovementParserTest.html", null ],
@@ -129,6 +139,8 @@ var annotated_dup =
     [ "PageUpdateTest", "classPageUpdateTest.html", "classPageUpdateTest" ],
     [ "ParserParameterizedTest", "classParserParameterizedTest.html", null ],
     [ "ParserTest", "classParserTest.html", "classParserTest" ],
+    [ "pattern_matching_result", "structpattern__matching__result.html", "structpattern__matching__result" ],
+    [ "PatternMatchingParameterizedTest", "classPatternMatchingParameterizedTest.html", null ],
     [ "PositionValidationTest", "classPositionValidationTest.html", null ],
     [ "PuzzleMapTest", "classPuzzleMapTest.html", "classPuzzleMapTest" ],
     [ "RulesValidatorTest", "classRulesValidatorTest.html", "classRulesValidatorTest" ],
