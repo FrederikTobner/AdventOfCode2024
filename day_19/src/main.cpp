@@ -1,4 +1,6 @@
+#include <execution>
 #include <expected>
+#include <numeric>
 #include <string>
 #include <system_error>
 
@@ -8,6 +10,15 @@
 
 #include "../lib/matcher.hpp"
 #include "../lib/parser.hpp"
+
+struct pattern_matching_result {
+    size_t solvable;
+    size_t solutions;
+
+    pattern_matching_result operator+(pattern_matching_result const & other) const {
+        return {solvable + other.solvable, solutions + other.solutions};
+    }
+};
 
 auto main(int argc, char const ** argv) -> int {
     std::expected<std::string, std::error_code> input = aoc::file_operations::read("input.txt");
@@ -22,21 +33,21 @@ auto main(int argc, char const ** argv) -> int {
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
-    size_t solvable = 0;
-    size_t solutions_count = 0;
     auto matcher = aoc::day_19::pattern_matcher(parsed_input->patterns);
-    for (auto const & design : parsed_input->designs) {
-        if (matcher.can_construct(design)) {
-            solvable++;
-            solutions_count += matcher.count_unique_ways_to_construct(design);
-        }
-    }
+    auto counts =
+        std::transform_reduce(std::execution::seq, parsed_input->designs.begin(), parsed_input->designs.end(),
+                              pattern_matching_result{0, 0}, std::plus<>(), [&matcher](auto const & design) {
+                                  if (matcher.can_construct(design)) {
+                                      return pattern_matching_result{1, matcher.count_unique_ways_to_construct(design)};
+                                  }
+                                  return pattern_matching_result{0, 0};
+                              });
 
     // Part 1
-    std::println("Solvable designs: {}", solvable);
+    std::println("Solvable designs: {}", counts.solvable);
 
     // Part 2
-    std::println("Total solutions count: {}", solutions_count);
+    std::println("Total solutions count: {}", counts.solutions);
 
     return 0;
 }

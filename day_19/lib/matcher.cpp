@@ -21,21 +21,23 @@ pattern_matcher::pattern_matcher(std::vector<std::string> patterns) {
 }
 
 [[nodiscard]] bool pattern_matcher::can_construct(std::string_view design) {
-    m_match_cache.clear();
-    return match_recursive(design, 0);
+    pattern_matcher_state state;
+    return match_recursive(design, 0, state);
 }
 
 [[nodiscard]] size_t pattern_matcher::count_unique_ways_to_construct(std::string_view design) {
-    m_count_cache.clear();
-    return count_recursive(design, 0);
+    pattern_matcher_state state;
+    return count_recursive(design, 0, state);
 }
 
-[[nodiscard]] bool pattern_matcher::match_recursive(std::string_view remaining_design, size_t depth) {
-    return process_patterns(remaining_design, depth, match_processing_strategy{this});
+[[nodiscard]] bool pattern_matcher::match_recursive(std::string_view remaining_design, size_t depth,
+                                                    pattern_matcher_state & state) {
+    return process_patterns(remaining_design, depth, match_processing_strategy{this}, state);
 }
 
-[[nodiscard]] size_t pattern_matcher::count_recursive(std::string_view remaining_design, size_t depth) {
-    return process_patterns(remaining_design, depth, count_processing_strategy{this});
+[[nodiscard]] size_t pattern_matcher::count_recursive(std::string_view remaining_design, size_t depth,
+                                                      pattern_matcher_state & state) {
+    return process_patterns(remaining_design, depth, count_processing_strategy{this}, state);
 }
 
 } // namespace aoc::day_19
