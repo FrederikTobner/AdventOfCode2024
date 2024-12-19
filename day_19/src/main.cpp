@@ -15,7 +15,6 @@ auto main(int argc, char const ** argv) -> int {
         std::println(stderr, "Could not open file: {}", input.error().message());
         return aoc::EXIT_CODE_IO_ERROR;
     }
-    std::println("Input: {}", *input);
 
     std::expected<aoc::day_19::puzzle_input, std::error_code> parsed_input = aoc::day_19::parseInput(*input);
     if (!parsed_input) [[unlikely]] {
