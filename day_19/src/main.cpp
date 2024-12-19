@@ -17,22 +17,27 @@ auto main(int argc, char const ** argv) -> int {
     }
     std::println("Input: {}", *input);
 
-    auto parsed_input = aoc::day_19::parseInput(*input);
+    std::expected<aoc::day_19::puzzle_input, std::error_code> parsed_input = aoc::day_19::parseInput(*input);
     if (!parsed_input) [[unlikely]] {
         std::println(stderr, "Could not parse input: {}", parsed_input.error().message());
         return aoc::EXIT_CODE_DATA_ERROR;
     }
 
     size_t solvable = 0;
+    size_t solutions_count = 0;
     auto matcher = aoc::day_19::pattern_matcher(parsed_input->patterns);
     for (auto const & design : parsed_input->designs) {
-        auto result = matcher.can_construct(design);
-        if (result) {
+        if (matcher.can_construct(design)) {
             solvable++;
-            std::println("Solvable design: {}", design);
+            solutions_count += matcher.count_unique_ways_to_construct(design);
         }
     }
+
+    // Part 1
     std::println("Solvable designs: {}", solvable);
+
+    // Part 2
+    std::println("Total solutions count: {}", solutions_count);
 
     return 0;
 }
