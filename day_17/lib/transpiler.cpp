@@ -1,5 +1,9 @@
 #include "transpiler.hpp"
+
+#include <cmath>
 #include <format>
+#include <iostream>
+#include <string_view>
 
 namespace aoc::day_17 {
 
