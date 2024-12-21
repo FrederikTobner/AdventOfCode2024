@@ -32,6 +32,12 @@ struct Node {
 };
 
 /// @brief The result of the pathfinding
+struct PathResultUsingCheats {
+    std::vector<Node> path;
+    int64_t saving;
+};
+
+/// @brief The result of the pathfinding
 struct PathResult {
     std::vector<Node> path;
     int64_t cost;
@@ -51,6 +57,12 @@ class MazeSolver {
     /// @brief Find all paths in the maze with the same cost as the cheapest path
     /// @return All paths in the maze with the same cost as the cheapest path
     auto findPaths() -> std::vector<PathResult>;
+
+    /// @brief Find all paths in the maze where a temprorary boost allowing to walk through walls for a limited time is
+    /// used
+    /// @return All paths in the maze with a cheaper cost than the cheapest path without the boost and the number of
+    /// steps saved
+    auto findPathUsingCheats(size_t boostLength) -> std::vector<PathResultUsingCheats>;
 
   private:
     /// @brief The maze to solve

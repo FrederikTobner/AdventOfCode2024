@@ -5,6 +5,8 @@
 #include <ranges>
 #include <unordered_map>
 
+#include <print>
+
 namespace aoc::path_finding {
 
 bool Node::operator==(Node const & other) const {
@@ -61,41 +63,54 @@ auto MazeSolver::findPath() -> PathResult {
     return result;
 }
 
-/// @brief Find all paths in the maze with the same cost as the cheapest path
-/// @return All paths in the maze with the same cost as the cheapest path
-auto MazeSolver::findPaths() -> std::vector<PathResult> {
-    std::vector<PathResult> allPaths;
-    auto heuristic = [](Node const & a, Node const & b) {
-        return std::abs(a.pos.x - b.pos.x) + std::abs(a.pos.y - b.pos.y);
-    };
+auto MazeSolver::findPathUsingCheats(size_t boostLength) -> std::vector<PathResultUsingCheats> {
+    std::vector<PathResultUsingCheats> results;
+    auto shortest = findPath();
+    if (shortest.cost == -1) {
+        return {};
+    }
+    // For every obstacle in the maze remove it and try to find a path
+    // If the path is shorter than the shortest path, add it to the results
+    // Then remove a neighbor of the obstacle and try to find a path
+    // If the path is shorter than the shortest path, add it to the results
 
-    auto getNeighbors = [this](Node const & n) {
-        std::vector<Node> neighbors;
-        for (auto const & dir : {aoc::math::Direction::UP, aoc::math::Direction::RIGHT, aoc::math::Direction::DOWN,
-                                 aoc::math::Direction::LEFT}) {
-            auto vec = aoc::math::getDirectionVector(dir);
-            auto new_pos = n.pos + vec;
-            if (isValid(new_pos)) {
-                neighbors.push_back({new_pos, dir});
+    for (size_t y = 0; y < m_maze.size(); ++y) {
+        std::println("y: {} of {}", y, m_maze.size());
+        for (size_t x = 0; x < m_maze[y].size(); ++x) {
+            if (m_maze[y][x] == maze_cell::WALL) {
+                m_maze[y][x] = maze_cell::EMPTY;
+                auto path = findPath();
+                auto currentCost = shortest.cost;
+                if (path.cost != -1 && path.cost < shortest.cost) {
+                    results.push_back({path.path, shortest.cost - path.cost});
+                }
+                // Check if the neigbor is a wall as well
+                for (auto const & dir : {aoc::math::Direction::UP, aoc::math::Direction::RIGHT}) {
+                    auto vec = aoc::math::getDirectionVector(dir);
+                    auto new_pos =
+                        aoc::math::vector_2d<int16_t>{static_cast<int16_t>(x), static_cast<int16_t>(y)} + vec;
+                    if (isValid(new_pos)) {
+                        if (m_maze[new_pos.y][new_pos.x] == maze_cell::WALL) {
+                            m_maze[new_pos.y][new_pos.x] = maze_cell::EMPTY;
+                            auto path = findPath();
+                            if (path.cost != -1 && path.cost < shortest.cost) {
+                                results.push_back({path.path, shortest.cost - path.cost});
+                            }
+                            m_maze[new_pos.y][new_pos.x] = maze_cell::WALL;
+                        }
+                    }
+                }
+                m_maze[y][x] = maze_cell::WALL;
             }
         }
-        return neighbors;
-    };
-
-    auto shortest_found = astar(m_start, m_end, heuristic, getNeighbors);
-    if (shortest_found.cost == -1) {
-        return allPaths;
     }
 
-    for (auto const & node : shortest_found.path) {
-        m_maze[node.pos.y][node.pos.x] = maze_cell::WALL;
-        // Look for shortest path again
-        auto result = astar(m_start, m_end, heuristic, getNeighbors);
-        if (result.cost == shortest_found.cost) {
-            allPaths.push_back(result);
-        }
-        m_maze[node.pos.y][node.pos.x] = maze_cell::EMPTY;
-    }
+    return results;
+}
+
+auto MazeSolver::findPaths() -> std::vector<PathResult> {
+    std::vector<PathResult> allPaths;
+    auto shortest = findPath();
     return allPaths;
 }
 
