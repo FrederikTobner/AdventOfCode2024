@@ -5,7 +5,7 @@
 #include <ranges>
 #include <unordered_map>
 
-#include <print>
+#include "print_compatibility_layer.hpp"
 
 namespace aoc::path_finding {
 
