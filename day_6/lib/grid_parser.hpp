@@ -24,12 +24,8 @@ struct ParsedGrid {
 
 /// @brief Converts a character representation of direction to FacingDirection enum
 /// @param c The character to convert ('^', 'v', '<', '>')
-/// @return The corresponding FacingDirection
-/// @details Optimized using platform-specific implementations:
-///          - MSVC: Uses switch with __assume(0)
-///          - GCC/Clang: Uses computed goto for better performance
+/// @return The corresponding FacingDirection value
 [[nodiscard]] constexpr auto charToGuardDirection(char c) -> FacingDirection {
-#ifdef _MSC_VER
     switch (c) {
     case '^':
         return FacingDirection::Up;
@@ -40,21 +36,8 @@ struct ParsedGrid {
     case '>':
         return FacingDirection::Right;
     default:
-        __assume(0); // Unreachable
+        std::unreachable();
     }
-#else // Use Computed goto's for GCC and Clang
-    static void * const jumpTable[] = {&&up, &&down, &&left, &&right};
-    goto * jumpTable[c - '^'];
-
-up:
-    return FacingDirection::Up;
-down:
-    return FacingDirection::Down;
-left:
-    return FacingDirection::Left;
-right:
-    return FacingDirection::Right;
-#endif
 }
 
 /// @brief Checks if a character represents a guard
