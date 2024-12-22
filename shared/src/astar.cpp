@@ -108,9 +108,41 @@ auto MazeSolver::findPathUsingCheats(size_t boostLength) -> std::vector<PathResu
     return results;
 }
 
+// @brief Find all paths in the maze with the same cost as the cheapest path
+/// @return All paths in the maze with the same cost as the cheapest path
 auto MazeSolver::findPaths() -> std::vector<PathResult> {
     std::vector<PathResult> allPaths;
-    auto shortest = findPath();
+    auto heuristic = [](Node const & a, Node const & b) {
+        return std::abs(a.pos.x - b.pos.x) + std::abs(a.pos.y - b.pos.y);
+    };
+
+    auto getNeighbors = [this](Node const & n) {
+        std::vector<Node> neighbors;
+        for (auto const & dir : {aoc::math::Direction::UP, aoc::math::Direction::RIGHT, aoc::math::Direction::DOWN,
+                                 aoc::math::Direction::LEFT}) {
+            auto vec = aoc::math::getDirectionVector(dir);
+            auto new_pos = n.pos + vec;
+            if (isValid(new_pos)) {
+                neighbors.push_back({new_pos, dir});
+            }
+        }
+        return neighbors;
+    };
+
+    auto shortest_found = astar(m_start, m_end, heuristic, getNeighbors);
+    if (shortest_found.cost == -1) {
+        return allPaths;
+    }
+
+    for (auto const & node : shortest_found.path) {
+        m_maze[node.pos.y][node.pos.x] = maze_cell::WALL;
+        // Look for shortest path again
+        auto result = astar(m_start, m_end, heuristic, getNeighbors);
+        if (result.cost == shortest_found.cost) {
+            allPaths.push_back(result);
+        }
+        m_maze[node.pos.y][node.pos.x] = maze_cell::EMPTY;
+    }
     return allPaths;
 }
 
